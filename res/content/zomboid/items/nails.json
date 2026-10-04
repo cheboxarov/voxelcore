@@ -3,5 +3,6 @@
     "description": "Для баррикад и крафта",
     "icon-type": "sprite",
     "icon": "items:nails",
-    "stack-size": 50
+    "stack-size": 50,
+    "zomboid:weight": 0.05
 }

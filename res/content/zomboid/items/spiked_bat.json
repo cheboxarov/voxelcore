@@ -13,5 +13,6 @@
     "zomboid:stamina": 10,
     "tags": [
         "zomboid:weapon"
-    ]
+    ],
+    "zomboid:weight": 1.8
 }

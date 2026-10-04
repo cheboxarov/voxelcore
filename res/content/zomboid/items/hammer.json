@@ -14,5 +14,6 @@
     "tags": [
         "zomboid:weapon"
     ],
-    "script-name": "hammer"
+    "script-name": "hammer",
+    "zomboid:weight": 1.0
 }

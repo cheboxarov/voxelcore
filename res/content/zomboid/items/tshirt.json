@@ -1,0 +1,17 @@
+{
+    "caption": "Футболка",
+    "description": "Тепло +1, защита 5%. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:tshirt",
+    "stack-size": 1,
+    "uses": 20,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "torso",
+    "zomboid:warmth": 1,
+    "zomboid:protection": 0.05,
+    "zomboid:weight": 0.2,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

@@ -3,5 +3,6 @@
     "description": "Для пистолета",
     "icon-type": "sprite",
     "icon": "items:ammo_9mm",
-    "stack-size": 60
+    "stack-size": 60,
+    "zomboid:weight": 0.02
 }

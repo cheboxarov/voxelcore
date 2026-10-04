@@ -1,0 +1,12 @@
+{
+    "caption": "Грязный бинт",
+    "description": "Может занести инфекцию. Прокипятите в кастрюле",
+    "icon-type": "sprite",
+    "icon": "items:dirty_bandage",
+    "stack-size": 10,
+    "script-name": "medical",
+    "zomboid:weight": 0.1,
+    "tags": [
+        "zomboid:medical"
+    ]
+}

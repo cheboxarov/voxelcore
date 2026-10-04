@@ -1,0 +1,17 @@
+{
+    "caption": "Кожаная куртка",
+    "description": "Тепло +5, защита 50%. Хорошо защищает от укусов. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:leather_jacket",
+    "stack-size": 1,
+    "uses": 40,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "jacket",
+    "zomboid:warmth": 5,
+    "zomboid:protection": 0.5,
+    "zomboid:weight": 1.5,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

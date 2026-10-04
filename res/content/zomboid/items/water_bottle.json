@@ -10,5 +10,6 @@
     "zomboid:thirst": 25,
     "tags": [
         "zomboid:drink"
-    ]
+    ],
+    "zomboid:weight": 1.0
 }

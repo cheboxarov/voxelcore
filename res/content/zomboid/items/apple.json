@@ -10,5 +10,7 @@
     "tags": [
         "zomboid:food"
     ],
-    "zomboid:spoil-days": 5
+    "zomboid:spoil-days": 5,
+    "zomboid:weight": 0.2,
+    "zomboid:mood": 4
 }

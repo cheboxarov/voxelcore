@@ -1,11 +1,12 @@
 {
     "caption": "Бинт",
-    "description": "Чистая перевязка раны",
+    "description": "Стерильная перевязка без риска инфекции",
     "icon-type": "sprite",
     "icon": "items:bandage",
     "stack-size": 10,
     "script-name": "medical",
     "tags": [
         "zomboid:medical"
-    ]
+    ],
+    "zomboid:weight": 0.1
 }

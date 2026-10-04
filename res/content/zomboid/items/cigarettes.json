@@ -1,0 +1,15 @@
+{
+    "caption": "Сигареты",
+    "description": "Успокаивают нервы. Нужны спички",
+    "icon-type": "sprite",
+    "icon": "items:cigarettes",
+    "stack-size": 1,
+    "script-name": "leisure",
+    "zomboid:mood": 12,
+    "zomboid:weight": 0.1,
+    "tags": [
+        "zomboid:leisure"
+    ],
+    "uses": 10,
+    "uses-display": "relation"
+}

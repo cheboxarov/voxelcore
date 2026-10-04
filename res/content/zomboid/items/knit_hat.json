@@ -1,0 +1,17 @@
+{
+    "caption": "Вязаная шапка",
+    "description": "Тепло +2.5, защита 5%. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:knit_hat",
+    "stack-size": 1,
+    "uses": 20,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "head",
+    "zomboid:warmth": 2.5,
+    "zomboid:protection": 0.05,
+    "zomboid:weight": 0.1,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

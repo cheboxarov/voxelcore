@@ -17,3 +17,11 @@
 "zomboid:noise-radius" = {}
 "zomboid:noise-delay" = {}
 "zomboid:noise-time" = {}
+"zomboid:weight" = {}
+"zomboid:mood" = {}
+"zomboid:slot" = {}
+"zomboid:warmth" = {}
+"zomboid:protection" = {}
+"zomboid:waterproof" = {}
+"zomboid:slots" = {}
+"zomboid:weight-reduction" = {}

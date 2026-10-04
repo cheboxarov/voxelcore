@@ -5,6 +5,7 @@ local sandbox = require "zomboid:sandbox"
 local firearms = require "zomboid:firearms"
 local combat = require "zomboid:combat"
 local inv = require "zomboid:inv"
+local vitals = require "zomboid:vitals"
 
 local BAR_WIDTH = 220
 
@@ -49,6 +50,7 @@ local function status_lines(state)
     if state.reading then
         table.insert(lines, string.format("[#ffd070]Чтение: %d%%", math.floor((state.reading.progress or 0) * 100)))
     end
+    vitals.status(state, lines)
     table.insert(lines, "[#a0a0a0]Выжито: " .. clock.duration(clock.hours - state.born))
     table.insert(lines, "[#a0a0a0]Убито зомби: " .. (state.kills or 0))
     return table.concat(lines, "\n"), #lines

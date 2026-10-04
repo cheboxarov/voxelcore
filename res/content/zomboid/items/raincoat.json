@@ -1,0 +1,18 @@
+{
+    "caption": "Дождевик",
+    "description": "Тепло +1.5, защита 10%, непромокаемый. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:raincoat",
+    "stack-size": 1,
+    "uses": 20,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "jacket",
+    "zomboid:warmth": 1.5,
+    "zomboid:protection": 0.1,
+    "zomboid:weight": 0.4,
+    "tags": [
+        "zomboid:clothing"
+    ],
+    "zomboid:waterproof": 0.9
+}

@@ -1,0 +1,15 @@
+{
+    "caption": "Туристический рюкзак",
+    "description": "20 мест, вес вещей внутри -60%. ПКМ - надеть, I - открыть",
+    "icon-type": "sprite",
+    "icon": "items:hiking_bag",
+    "stack-size": 1,
+    "script-name": "clothing",
+    "zomboid:slot": "back",
+    "zomboid:slots": 20,
+    "zomboid:weight-reduction": 0.6,
+    "zomboid:weight": 1.2,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

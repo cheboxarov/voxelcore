@@ -3,13 +3,18 @@ local clock = require "zomboid:clock"
 local sandbox = require "zomboid:sandbox"
 local water = require "zomboid:water"
 local inv = require "zomboid:inv"
+local gear = require "zomboid:gear"
 
 function on_interact(x, y, z, pid)
     if clock.day() >= sandbox.get("water_shutoff_day") then
         survival.notify(pid, "Из крана не течёт ни капли. Водоснабжение отключено")
         return true
     end
-    local itemid = inv.held(pid)
+    local itemid, _, invid, slot = inv.held(pid)
+    if gear.wash(invid, slot) then
+        survival.notify(pid, "Вы постирали вещь", "#90c0ff")
+        return true
+    end
     if water.is_container(itemid) then
         water.fill_held(pid, true)
         return true

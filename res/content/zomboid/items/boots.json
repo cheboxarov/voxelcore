@@ -1,0 +1,17 @@
+{
+    "caption": "Ботинки",
+    "description": "Тепло +1, защита 30%. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:boots",
+    "stack-size": 1,
+    "uses": 40,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "feet",
+    "zomboid:warmth": 1,
+    "zomboid:protection": 0.3,
+    "zomboid:weight": 1.0,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

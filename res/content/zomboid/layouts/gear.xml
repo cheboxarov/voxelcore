@@ -1,0 +1,26 @@
+<container id="root" size="640,300" color="#000000c0">
+    <label pos="12,8" color="#ffe0a0">Снаряжение (I - закрыть, ПКМ - снять)</label>
+    <container pos="12,36" size="48,48" color="#2a2a2acc"/>
+    <container pos="12,92" size="48,48" color="#2a2a2acc"/>
+    <container pos="12,148" size="48,48" color="#2a2a2acc"/>
+    <container pos="202,36" size="48,48" color="#2a2a2acc"/>
+    <container pos="202,92" size="48,48" color="#2a2a2acc"/>
+    <container pos="202,148" size="48,48" color="#2a2a2acc"/>
+    <inventory id="gear" pos="12,36" color="#00000000">
+        <slot index="0" pos="0,0" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slot index="1" pos="0,56" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slot index="2" pos="0,112" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slot index="3" pos="190,0" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slot index="4" pos="190,56" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slot index="5" pos="190,112" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+    </inventory>
+    <label id="slot_0" pos="68,40" size="134,40" multiline="true" color="#d0d0d0"></label>
+    <label id="slot_1" pos="68,96" size="134,40" multiline="true" color="#d0d0d0"></label>
+    <label id="slot_2" pos="68,152" size="134,40" multiline="true" color="#d0d0d0"></label>
+    <label id="slot_3" pos="258,40" size="134,40" multiline="true" color="#d0d0d0"></label>
+    <label id="slot_4" pos="258,96" size="134,40" multiline="true" color="#d0d0d0"></label>
+    <label id="slot_5" pos="258,152" size="134,40" multiline="true" color="#d0d0d0"></label>
+    <label id="info" pos="12,206" size="370,90" multiline="true" markup="md" valign="top"></label>
+    <label id="pack_title" pos="400,8" color="#ffe0a0">Рюкзак</label>
+    <container id="packbox" pos="400,36" size="220,260" color="#00000000"></container>
+</container>

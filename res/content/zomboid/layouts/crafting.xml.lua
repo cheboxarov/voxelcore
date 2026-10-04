@@ -6,7 +6,7 @@ local function refresh()
     local list = document.recipes
     list:clear()
     for i, recipe in ipairs(crafting.RECIPES) do
-        local ok = crafting.can_craft(invid, recipe)
+        local ok = crafting.can_craft(invid, recipe, pid)
         list:add(string.format(
             "<button onclick='craft(%d)' enabled='%s' padding='4' text-align='left' size='404,26'>%s</button>",
             i, tostring(ok), recipe.title))

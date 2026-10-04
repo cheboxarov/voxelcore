@@ -4,5 +4,6 @@
     "icon-type": "sprite",
     "icon": "items:plank",
     "stack-size": 20,
-    "placing-block": "base:planks"
+    "placing-block": "base:planks",
+    "zomboid:weight": 1.0
 }

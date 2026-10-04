@@ -9,5 +9,7 @@
     "zomboid:thirst": 30,
     "tags": [
         "zomboid:food"
-    ]
+    ],
+    "zomboid:weight": 0.4,
+    "zomboid:mood": 10
 }

@@ -6,34 +6,45 @@ local TABLES = {
     fridge = {
         {"zomboid:bread", 4, 1, 2}, {"zomboid:apple", 4, 1, 3}, {"zomboid:water_bottle", 3, 1, 1},
         {"zomboid:soda", 4, 1, 2}, {"zomboid:chocolate", 2, 1, 1}, {"zomboid:canned_beans", 1, 1, 1},
+        {"zomboid:raw_meat", 3, 1, 2}, {"zomboid:potato", 2, 1, 3}, {"zomboid:carrot", 2, 1, 3},
     },
     kitchen_cabinet = {
         {"zomboid:canned_beans", 5, 1, 2}, {"zomboid:chips", 3, 1, 2}, {"zomboid:empty_bottle", 3, 1, 2},
         {"zomboid:knife", 2, 1, 1}, {"zomboid:frying_pan", 2, 1, 1}, {"zomboid:matches", 2, 1, 1},
         {"zomboid:rag", 2, 1, 2}, {"zomboid:chocolate", 1, 1, 1}, {"zomboid:book_cooking_1", 1, 1, 1},
         {"zomboid:alarm_clock.item", 1, 1, 1},
+        {"zomboid:cooking_pot", 2, 1, 1}, {"zomboid:potato", 2, 1, 2}, {"zomboid:cigarettes", 1, 1, 1},
     },
     stove = {
         {"zomboid:frying_pan", 3, 1, 1}, {"zomboid:canned_beans", 1, 1, 1}, {"zomboid:book_cooking_2", 1, 1, 1},
+        {"zomboid:cooking_pot", 3, 1, 1},
     },
     wardrobe = {
         {"zomboid:rag", 6, 1, 3}, {"zomboid:bat", 1, 1, 1}, {"zomboid:flashlight", 2, 1, 1},
         {"zomboid:bandage", 1, 1, 1}, {"zomboid:painkillers", 1, 1, 1}, {"zomboid:matches", 1, 1, 1},
         {"zomboid:book_melee_1", 1, 1, 1}, {"zomboid:book_sneaking_1", 1, 1, 1},
         {"zomboid:alarm_clock.item", 1, 1, 1},
+        {"zomboid:tshirt", 3, 1, 1}, {"zomboid:sweater", 3, 1, 1}, {"zomboid:knit_hat", 3, 1, 1},
+        {"zomboid:jeans", 3, 1, 1}, {"zomboid:leather_jacket", 1, 1, 1}, {"zomboid:raincoat", 2, 1, 1},
+        {"zomboid:boots", 2, 1, 1}, {"zomboid:school_bag", 1, 1, 1}, {"zomboid:novel", 2, 1, 1},
+        {"zomboid:magazine", 2, 1, 2}, {"zomboid:cigarettes", 1, 1, 1},
     },
     medicine_cabinet = {
         {"zomboid:bandage", 5, 1, 3}, {"zomboid:disinfectant", 3, 1, 1}, {"zomboid:painkillers", 3, 1, 1},
         {"zomboid:antibiotics", 1, 1, 1}, {"zomboid:rag", 2, 1, 2}, {"zomboid:book_first_aid_1", 1, 1, 1},
+        {"zomboid:splint", 1, 1, 1},
     },
     crate = {
         {"zomboid:plank", 4, 2, 6}, {"zomboid:nails", 4, 5, 20}, {"zomboid:hammer", 2, 1, 1},
         {"zomboid:empty_bottle", 2, 1, 2}, {"zomboid:flashlight", 1, 1, 1}, {"zomboid:bat", 1, 1, 1},
-        {"zomboid:crowbar", 1, 1, 1}, {"zomboid:book_carpentry_1", 1, 1, 1},
+        {"zomboid:crowbar", 1, 1, 1}, {"zomboid:book_carpentry_1", 1, 1, 1}, {"zomboid:stick", 2, 1, 3},
+        {"zomboid:hiking_bag", 1, 1, 1},
     },
     shelf = {
         {"zomboid:canned_beans", 5, 1, 3}, {"zomboid:chips", 4, 1, 3}, {"zomboid:chocolate", 3, 1, 2},
         {"zomboid:soda", 4, 1, 3}, {"zomboid:water_bottle", 4, 1, 2}, {"zomboid:bread", 2, 1, 2},
+        {"zomboid:potato", 3, 1, 3}, {"zomboid:carrot", 3, 1, 3}, {"zomboid:cigarettes", 2, 1, 1},
+        {"zomboid:magazine", 2, 1, 1},
     },
 }
 
@@ -44,6 +55,7 @@ local BUILDING = {
             {"zomboid:axe", 2, 1, 1}, {"zomboid:crowbar", 2, 1, 1}, {"zomboid:flashlight", 2, 1, 1},
             {"zomboid:matches", 2, 1, 1}, {"zomboid:book_carpentry_1", 2, 1, 1}, {"zomboid:book_carpentry_2", 1, 1, 1},
             {"zomboid:shotgun_shells", 1, 2, 6}, {"zomboid:alarm_clock.item", 1, 1, 1},
+            {"zomboid:stick", 2, 2, 4}, {"zomboid:raincoat", 1, 1, 1}, {"zomboid:boots", 2, 1, 1},
         },
     },
     police = {
@@ -53,22 +65,25 @@ local BUILDING = {
             {"zomboid:spiked_bat", 1, 1, 1}, {"zomboid:book_melee_2", 1, 1, 1}, {"zomboid:book_sneaking_2", 1, 1, 1},
             {"zomboid:pistol", 1, 1, 1}, {"zomboid:shotgun", 0.5, 1, 1},
             {"zomboid:ammo_9mm", 2, 4, 12}, {"zomboid:shotgun_shells", 1.5, 2, 6}, {"zomboid:siren.item", 0.5, 1, 1},
+            {"zomboid:hiking_bag", 1, 1, 1},
         },
         wardrobe = {
             {"zomboid:flashlight", 3, 1, 1}, {"zomboid:bandage", 3, 1, 2}, {"zomboid:bat", 2, 1, 1},
             {"zomboid:ammo_9mm", 1, 3, 8},
+            {"zomboid:leather_jacket", 3, 1, 1}, {"zomboid:boots", 2, 1, 1},
         },
     },
     pharmacy = {
         medicine_cabinet = {
             {"zomboid:bandage", 5, 2, 5}, {"zomboid:disinfectant", 4, 1, 1}, {"zomboid:painkillers", 4, 1, 1},
             {"zomboid:antibiotics", 3, 1, 1}, {"zomboid:book_first_aid_1", 1, 1, 1}, {"zomboid:book_first_aid_2", 1, 1, 1},
+            {"zomboid:splint", 2, 1, 1},
         },
     },
 }
 
 local ROLLS = {
-    fridge = {1, 4}, kitchen_cabinet = {1, 3}, stove = {0, 1}, wardrobe = {0, 3}, medicine_cabinet = {1, 3},
+    fridge = {1, 4}, kitchen_cabinet = {1, 3}, stove = {0, 1}, wardrobe = {1, 4}, medicine_cabinet = {1, 3},
     crate = {1, 4}, shelf = {2, 5},
 }
 
@@ -110,6 +125,9 @@ function loot.fill(invid, container, x, z, apocalypse_hour)
                 if slot then
                     inventory.set(invid, slot, itemid, 1)
                     inventory.set_data(invid, slot, "born", apocalypse_hour - math.random() * 12)
+                    if container == "fridge" then
+                        inventory.set_data(invid, slot, "cold", apocalypse_hour)
+                    end
                     added = added + 1
                 end
             end
@@ -124,6 +142,7 @@ end
 local ZOMBIE_DROPS = {
     {"zomboid:rag", 4, 1, 2}, {"zomboid:chips", 2, 1, 1}, {"zomboid:water_bottle", 1, 1, 1},
     {"zomboid:bandage", 1, 1, 1}, {"zomboid:matches", 1, 1, 1}, {"zomboid:chocolate", 1, 1, 1},
+    {"zomboid:magazine", 1, 1, 1}, {"zomboid:cigarettes", 1, 1, 1},
 }
 
 function loot.zombie_drop()

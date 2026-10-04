@@ -1,0 +1,15 @@
+{
+    "caption": "Роман",
+    "description": "Снимает скуку и грусть. 4 главы",
+    "icon-type": "sprite",
+    "icon": "items:novel",
+    "stack-size": 1,
+    "script-name": "leisure",
+    "zomboid:mood": 25,
+    "zomboid:weight": 0.4,
+    "tags": [
+        "zomboid:leisure"
+    ],
+    "uses": 4,
+    "uses-display": "relation"
+}

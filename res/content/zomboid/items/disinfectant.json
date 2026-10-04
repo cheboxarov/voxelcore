@@ -9,5 +9,6 @@
         "zomboid:medical"
     ],
     "uses": 5,
-    "uses-display": "relation"
+    "uses-display": "relation",
+    "zomboid:weight": 0.3
 }

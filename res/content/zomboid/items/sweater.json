@@ -1,0 +1,17 @@
+{
+    "caption": "Свитер",
+    "description": "Тепло +4, защита 15%. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:sweater",
+    "stack-size": 1,
+    "uses": 25,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "torso",
+    "zomboid:warmth": 4,
+    "zomboid:protection": 0.15,
+    "zomboid:weight": 0.5,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

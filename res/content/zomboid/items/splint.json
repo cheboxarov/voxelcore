@@ -1,0 +1,12 @@
+{
+    "caption": "Шина",
+    "description": "ПКМ - наложить на перелом",
+    "icon-type": "sprite",
+    "icon": "items:splint",
+    "stack-size": 4,
+    "script-name": "medical",
+    "zomboid:weight": 0.5,
+    "tags": [
+        "zomboid:medical"
+    ]
+}

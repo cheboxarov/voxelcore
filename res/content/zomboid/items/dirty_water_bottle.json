@@ -11,5 +11,6 @@
     "tags": [
         "zomboid:drink"
     ],
-    "zomboid:sickness": 30
+    "zomboid:sickness": 30,
+    "zomboid:weight": 1.0
 }

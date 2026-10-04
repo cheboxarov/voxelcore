@@ -10,5 +10,7 @@
     "tags": [
         "zomboid:food"
     ],
-    "zomboid:sickness": 45
+    "zomboid:sickness": 45,
+    "zomboid:weight": 0.3,
+    "zomboid:mood": -20
 }

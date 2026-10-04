@@ -6,7 +6,7 @@ local function apply(pid)
     local itemid, _, invid, slot = inv.held(pid)
     local kind = item.name(itemid):sub(#"zomboid:" + 1)
     if survival.treat(pid, kind) then
-        if kind == "bandage" or kind == "rag" or kind == "disinfectant" then
+        if kind ~= "painkillers" and kind ~= "antibiotics" then
             local state = survival.get(pid)
             local heal = 100 * (skills.mul(pid, "treat_heal") - 1)
             state.health = math.min(survival.max_health(state), state.health + heal)

@@ -1,0 +1,13 @@
+{
+    "caption": "Журнал",
+    "description": "Немного развлекает",
+    "icon-type": "sprite",
+    "icon": "items:magazine",
+    "stack-size": 4,
+    "script-name": "leisure",
+    "zomboid:mood": 20,
+    "zomboid:weight": 0.2,
+    "tags": [
+        "zomboid:leisure"
+    ]
+}

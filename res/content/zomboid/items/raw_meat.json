@@ -1,0 +1,17 @@
+{
+    "caption": "Сырое мясо",
+    "description": "Лучше пожарить. Портится за 2 дня",
+    "icon-type": "sprite",
+    "icon": "items:raw_meat",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 15,
+    "zomboid:thirst": 0,
+    "zomboid:weight": 0.5,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:spoil-days": 2,
+    "zomboid:mood": -10,
+    "zomboid:sickness": 35
+}

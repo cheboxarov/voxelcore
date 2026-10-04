@@ -20,5 +20,6 @@
     },
     "tags": [
         "zomboid:gun"
-    ]
+    ],
+    "zomboid:weight": 1.0
 }

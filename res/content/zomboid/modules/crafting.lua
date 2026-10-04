@@ -1,6 +1,8 @@
 local inv = require "zomboid:inv"
 local survival = require "zomboid:survival"
 local skills = require "zomboid:skills"
+local water = require "zomboid:water"
+local heat = require "zomboid:heat"
 
 local crafting = {}
 
@@ -56,6 +58,61 @@ crafting.RECIPES = {
         need = {{"zomboid:alarm_clock.item", 1}, {"zomboid:flashlight", 1}, {"zomboid:nails", 2}},
         tools = {"zomboid:hammer"},
     },
+    {
+        title = "Палки (2 шт.)",
+        result = {"zomboid:stick", 2},
+        need = {{"zomboid:plank", 1}},
+    },
+    {
+        title = "Шина",
+        result = {"zomboid:splint", 1},
+        need = {{"zomboid:stick", 1}, {"zomboid:rag", 1}},
+        xp = {"first_aid", 5},
+    },
+    {
+        title = "Прокипятить грязный бинт",
+        result = {"zomboid:bandage", 1},
+        need = {{"zomboid:dirty_bandage", 1}},
+        tools = {"zomboid:cooking_pot"},
+        water = true,
+        heat = true,
+        xp = {"first_aid", 3},
+    },
+    {
+        title = "Прокипятить грязную тряпку",
+        result = {"zomboid:rag", 1},
+        need = {{"zomboid:dirty_rag", 1}},
+        tools = {"zomboid:cooking_pot"},
+        water = true,
+        heat = true,
+        xp = {"first_aid", 3},
+    },
+    {
+        title = "Жареное мясо",
+        result = {"zomboid:cooked_meat", 1},
+        need = {{"zomboid:raw_meat", 1}},
+        tools = {"zomboid:frying_pan"},
+        heat = true,
+        xp = {"cooking", 10},
+    },
+    {
+        title = "Овощной суп",
+        result = {"zomboid:soup", 1},
+        need = {{"zomboid:potato", 1}, {"zomboid:carrot", 1}},
+        tools = {"zomboid:cooking_pot"},
+        water = true,
+        heat = true,
+        xp = {"cooking", 15},
+    },
+    {
+        title = "Рагу с мясом",
+        result = {"zomboid:stew", 1},
+        need = {{"zomboid:raw_meat", 1}, {"zomboid:potato", 1}, {"zomboid:carrot", 1}},
+        tools = {"zomboid:cooking_pot"},
+        water = true,
+        heat = true,
+        xp = {"cooking", 20},
+    },
 }
 
 local CAPTIONS = {
@@ -87,10 +144,16 @@ function crafting.describe(recipe)
     if recipe.uses then
         table.insert(parts, "расходует: " .. names(recipe.uses))
     end
+    if recipe.water then
+        table.insert(parts, "глоток воды")
+    end
+    if recipe.heat then
+        table.insert(parts, "нужен огонь рядом (костёр или плита)")
+    end
     return table.concat(parts, "; ")
 end
 
-function crafting.can_craft(invid, recipe)
+function crafting.can_craft(invid, recipe, pid)
     for _, need in ipairs(recipe.need) do
         if inv.count(invid, need[1]) < need[2] then
             return false
@@ -106,13 +169,16 @@ function crafting.can_craft(invid, recipe)
             return false
         end
     end
-    return true
+    if recipe.water and water.sip_slot(invid) == nil then
+        return false
+    end
+    return not recipe.heat or (pid ~= nil and heat.near_player(pid))
 end
 
 function crafting.craft(pid, index)
     local recipe = crafting.RECIPES[index]
     local invid = player.get_inventory(pid)
-    if recipe == nil or not crafting.can_craft(invid, recipe) then
+    if recipe == nil or not crafting.can_craft(invid, recipe, pid) then
         survival.notify(pid, "Не хватает материалов", "#ff9050")
         return false
     end
@@ -124,6 +190,9 @@ function crafting.craft(pid, index)
         if slot then
             inventory.use(invid, slot)
         end
+    end
+    if recipe.water then
+        water.take_sip(invid)
     end
     inv.give(pid, recipe.result[1], recipe.result[2])
     if recipe.xp then

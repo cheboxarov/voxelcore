@@ -1,0 +1,16 @@
+{
+    "caption": "Рагу с мясом",
+    "description": "Очень сытно. Портится за 6 дней",
+    "icon-type": "sprite",
+    "icon": "items:stew",
+    "stack-size": 4,
+    "script-name": "food",
+    "zomboid:hunger": 75,
+    "zomboid:thirst": 5,
+    "zomboid:weight": 0.9,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:spoil-days": 6,
+    "zomboid:mood": 25
+}

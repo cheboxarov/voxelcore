@@ -1,0 +1,17 @@
+{
+    "caption": "Джинсы",
+    "description": "Тепло +2, защита 25%. ПКМ - надеть",
+    "icon-type": "sprite",
+    "icon": "items:jeans",
+    "stack-size": 1,
+    "uses": 30,
+    "uses-display": "vbar",
+    "script-name": "clothing",
+    "zomboid:slot": "legs",
+    "zomboid:warmth": 2,
+    "zomboid:protection": 0.25,
+    "zomboid:weight": 0.6,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

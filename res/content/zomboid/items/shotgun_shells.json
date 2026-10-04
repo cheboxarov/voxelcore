@@ -3,5 +3,6 @@
     "description": "Картечь 12 калибра",
     "icon-type": "sprite",
     "icon": "items:shotgun_shells",
-    "stack-size": 30
+    "stack-size": 30,
+    "zomboid:weight": 0.05
 }

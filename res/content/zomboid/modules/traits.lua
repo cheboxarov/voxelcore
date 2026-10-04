@@ -1,8 +1,8 @@
 local traits = {}
 
 traits.LIST = {
-    {id = "strong", title = "Сильный", cost = 4, text = "Урон в ближнем бою +20%, отбрасывание +40%",
-        mods = {melee_damage = 1.2, knockback = 1.4}, opposite = "weak"},
+    {id = "strong", title = "Сильный", cost = 4, text = "Урон в ближнем бою +20%, отбрасывание +40%, носит на 25% больше",
+        mods = {melee_damage = 1.2, knockback = 1.4, carry = 1.25}, opposite = "weak"},
     {id = "athletic", title = "Выносливый", cost = 4, text = "Бег тратит на 30% меньше выносливости",
         mods = {sprint_stamina = 0.7}, opposite = "out_of_shape"},
     {id = "light_step", title = "Тихий шаг", cost = 3, text = "Шаги на 40% тише",
@@ -13,8 +13,8 @@ traits.LIST = {
         mods = {hunger = 0.75}, opposite = "hearty_appetite"},
     {id = "handy", title = "Мастер на все руки", cost = 3, text = "+1 к плотницкому делу, баррикады прочнее на 15%",
         mods = {barricade_hp = 1.15}, skills = {carpentry = 1}},
-    {id = "weak", title = "Слабый", cost = -4, text = "Урон в ближнем бою -25%, отбрасывание -30%",
-        mods = {melee_damage = 0.75, knockback = 0.7}},
+    {id = "weak", title = "Слабый", cost = -4, text = "Урон в ближнем бою -25%, отбрасывание -30%, носит на 20% меньше",
+        mods = {melee_damage = 0.75, knockback = 0.7, carry = 0.8}},
     {id = "out_of_shape", title = "Не в форме", cost = -3, text = "Бег тратит на 40% больше выносливости",
         mods = {sprint_stamina = 1.4}},
     {id = "clumsy", title = "Неуклюжий", cost = -2, text = "Шаги на 50% громче",

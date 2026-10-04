@@ -1,0 +1,15 @@
+{
+    "caption": "Школьный рюкзак",
+    "description": "12 мест, вес вещей внутри -40%. ПКМ - надеть, I - открыть",
+    "icon-type": "sprite",
+    "icon": "items:school_bag",
+    "stack-size": 1,
+    "script-name": "clothing",
+    "zomboid:slot": "back",
+    "zomboid:slots": 12,
+    "zomboid:weight-reduction": 0.4,
+    "zomboid:weight": 0.6,
+    "tags": [
+        "zomboid:clothing"
+    ]
+}

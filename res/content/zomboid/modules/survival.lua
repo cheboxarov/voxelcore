@@ -2,6 +2,8 @@ local clock = require "zomboid:clock"
 local inv = require "zomboid:inv"
 local traits = require "zomboid:traits"
 local sandbox = require "zomboid:sandbox"
+local gear = require "zomboid:gear"
+local vitals = require "zomboid:vitals"
 
 local survival = {
     states = {},
@@ -24,6 +26,13 @@ local WOUNDS = {
 }
 survival.WOUNDS = WOUNDS
 
+local DRESSINGS = {
+    bandage = {infection = 0.0, dirty = "zomboid:dirty_bandage"},
+    rag = {infection = 0.3, dirty = "zomboid:dirty_rag"},
+    dirty_bandage = {infection = 0.35, dirty = "zomboid:dirty_bandage"},
+    dirty_rag = {infection = 0.5, dirty = "zomboid:dirty_rag"},
+}
+
 local CAUSES = {
     zombies = "Растерзан зомби",
     bleeding = "Истёк кровью",
@@ -31,16 +40,21 @@ local CAUSES = {
     dehydration = "Умер от жажды",
     infection = "Обратился в зомби",
     sickness = "Умер от болезни",
+    cold = "Замёрз насмерть",
+    heat = "Умер от теплового удара",
+    fall = "Разбился при падении",
 }
 survival.CAUSES = CAUSES
 
 local function new_state()
-    return {
+    local state = {
         health = 100, hunger = 85, thirst = 85, energy = 90, stamina = 100,
         sickness = 0, pain = 0, wounds = {}, infection = nil, wound_infection = false,
         kills = 0, born = clock.hours, dead = false, messages = {}, hurt = 0,
         sleeping = false, sprinting = false, crouching = false,
     }
+    vitals.defaults(state)
+    return state
 end
 
 function survival.get(pid)
@@ -85,10 +99,21 @@ function survival.days_alive(state)
     return (clock.hours - state.born) / 24
 end
 
-function survival.add_wound(pid, kind)
+function survival.add_wound(pid, kind, through_clothes)
     local state = survival.get(pid)
     local def = WOUNDS[kind]
-    table.insert(state.wounds, {kind = kind, bleeding = true, bandaged = false, dirty = false, time = clock.hours})
+    local blocked, torn, dirty
+    if through_clothes then
+        blocked, torn, dirty = gear.absorb(state, kind)
+    end
+    if torn then
+        survival.notify(pid, "Одежда порвалась: " .. torn, "#e0a060")
+    end
+    if blocked then
+        survival.notify(pid, "Одежда защитила от раны: " .. blocked, "#a0d0a0")
+        return
+    end
+    table.insert(state.wounds, {kind = kind, bleeding = true, bandaged = false, dirty = dirty or false, time = clock.hours})
     if state.infection == nil and math.random() < def.infection then
         state.infection = 0.0
     end
@@ -117,11 +142,11 @@ function survival.zombie_hit(pid, night)
     local r = math.random()
     local bite_chance = night and 0.28 or 0.18
     if r < bite_chance then
-        survival.add_wound(pid, "bite")
+        survival.add_wound(pid, "bite", true)
     elseif r < 0.55 then
-        survival.add_wound(pid, "laceration")
+        survival.add_wound(pid, "laceration", true)
     elseif r < 0.85 then
-        survival.add_wound(pid, "scratch")
+        survival.add_wound(pid, "scratch", true)
     end
     if state.sleeping then
         state.sleeping = false
@@ -152,7 +177,7 @@ function survival.update(pid, dh, dt)
     if state.sprinting then
         state.stamina = clamp(state.stamina - SPRINT_STAMINA * dt * traits.mul(state, "sprint_stamina"))
     else
-        local regen = STAMINA_REGEN * (state.energy < 20 and 0.4 or 1.0)
+        local regen = STAMINA_REGEN * (state.energy < 20 and 0.4 or 1.0) * vitals.stamina_mul(state)
         state.stamina = clamp(state.stamina + regen * dt)
     end
 
@@ -177,14 +202,21 @@ function survival.update(pid, dh, dt)
                 bleeding = bleeding + def.bleed
             end
         end
+        if w.bandaged and not state.wound_infection and clock.hours - (w.dressed or w.time) > vitals.DRESSING_DIRTY_HOURS
+            and math.random() < 0.03 * dh then
+            state.wound_infection = true
+            survival.notify(pid, "Под грязной повязкой началось воспаление", "#e0c040")
+        end
         if w.bandaged and age > def.heals then
             table.remove(state.wounds, i)
+            inv.give(pid, DRESSINGS[w.dressing or "bandage"].dirty, 1)
             survival.notify(pid, "Рана зажила: " .. def.title, "#90e090")
         elseif not w.bandaged and not w.bleeding and age > def.heals * 1.5 then
             table.remove(state.wounds, i)
         end
     end
     hurt("bleeding", bleeding * dt)
+    vitals.update(pid, state, dh, dt, hurt)
 
     if state.wound_infection then
         hurt("sickness", 1.5 * dh)
@@ -225,7 +257,7 @@ function survival.update(pid, dh, dt)
     if total > 0 then
         state.health = state.health - total
         state.last_cause = worst
-    elseif state.hunger > 35 and state.thirst > 35 and state.sickness < 30 then
+    elseif state.hunger > 35 and state.thirst > 35 and state.sickness < 30 and vitals.can_regen(state) then
         state.health = state.health + REGEN * dh * (state.sleeping and 3 or 1)
     end
     state.health = math.min(state.health, survival.max_health(state))
@@ -239,15 +271,18 @@ function survival.speed_factor(state)
     if state.energy < 20 then f = f * 0.8 end
     if state.health < 30 and state.pain <= 0 then f = f * 0.8 end
     if state.hunger <= 0 or state.thirst <= 0 then f = f * 0.85 end
-    return f
+    return f * vitals.speed_factor(state)
 end
 
 function survival.can_sprint(state)
-    return state.stamina > 12 and state.energy > 5
+    return state.stamina > 12 and state.energy > 5 and vitals.can_sprint(state)
 end
 
-function survival.eat(pid, hunger, thirst, sickness)
+function survival.eat(pid, hunger, thirst, sickness, mood)
     local state = survival.get(pid)
+    if mood and mood ~= 0 then
+        vitals.cheer(state, mood)
+    end
     state.hunger = clamp(state.hunger + (hunger or 0))
     state.thirst = clamp(state.thirst + (thirst or 0))
     if sickness and sickness > 0 then
@@ -261,25 +296,50 @@ end
 
 function survival.treat(pid, kind)
     local state = survival.get(pid)
-    if kind == "bandage" or kind == "rag" then
+    local dressing = DRESSINGS[kind]
+    if dressing then
+        local target, replaced
         for _, w in ipairs(state.wounds) do
             if not w.bandaged then
-                w.bandaged = true
-                w.bleeding = false
-                if kind == "rag" and not w.disinfected and math.random() < 0.3 then
-                    state.wound_infection = true
-                end
-                survival.notify(pid, "Вы перевязали рану: " .. WOUNDS[w.kind].title, "#90e090")
-                return true
+                target = w
+                break
             end
         end
-        survival.notify(pid, "Нет ран, которые нужно перевязать")
-        return false
+        if target == nil then
+            for _, w in ipairs(state.wounds) do
+                if clock.hours - (w.dressed or w.time) > vitals.DRESSING_DIRTY_HOURS then
+                    target, replaced = w, true
+                    break
+                end
+            end
+        end
+        if target == nil then
+            survival.notify(pid, "Нет ран, которые нужно перевязать")
+            return false
+        end
+        if replaced then
+            inv.give(pid, DRESSINGS[target.dressing or "bandage"].dirty, 1)
+        end
+        target.bandaged = true
+        target.bleeding = false
+        target.dressing = kind
+        target.dressed = clock.hours
+        local risk = dressing.infection + (target.dirty and 0.25 or 0)
+        if not target.disinfected and math.random() < risk then
+            state.wound_infection = true
+        end
+        survival.notify(pid, (replaced and "Вы сменили повязку: " or "Вы перевязали рану: ") .. WOUNDS[target.kind].title, "#90e090")
+        return true
+    elseif kind == "splint" then
+        local ok = vitals.splint(state)
+        survival.notify(pid, ok and "Вы наложили шину на перелом" or "Шина не нужна: переломов нет", ok and "#90e090" or nil)
+        return ok
     elseif kind == "disinfectant" then
         local used = false
         for _, w in ipairs(state.wounds) do
             if not w.disinfected then
                 w.disinfected = true
+                w.dirty = false
                 used = true
             end
         end
@@ -353,6 +413,9 @@ function survival.kill(pid, cause)
         end
     end
     inv.clear(invid)
+    for _, entry in ipairs(gear.take_all(state)) do
+        table.insert(items, entry)
+    end
     events.emit("zomboid:player_died", pid, {x, y, z}, items, state.death.infected)
 end
 
@@ -372,6 +435,7 @@ function survival.new_character(pid, pos)
     for _, entry in ipairs(STARTER_KIT) do
         inventory.add(invid, item.index(entry[1]), entry[2])
     end
+    gear.dress(state)
     if pos then
         player.set_pos(pid, pos[1], pos[2], pos[3])
         player.set_vel(pid, 0, 0, 0)
@@ -391,6 +455,8 @@ function survival.serialize()
         copy.fresh = nil
         copy.hurt = nil
         copy.sprinting = nil
+        copy.gear = gear.dump(state)
+        copy.gear_inv = nil
         players[tostring(pid)] = copy
     end
     return players
@@ -402,6 +468,7 @@ function survival.deserialize(players)
         state.messages = {}
         state.hurt = 0
         state.wounds = state.wounds or {}
+        vitals.defaults(state)
         survival.states[tonumber(key)] = state
     end
 end

@@ -1,0 +1,8 @@
+{
+    "caption": "Кастрюля",
+    "description": "Для супа, рагу и кипячения бинтов",
+    "icon-type": "sprite",
+    "icon": "items:cooking_pot",
+    "stack-size": 1,
+    "zomboid:weight": 1.2
+}

@@ -1,0 +1,16 @@
+{
+    "caption": "Жареное мясо",
+    "description": "Сытно. Портится за 4 дня",
+    "icon-type": "sprite",
+    "icon": "items:cooked_meat",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 45,
+    "zomboid:thirst": -5,
+    "zomboid:weight": 0.4,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:spoil-days": 4,
+    "zomboid:mood": 12
+}

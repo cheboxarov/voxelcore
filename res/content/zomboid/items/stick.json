@@ -1,0 +1,8 @@
+{
+    "caption": "Палка",
+    "description": "Пригодится для шины",
+    "icon-type": "sprite",
+    "icon": "items:stick",
+    "stack-size": 10,
+    "zomboid:weight": 0.3
+}

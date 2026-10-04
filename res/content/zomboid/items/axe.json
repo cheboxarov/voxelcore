@@ -14,5 +14,6 @@
     "tags": [
         "zomboid:weapon"
     ],
-    "zomboid:chop": 4.0
+    "zomboid:chop": 4.0,
+    "zomboid:weight": 2.5
 }

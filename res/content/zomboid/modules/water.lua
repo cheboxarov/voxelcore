@@ -36,6 +36,20 @@ function water.fill_held(pid, clean)
     return true
 end
 
+function water.sip_slot(invid)
+    return inventory.find_by_item(invid, item.index("zomboid:dirty_water_bottle"))
+        or inventory.find_by_item(invid, item.index("zomboid:water_bottle"))
+end
+
+function water.take_sip(invid)
+    local slot = water.sip_slot(invid)
+    if inventory.get_uses(invid, slot) <= 1 then
+        inventory.set(invid, slot, item.index("zomboid:empty_bottle"), 1)
+    else
+        inventory.use(invid, slot)
+    end
+end
+
 function water.is_container(itemid)
     local name = item.name(itemid)
     return name == "zomboid:empty_bottle" or name == "zomboid:water_bottle" or name == "zomboid:dirty_water_bottle"

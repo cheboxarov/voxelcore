@@ -4,5 +4,6 @@
     "icon-type": "sprite",
     "icon": "items:empty_bottle",
     "stack-size": 4,
-    "script-name": "empty_bottle"
+    "script-name": "empty_bottle",
+    "zomboid:weight": 0.2
 }

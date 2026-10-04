@@ -1,0 +1,16 @@
+{
+    "caption": "Картофель",
+    "description": "Сырой не очень. Портится за 12 дней",
+    "icon-type": "sprite",
+    "icon": "items:potato",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 10,
+    "zomboid:thirst": 0,
+    "zomboid:weight": 0.3,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:spoil-days": 12,
+    "zomboid:mood": -5
+}

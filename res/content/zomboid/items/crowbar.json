@@ -16,5 +16,6 @@
     ],
     "zomboid:pry": 1,
     "zomboid:chop": 1.5,
-    "script-name": "crowbar"
+    "script-name": "crowbar",
+    "zomboid:weight": 2.0
 }

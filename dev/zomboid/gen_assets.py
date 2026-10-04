@@ -602,6 +602,214 @@ for _skill, _color in BOOK_COLORS.items():
         ITEM_ART["book_%s_%d" % (_skill, _volume)] = book_art(hexc(_color), _volume)
 
 
+@item
+def knit_hat(img):
+    c = hexc("b03030")
+    img.rect(4, 6, 11, 11, c)
+    img.rect(5, 4, 10, 5, c)
+    img.rect(3, 11, 12, 13, hexc("e8e8e8"))
+    img.rect(7, 2, 8, 3, hexc("e8e8e8"))
+    for x in (5, 8, 11):
+        img.line(x, 6, x, 10, shade(c, 0.8))
+
+
+def _shirt(img, c, sleeves_to=13):
+    img.rect(5, 3, 10, 13, c)
+    img.rect(2, 3, 13, 6, c)
+    img.rect(2, 3, 3, sleeves_to - 6, c)
+    img.rect(12, 3, 13, sleeves_to - 6, c)
+    img.rect(7, 3, 8, 4, shade(c, 0.6))
+
+
+@item
+def tshirt(img):
+    _shirt(img, hexc("e0e0e0"), 10)
+
+
+@item
+def sweater(img):
+    c = hexc("3a6a9a")
+    _shirt(img, c, 18)
+    for y in (8, 11):
+        img.line(5, y, 10, y, shade(c, 1.25))
+
+
+@item
+def leather_jacket(img):
+    c = hexc("3a2a20")
+    _shirt(img, c, 18)
+    img.line(7, 4, 7, 13, hexc("a0a0a0"))
+    img.set(5, 4, shade(c, 1.4))
+    img.set(10, 4, shade(c, 1.4))
+
+
+@item
+def raincoat(img):
+    c = hexc("e8c820")
+    _shirt(img, c, 18)
+    img.rect(6, 1, 9, 3, c)
+    img.line(7, 4, 7, 14, shade(c, 0.7))
+
+
+@item
+def jeans(img):
+    c = hexc("3a5a9a")
+    img.rect(4, 2, 11, 5, c)
+    img.rect(4, 6, 7, 14, c)
+    img.rect(8, 6, 11, 14, shade(c, 0.9))
+    img.line(4, 2, 11, 2, hexc("6a4a2a"))
+
+
+@item
+def boots(img):
+    c = hexc("5a3a20")
+    img.rect(3, 4, 6, 11, c)
+    img.rect(3, 11, 9, 13, c)
+    img.rect(9, 5, 12, 11, shade(c, 0.85))
+    img.rect(9, 11, 15, 13, shade(c, 0.85))
+    img.line(3, 13, 9, 13, hexc("202020"))
+    img.line(9, 13, 15, 13, hexc("202020"))
+
+
+def _bag(img, c):
+    img.rect(3, 4, 12, 14, c)
+    img.rect(5, 2, 10, 3, shade(c, 0.7))
+    img.rect(4, 9, 11, 13, shade(c, 0.85))
+    img.line(4, 9, 11, 9, shade(c, 0.6))
+    img.set(7, 11, hexc("d0d0d0"))
+
+
+@item
+def school_bag(img):
+    _bag(img, hexc("c04040"))
+
+
+@item
+def hiking_bag(img):
+    _bag(img, hexc("4a6a3a"))
+    img.rect(3, 1, 12, 2, hexc("8a6a4a"))
+
+
+@item
+def dirty_bandage(img):
+    bandage(img)
+    img.speckle(hexc("8a6a40"), 8)
+    img.rect(9, 7, 10, 9, hexc("7a2a20"))
+
+
+@item
+def dirty_rag(img):
+    rag(img)
+    img.speckle(hexc("6a5030"), 10)
+
+
+@item
+def stick(img):
+    img.line(3, 13, 12, 3, hexc("7a5a30"))
+    img.line(4, 13, 13, 3, hexc("5a4020"))
+    img.set(8, 7, hexc("4a8a30"))
+
+
+@item
+def splint(img):
+    stick(img)
+    img.rect(6, 7, 10, 9, hexc("e8e0d0"))
+    img.line(6, 8, 10, 8, hexc("c8c0b0"))
+
+
+@item
+def cooking_pot(img):
+    img.rect(3, 6, 12, 13, hexc("9aa0a8"))
+    img.line(2, 6, 13, 6, hexc("c8ccd2"))
+    img.rect(6, 4, 9, 5, hexc("505050"))
+    img.set(1, 8, hexc("505050"))
+    img.set(14, 8, hexc("505050"))
+    img.line(3, 13, 12, 13, hexc("6a7078"))
+
+
+@item
+def raw_meat(img):
+    c = hexc("c84850")
+    img.rect(3, 5, 12, 11, c)
+    img.rect(4, 4, 10, 12, c)
+    img.line(5, 7, 10, 7, hexc("f0d0d0"))
+    img.line(4, 10, 9, 9, hexc("f0d0d0"))
+
+
+@item
+def cooked_meat(img):
+    c = hexc("8a4a20")
+    img.rect(3, 5, 12, 11, c)
+    img.rect(4, 4, 10, 12, c)
+    for x in (5, 8, 11):
+        img.line(x, 5, x - 2, 11, hexc("4a2a10"))
+
+
+@item
+def potato(img):
+    c = hexc("b08a50")
+    img.rect(4, 5, 11, 11, c)
+    img.rect(3, 6, 12, 10, c)
+    img.speckle(shade(c, 0.7), 6)
+
+
+@item
+def carrot(img):
+    img.line(4, 12, 10, 5, hexc("e07020"))
+    img.line(5, 12, 11, 5, hexc("e88030"))
+    img.line(4, 11, 9, 5, hexc("d06010"))
+    img.line(11, 4, 13, 2, hexc("40a040"))
+    img.line(10, 4, 10, 1, hexc("40a040"))
+
+
+def _bowl(img, food):
+    img.rect(2, 8, 13, 9, food)
+    img.rect(2, 10, 13, 11, hexc("e0e0e0"))
+    img.rect(4, 12, 11, 13, hexc("c8c8c8"))
+    img.line(5, 6, 6, 3, hexc("e0e0e0", 160))
+    img.line(9, 6, 10, 3, hexc("e0e0e0", 160))
+
+
+@item
+def soup(img):
+    _bowl(img, hexc("d0a040"))
+    img.set(5, 8, hexc("e07020"))
+    img.set(10, 8, hexc("e07020"))
+
+
+@item
+def stew(img):
+    _bowl(img, hexc("7a3a1a"))
+    img.set(6, 8, hexc("e07020"))
+    img.set(9, 8, hexc("c8a060"))
+
+
+@item
+def novel(img):
+    c = hexc("6a2a6a")
+    img.rect(3, 2, 12, 14, c)
+    img.rect(4, 2, 4, 14, shade(c, 0.6))
+    img.rect(6, 5, 10, 6, hexc("e0c060"))
+    img.rect(12, 3, 12, 13, hexc("f0f0e0"))
+
+
+@item
+def magazine(img):
+    img.rect(3, 2, 12, 14, hexc("f0f0f0"))
+    img.rect(4, 3, 11, 6, hexc("d03030"))
+    img.rect(4, 8, 11, 12, hexc("4080c0"))
+    img.line(4, 13, 9, 13, hexc("808080"))
+
+
+@item
+def cigarettes(img):
+    img.rect(4, 3, 11, 14, hexc("f0f0f0"))
+    img.rect(4, 3, 11, 6, hexc("c02020"))
+    for x in (5, 7, 9):
+        img.rect(x, 1, x, 2, hexc("e0b080"))
+    img.line(5, 9, 10, 9, hexc("202020"))
+
+
 def item_textures():
     for name, fn in ITEM_ART.items():
         img = Img(seed=zlib.crc32(name.encode()) & 0xFFFF)
