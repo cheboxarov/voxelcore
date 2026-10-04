@@ -40,6 +40,9 @@
     "fields": {
         "fuel": {
             "type": "float32"
+        },
+        "last": {
+            "type": "float32"
         }
     },
     "tags": [

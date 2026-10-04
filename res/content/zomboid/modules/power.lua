@@ -52,7 +52,8 @@ end
 function power.track_generator(x, y, z)
     local k = key(x, y, z)
     if power.generators[k] == nil then
-        power.generators[k] = {x, y, z, last = clock.hours}
+        local last = block.get_field(x, y, z, "last") or 0
+        power.generators[k] = {x, y, z, last = last > 0 and last or clock.hours}
     end
 end
 
@@ -90,6 +91,7 @@ function power.set_running(x, y, z, on)
     block.set_variant(x, y, z, on and 1 or 0)
     power.track_generator(x, y, z)
     power.generators[key(x, y, z)].last = clock.hours
+    block.set_field(x, y, z, "last", clock.hours)
     power.refresh_lamps()
 end
 
@@ -129,6 +131,7 @@ local function burn()
         elseif power.is_running(x, y, z) then
             local left = (block.get_field(x, y, z, "fuel") or 0) - dh * power.LITERS_PER_HOUR
             block.set_field(x, y, z, "fuel", math.max(0, left))
+            block.set_field(x, y, z, "last", clock.hours)
             noise.emit({x + 0.5, y + 0.5, z + 0.5}, power.NOISE_RADIUS, nil, 3)
             if vc.is_client() then
                 audio.play_sound("world/generator", x + 0.5, y + 0.5, z + 0.5, 0.8, 1.0)
