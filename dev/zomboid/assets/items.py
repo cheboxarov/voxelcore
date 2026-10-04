@@ -98,13 +98,16 @@ def frying_pan(c):
 
 @art
 def hammer(c):
-    rod(c, 3, 21, 13, 11, WOOD)
-    c.paint(c.line_m(3, 20, 5, 18, 2) | {(2, 22), (3, 22)}, RUBBER, grad=False)
-    head = c.line_m(9, 4, 17, 12, 3) | c.line_m(8, 4, 11, 1, 3)
-    head -= c.line_m(17, 13, 21, 17, 1)
-    c.paint(head | c.line_m(17, 11, 21, 14, 1) | c.line_m(16, 13, 19, 17, 1), STEEL)
-    c.paint(c.line_m(7, 2, 10, 5, 4), IRON)
-    c.line(10, 4, 16, 10, STEEL[4])
+    def diag(test):
+        return {(x, y) for y in range(S) for x in range(S) if test(x - y, x + y)}
+
+    c.paint(diag(lambda p, q: 20 <= q <= 22 and p <= 3), WOOD, grad=False)
+    c.paint(diag(lambda p, q: 20 <= q <= 22 and p <= -13), WOOD_D, grad=False)
+    claw = diag(lambda p, q: 8 <= q < 15 and abs(p - 3 + 0.4 * (15 - q)) <= 2.2)
+    notch = diag(lambda p, q: q <= 12 and abs(p - 3 + 0.4 * (15 - q)) <= 1)
+    c.paint(diag(lambda p, q: 15 <= q <= 24 and 1 <= p <= 5 or 25 <= q <= 30 and 0 <= p <= 6) | claw - notch, STEEL)
+    c.fill(diag(lambda p, q: q == 25 and 0 <= p <= 6), STEEL[1])
+    c.fill(diag(lambda p, q: q == 18 and 2 <= p <= 4), STEEL[4])
 
 
 @art
@@ -245,24 +248,28 @@ def soda(c):
         c.set(x, y + 1, ramp("f8f8f8")[2])
 
 
-def _rag(c, cloth):
-    m = c.poly_m([(3, 6), (8, 4), (13, 5), (19, 3), (21, 9), (20, 15), (21, 20), (14, 19), (9, 21), (3, 19), (4, 13)])
-    c.paint(m, cloth)
-    for x0, y0, x1, y1 in ((6, 7, 9, 18), (12, 6, 14, 18), (16, 5, 18, 17)):
-        c.fill(c.line_m(x0, y0, x1, y1) & m, cloth[1])
-        c.fill(c.line_m(x0 + 1, y0, x1 + 1, y1) & m, cloth[3])
-    for x in range(4, 21, 2):
-        c.set(x, 20 + (x % 4 == 0), cloth[1])
+def _rag(c, cloth, stripe):
+    m = c.poly_m([(3, 4), (21, 3), (17.5, 5.5), (22, 8), (18, 10.5), (22, 13), (17.5, 15), (21.5, 17.5), (18, 19.5), (21, 21.5), (3, 21.5), (2, 12)])
+    fold = c.poly_m([(2, 12), (12, 21.5), (2, 21.5)])
+    c.paint(m - fold, cloth)
+    for y in (6, 8):
+        c.fill({(x, y) for x in range(3, 22)} & m - fold, stripe)
+    for x0, y0, x1, y1 in ((8, 10, 11, 15), (14, 5, 16, 12), (15, 15, 17, 19)):
+        c.fill(c.line_m(x0, y0, x1, y1) & m - fold, cloth[1])
+        c.fill(c.line_m(x0 - 1, y0, x1 - 1, y1) & m - fold, cloth[3])
+    back = [mix(t, (40, 40, 60, 255), 0.25) for t in cloth]
+    c.paint(fold & m, back)
+    c.fill(c.line_m(3, 13, 11, 21) & m, cloth[4])
 
 
 @art
 def rag(c):
-    _rag(c, ramp("c8bfa8"))
+    _rag(c, ramp("d8d2c0"), ramp("5a7aa0")[2])
 
 
 @art
 def dirty_rag(c):
-    _rag(c, ramp("8e7e5e"))
+    _rag(c, ramp("8e7e5e"), ramp("4a5a60")[2])
     for x, y in ((8, 8), (14, 13), (10, 15), (16, 8), (7, 14)):
         c.fill({(x, y), (x + 1, y), (x, y + 1)}, ramp("5a3a20")[2])
     c.fill({(12, 10), (13, 10), (12, 11)}, PAL["blood"][2])
@@ -364,14 +371,23 @@ def flashlight(c):
 
 @art
 def matches(c):
-    box = ramp("d8b040")
-    c.paint(c.rect_m(3, 9, 20, 19), box)
-    c.paint(c.rect_m(5, 11, 18, 17), ramp("c03020"))
-    c.fill(c.rect_m(3, 18, 20, 19), ramp("5a3a2a")[2])
-    c.paint(c.line_m(11, 3, 11, 13, 1), WOOD_P, grad=False)
-    c.paint(c.ellipse_m(11.5, 3, 1.6, 2), ramp("d02020"))
-    c.paint(c.line_m(15, 4, 15, 13, 1), WOOD_P, grad=False)
-    c.paint(c.ellipse_m(15.5, 4, 1.6, 2), ramp("d02020"))
+    tray, head = ramp("c8a878"), ramp("c82a22")
+    c.paint(c.rect_m(11, 9, 21, 19), tray)
+    c.fill(c.rect_m(12, 10, 20, 18), tray[1])
+    for y in (11, 14, 17):
+        c.fill(c.rect_m(12, y, 17, y), WOOD_P[3])
+        c.fill(c.rect_m(18, y - 1, 19, y), head[2])
+        c.set(18, y - 1, head[4])
+    box = ramp("b83a2a")
+    c.paint(c.rect_m(2, 8, 13, 20), box)
+    c.fill(c.rect_m(2, 19, 13, 20), ramp("4a3020")[2])
+    for x in range(3, 13, 2):
+        c.set(x, 19, ramp("4a3020")[3])
+    flame = ramp("f0b030")
+    c.paint(c.poly_m([(7.5, 9), (10.5, 13), (10, 16), (5, 16), (4.5, 13)]), flame)
+    c.fill({(7, 14), (8, 14), (7, 15), (8, 15)}, ramp("f8e8a0")[4])
+    c.paint(c.line_m(3, 6, 11, 2, 1), WOOD_P, grad=False)
+    c.paint(c.ellipse_m(13, 2, 1.8, 1.6), head)
 
 
 BOOK_COLORS = {"melee": "8a2a2a", "carpentry": "7a5a34", "cooking": "c86a28", "first_aid": "d8d8d0", "sneaking": "3e5a3a"}
