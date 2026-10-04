@@ -33,8 +33,34 @@ local function visit(x, z)
     end, nil, 30)
 end
 
+-- what stands in the way at a column: a building, water, the wild or a solid block at body height
+local function blocked(x, z)
+    local out = {}
+    local kind = town.column(x, z, out)
+    if kind == "building" or kind == "river" or kind == nil then
+        return kind or "wild"
+    end
+    for _, e in ipairs(out) do
+        if (e[1] == 1 or e[1] == 2) and e[2] ~= "core:struct_air" and e[2] ~= "zomboid:car_spawner" then
+            return e[2]
+        end
+    end
+    return nil, kind, out
+end
+
+local function has(out, name)
+    for _, e in ipairs(out) do
+        if e[2] == name then return true end
+    end
+    return false
+end
+
+for _, def in ipairs(town.building_defs()) do
+    check(def.title and def.color, def.kind .. " has a map title and color")
+end
+
 -- layout: every building fits its lot, never stands on roads, water or another lot
-local kinds, zones, rotations, buildings = {}, {}, {}, 0
+local kinds, zones, rotations, buildings, cars = {}, {}, {}, 0, 0
 for _, c in ipairs(town.cells()) do
     zones[c.zone] = (zones[c.zone] or 0) + 1
     local p = town.plan(c.cx, c.cz)
@@ -50,11 +76,38 @@ for _, c in ipairs(town.cells()) do
                 check(owner == p and lx == hx and lz == hz, "to_world and to_local agree")
             end
         end
-        local fx, fz = town.to_world(p, p.door, -1)
-        local front = town.column(fx, fz)
-        check(front ~= "building" and front ~= "river", p.kind .. " door is blocked: " .. tostring(front))
+        local lot = p.lot
+        check(p.x0 >= lot.x0 and p.x1 <= lot.x1 and p.z0 >= lot.z0 and p.z1 <= lot.z1, p.kind .. " stays inside its lot")
+        for hx = 0, p.w - 1 do
+            for hz = 0, p.d - 1 do
+                local edge = hz == 0 and -1 or hz == p.d - 1 and p.d or nil
+                local side = hx == 0 and -1 or hx == p.w - 1 and p.w or nil
+                local out = {}
+                if edge or side then
+                    p.def.column(p, hx, hz, out)
+                end
+                if has(out, "base:wooden_door") then
+                    local wx, wz = town.to_world(p, edge and hx or side, edge or hz)
+                    local b = blocked(wx, wz)
+                    check(b == nil, p.kind .. " rot " .. p.rot .. " door " .. hx .. "," .. hz .. " opens onto " .. tostring(b))
+                end
+            end
+        end
+        if p.car then
+            cars = cars + 1
+            local cx, cz = town.car_spot(p)
+            local b, _, out = blocked(cx, cz)
+            check(b == nil and has(out, "zomboid:car_spawner"), p.kind .. " car spawner is placed: " .. tostring(b))
+            for dx = -1, 1 do
+                for dz = -1, 1 do
+                    check(blocked(cx + dx, cz + dz) == nil, p.kind .. " car has room")
+                end
+            end
+        end
     end
 end
+log("buildings with a car: " .. cars)
+check(cars > 10, "cars by the houses")
 local list = {}
 for k, n in pairs(kinds) do table.insert(list, k .. "=" .. n) end
 table.sort(list)
@@ -86,6 +139,19 @@ while #queue > 0 do
 end
 log("reachable crossings: " .. n)
 check(n > 60, "street network is connected")
+for _, c in ipairs(town.cells()) do
+    local node = town.crossing_near(town.cell_center(c.cx, c.cz))
+    check(#node.links > 0, "roaming zombies never get a crossing without roads")
+end
+
+-- the map can color every column, own lot kinds included
+local B = town.BOUNDS
+for x = B[1] - 8, B[3] + 8, 4 do
+    for z = B[2] - 8, B[4] + 8, 4 do
+        local c = mapping.color(x, z)
+        check(type(c) == "table" and c[3], "map color at " .. x .. "," .. z)
+    end
+end
 
 -- highway leads to the village
 check(town.column(400, math.floor(town.highway_z(400) + 0.5)) == "road", "highway between town and village")
@@ -199,6 +265,15 @@ check(vp, "village gas station")
 local px, pz = town.to_world(vp, 2, -4)
 visit(px, pz)
 check(name_at(px, G + 1, pz) == "zomboid:fuel_pump", "village pump: " .. name_at(px, G + 1, pz))
+
+-- the highway lies on the ground where it bends outside the town
+for _, hx in ipairs({-400, 370, 900}) do
+    local hz = math.floor(town.highway_z(hx) + 0.5)
+    visit(hx, hz)
+    local top = name_at(hx, G, hz)
+    check(top == "zomboid:asphalt" or top == "zomboid:road_line", "highway at " .. hx .. ": " .. top)
+    check(block.is_solid_at(hx, G - 1, hz) and name_at(hx, G + 1, hz) == "core:air", "highway at " .. hx .. " is on the ground")
+end
 
 -- forest outside the town is not flat and has trees
 local wood = 0

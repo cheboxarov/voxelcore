@@ -434,6 +434,13 @@ local function place(p, def, lot, seed)
         p.x0, p.z1 = p.x1 - d + 1, p.z0 + w - 1
     end
     p.lot = lot
+    if p.car then
+        local cx, cz = town.to_world(p, p.car[1], p.car[2])
+        local inside = p.car[1] >= 0 and p.car[1] < w and p.car[2] >= 0 and p.car[2] < d
+        if inside or cx < lot.x0 or cx > lot.x1 or cz < lot.z0 or cz > lot.z1 then
+            p.car = nil
+        end
+    end
     return true
 end
 
@@ -685,7 +692,8 @@ local function lot_column(c, p, lot, wx, wz, out)
         end
         return "building"
     end
-    if out and p.car and hx == p.car[1] and hz == p.car[2] then
+    local car = p.car and hx == p.car[1] and hz == p.car[2]
+    if out and car then
         table.insert(out, {1, "zomboid:car_spawner", 0})
     end
     if p.def.lot then
@@ -704,7 +712,7 @@ local function lot_column(c, p, lot, wx, wz, out)
         end
         return "path"
     end
-    if out then
+    if out and not car then
         decorate("lawn", zone, c, wx - c.x0, wz - c.z0, p, wx, wz, out)
     end
     return "lawn"

@@ -76,7 +76,7 @@ function mapping.color(wx, wz)
             return tint
         end
     end
-    return COLORS[kind or "wild"]
+    return COLORS[kind or "wild"] or COLORS.lawn
 end
 
 function mapping.tick()
