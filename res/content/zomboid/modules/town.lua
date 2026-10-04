@@ -374,6 +374,9 @@ function town.house_interiors()
 end
 
 function town.spawn_point(index)
+    if world.get_generator() ~= "zomboid:town" then
+        return nil
+    end
     local points = town.house_interiors()
     local p = points[math.max(1, math.min(index or 1, #points))]
     return {p[1] + 0.5, p[2] + 0.95, p[3] + 0.5}
