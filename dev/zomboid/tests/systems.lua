@@ -76,7 +76,24 @@ check(survival.sleep(pid) > 0, "slept")
 check(clock.hours - hours > 4, "time skipped: " .. (clock.hours - hours))
 check(state.energy > 80, "rested")
 
--- spawner fills the area at night of day 2 and sends a horde
+-- block breaking takes several hits and drops loot
+local p = town.plan(0, 0)
+local cx, cy, cz = p.x0 + 1, G + 1, p.z0 + 2
+local crate_name = block.name(block.get(cx, cy, cz))
+check(crate_name == "zomboid:crate", "crate " .. crate_name)
+local id = block.get(cx, cy, cz)
+local hits = 0
+while block.get(cx, cy, cz) == id and hits < 200 do
+    events.emit("zomboid:.blockbreaking", id, cx, cy, cz, pid)
+    hits = hits + 1
+end
+log("crate broken after " .. hits .. " hits")
+check(block.get(cx, cy, cz) == 0, "crate destroyed")
+check(hits > 10, "breaking takes time")
+
+-- spawner fills the area at night of day 2 and sends a horde; the player is kept alive so the outcome does not hang on luck
+local kill = survival.kill
+survival.kill = function() end
 state.hunger, state.thirst, state.health = 100, 100, 100
 clock.reset(24 + 21.9)
 zombies.enabled = true
@@ -97,26 +114,7 @@ check(chasing > 0, "horde is coming")
 local t0 = time.uptime()
 app.sleep(10)
 log(string.format("10s with %d zombies took %.1fs real time, health %.0f", zombies.count(), time.uptime() - t0, state.health))
-
--- block breaking takes several hits and drops loot
-zombies.enabled = false
-for uid in pairs(zombies.registry) do
-    entities.get(uid):despawn()
-end
-app.tick()
-local p = town.plan(0, 0)
-local cx, cy, cz = p.x0 + 1, G + 1, p.z0 + 2
-local crate_name = block.name(block.get(cx, cy, cz))
-check(crate_name == "zomboid:crate", "crate " .. crate_name)
-local id = block.get(cx, cy, cz)
-local hits = 0
-while block.get(cx, cy, cz) == id and hits < 200 do
-    events.emit("zomboid:.blockbreaking", id, cx, cy, cz, pid)
-    hits = hits + 1
-end
-log("crate broken after " .. hits .. " hits")
-check(block.get(cx, cy, cz) == 0, "crate destroyed")
-check(hits > 10, "breaking takes time")
+survival.kill = kill
 
 app.close_world(false)
 app.delete_world("zsys")
