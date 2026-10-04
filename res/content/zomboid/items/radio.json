@@ -1,0 +1,8 @@
+{
+    "icon-type": "sprite",
+    "icon": "items:radio",
+    "caption": "Радиоприёмник",
+    "description": "ПКМ - включить/выключить. Ловит новости, пока они есть",
+    "stack-size": 1,
+    "script-name": "radio"
+}

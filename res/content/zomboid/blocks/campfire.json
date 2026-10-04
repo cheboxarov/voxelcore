@@ -74,5 +74,6 @@
             "particles:smoke_0",
             "particles:smoke_1"
         ]
-    }
+    },
+    "tick-interval": 100
 }

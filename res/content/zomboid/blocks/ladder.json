@@ -1,0 +1,31 @@
+{
+    "caption": "Лестница",
+    "texture": "ladder",
+    "material": "base:wood",
+    "rotation": "pane",
+    "model": "aabb",
+    "hitbox": [
+        0.0,
+        0.0,
+        0.85,
+        1.0,
+        1.0,
+        0.15
+    ],
+    "light-passing": true,
+    "sky-light-passing": true,
+    "obstacle": false,
+    "draw-group": 1,
+    "base:durability": 3.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 0,
+            "max": 2
+        }
+    ],
+    "tags": [
+        "zomboid:ladder",
+        "zomboid:flammable"
+    ]
+}

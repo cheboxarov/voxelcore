@@ -43,6 +43,9 @@ function town.lot_kind(cx, cz)
     if cx == -1 and cz == 0 then
         return "grocery"
     end
+    if cx == 1 and cz == 2 then
+        return "gas_station"
+    end
     local r = hash(cx, cz, 17)
     if r < 0.08 then return "grocery"
     elseif r < 0.15 then return "hardware"
@@ -71,6 +74,8 @@ function town.plan(cx, cz)
         w = 9 + 2 * math.floor(hash(cx, cz, 1) * 3)
         d = 9 + 2 * math.floor(hash(cx, cz, 2) * 3)
         wall = SIDINGS[1 + math.floor(hash(cx, cz, 3) * #SIDINGS)]
+    elseif kind == "gas_station" then
+        w, d, wall = 11, 7, "base:brick"
     else
         w, d, wall = 17, 13, kind == "police" and "base:stone" or "base:brick"
     end
@@ -78,12 +83,13 @@ function town.plan(cx, cz)
         kind = kind,
         w = w, d = d,
         x0 = town.LOT_MIN + math.floor((23 - w) / 2),
-        z0 = town.LOT_MIN + 3,
+        z0 = town.LOT_MIN + (kind == "gas_station" and 15 or 3),
         wall = wall,
         mid = math.floor(w / 2),
         split = math.floor(d / 2),
     }
     plan.door = plan.mid
+    plan.car = kind == "gas_station" or (kind == "house" and hash(cx, cz, 23) < 0.4)
     plans[key] = plan
     return plan
 end
@@ -176,6 +182,8 @@ local function house_column(p, hx, hz, out)
         furniture, rot = "zomboid:crate", 1
     elseif hx == 1 and hz == p.split - 1 then
         furniture, rot = "zomboid:wardrobe", 1
+    elseif hx == 1 and hz == 1 then
+        furniture, rot = "zomboid:tv", 1
     end
     if furniture then
         table.insert(out, {1, furniture, rot})
@@ -186,7 +194,10 @@ local function house_column(p, hx, hz, out)
         table.insert(out, {1, "core:struct_air", 0})
         table.insert(out, {2, "core:struct_air", 0})
     end
-    table.insert(out, {3, "core:struct_air", 0})
+    local back_z = math.floor((p.split + d - 1) / 2)
+    local lamp = (hx == p.mid and hz == math.floor(p.split / 2))
+        or (hz == back_z and (hx == math.floor(p.mid / 2) or hx == p.mid + math.floor((w - 1 - p.mid) / 2)))
+    table.insert(out, {3, lamp and "zomboid:lamp" or "core:struct_air", 0})
 end
 
 local STORE_CONTAINER = {
@@ -194,6 +205,7 @@ local STORE_CONTAINER = {
     hardware = "zomboid:crate",
     pharmacy = "zomboid:medicine_cabinet",
     police = "zomboid:crate",
+    gas_station = "zomboid:shelf",
 }
 
 local function store_column(p, hx, hz, out)
@@ -249,7 +261,25 @@ local function store_column(p, hx, hz, out)
         table.insert(out, {1, "core:struct_air", 0})
         table.insert(out, {2, "core:struct_air", 0})
     end
-    table.insert(out, {3, "core:struct_air", 0})
+    table.insert(out, {3, (hx % 4 == 2 and hz % 4 == 2) and "zomboid:lamp" or "core:struct_air", 0})
+end
+
+function town.car_spot(cx, cz)
+    local p = town.plan(cx, cz)
+    if p == nil or not p.car then
+        return nil
+    end
+    if p.kind == "gas_station" then
+        return cx * CELL + p.x0 + p.mid, cz * CELL + p.z0 - 8
+    end
+    return cx * CELL + p.x0 - 3, cz * CELL + p.z0 - 2
+end
+
+local function forecourt(p, hx, hz, out)
+    table.insert(out, {0, "zomboid:asphalt", 0})
+    if hz == -4 and (hx == 2 or hx == p.w - 3) then
+        table.insert(out, {1, "zomboid:fuel_pump", 2})
+    end
 end
 
 function town.column(wx, wz, out)
@@ -297,6 +327,16 @@ function town.column(wx, wz, out)
             end
         end
         return "building"
+    end
+    local sx, sz = town.car_spot(cx, cz)
+    if out and wx == sx and wz == sz then
+        table.insert(out, {1, "zomboid:car_spawner", 0})
+    end
+    if p.kind == "gas_station" and hz < 0 and hx >= -1 and hx <= p.w then
+        if out then
+            forecourt(p, hx, hz, out)
+        end
+        return "path"
     end
     if hx == p.door and hz < 0 then
         if out then

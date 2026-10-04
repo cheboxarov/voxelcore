@@ -1,0 +1,12 @@
+{
+    "caption": "Место машины",
+    "model": "none",
+    "hidden": true,
+    "obstacle": false,
+    "selectable": false,
+    "replaceable": true,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "script-name": "car_spawner",
+    "base:loot": []
+}

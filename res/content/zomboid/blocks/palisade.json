@@ -1,0 +1,27 @@
+{
+    "caption": "Частокол",
+    "texture-faces": [
+        "palisade",
+        "palisade",
+        "palisade_top",
+        "palisade_top",
+        "palisade",
+        "palisade"
+    ],
+    "material": "base:wood",
+    "draw-group": 1,
+    "light-passing": true,
+    "base:durability": 20.0,
+    "base:loot": [
+        {
+            "item": "base:wood.item",
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "zomboid:bash-hp": 120,
+    "tags": [
+        "zomboid:bashable",
+        "zomboid:flammable"
+    ]
+}

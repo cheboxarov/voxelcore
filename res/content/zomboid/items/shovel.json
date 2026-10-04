@@ -1,0 +1,18 @@
+{
+    "icon-type": "sprite",
+    "icon": "items:shovel",
+    "caption": "Лопата",
+    "description": "ПКМ по траве или земле - вскопать грядку. Сгодится и как оружие",
+    "stack-size": 1,
+    "uses": 90,
+    "uses-display": "vbar",
+    "script-name": "shovel",
+    "zomboid:damage": 24,
+    "zomboid:knockback": 5.0,
+    "zomboid:cooldown": 1.0,
+    "zomboid:range": 2.6,
+    "zomboid:stamina": 9,
+    "tags": [
+        "zomboid:weapon"
+    ]
+}

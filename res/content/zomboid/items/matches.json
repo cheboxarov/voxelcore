@@ -1,10 +1,11 @@
 {
     "caption": "Спички",
-    "description": "Нужны для костра и факелов",
+    "description": "Нужны для костра и факелов. ПКМ по деревянному блоку - поджечь",
     "icon-type": "sprite",
     "icon": "items:matches",
     "stack-size": 1,
     "uses": 8,
     "uses-display": "relation",
-    "zomboid:weight": 0.05
+    "zomboid:weight": 0.05,
+    "script-name": "matches"
 }

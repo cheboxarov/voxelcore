@@ -1,0 +1,70 @@
+{
+    "caption": "Огонь",
+    "texture": "fire",
+    "model": "X",
+    "material": "base:grass",
+    "draw-group": 1,
+    "emission": [
+        15,
+        10,
+        4
+    ],
+    "shadeless": true,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "obstacle": false,
+    "hidden": true,
+    "breakable": false,
+    "replaceable": false,
+    "script-name": "fire",
+    "tick-interval": 20,
+    "base:loot": [],
+    "hitbox": [
+        0.1,
+        0,
+        0.1,
+        0.8,
+        0.9,
+        0.8
+    ],
+    "particles": {
+        "lifetime": 1.2,
+        "spawn_interval": 0.08,
+        "acceleration": [
+            0,
+            0.6,
+            0
+        ],
+        "velocity": [
+            0,
+            1.0,
+            0
+        ],
+        "explosion": [
+            0.3,
+            0.3,
+            0.3
+        ],
+        "size": [
+            0.35,
+            0.35,
+            0.35
+        ],
+        "spawn_shape": "box",
+        "spawn_spread": [
+            0.4,
+            0.2,
+            0.4
+        ],
+        "lighting": false,
+        "max_distance": 32.0,
+        "frames": [
+            "particles:fire_0",
+            "particles:smoke_0",
+            "particles:smoke_1"
+        ]
+    },
+    "tags": [
+        "zomboid:fire"
+    ]
+}

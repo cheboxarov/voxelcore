@@ -1,0 +1,12 @@
+@bone name 'body' {
+    @box from (-0.85,-0.45,-1.5) to (0.85,0.1,1.5) texture "$paint"
+    @box from (-0.78,0.1,-0.75) to (0.78,0.62,0.65) texture "blocks:car_glass" {
+        @part tags (top) texture "$paint"
+    }
+    @box from (-0.7,-0.2,1.5) to (-0.35,0.0,1.52) texture "blocks:car_light"
+    @box from (0.35,-0.2,1.5) to (0.7,0.0,1.52) texture "blocks:car_light"
+    @box from (-0.92,-0.7,0.75) to (-0.62,-0.2,1.25) texture "blocks:car_wheel"
+    @box from (0.62,-0.7,0.75) to (0.92,-0.2,1.25) texture "blocks:car_wheel"
+    @box from (-0.92,-0.7,-1.25) to (-0.62,-0.2,-0.75) texture "blocks:car_wheel"
+    @box from (0.62,-0.7,-1.25) to (0.92,-0.2,-0.75) texture "blocks:car_wheel"
+}

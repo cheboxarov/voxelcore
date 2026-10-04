@@ -1,9 +1,10 @@
 local survival = require "zomboid:survival"
+local power = require "zomboid:power"
 local clock = require "zomboid:clock"
-local sandbox = require "zomboid:sandbox"
 local water = require "zomboid:water"
 local inv = require "zomboid:inv"
 local loot = require "zomboid:loot"
+local fire = require "zomboid:fire"
 
 function on_placed(x, y, z, pid)
     block.set_user_bits(x, y, z, 0, 1, 1)
@@ -12,10 +13,10 @@ end
 function on_interact(x, y, z, pid)
     local itemid = inv.held(pid)
     if itemid == item.index("zomboid:dirty_water_bottle") then
-        if clock.day() >= sandbox.get("power_shutoff_day") then
+        if not power.has_power(x, y, z) then
             survival.notify(pid, "Плита не работает: электричества больше нет")
-        else
-            water.purify_held(pid)
+        elseif water.purify_held(pid) then
+            fire.heat(x, y, z, 1)
         end
         return true
     end
@@ -28,4 +29,8 @@ function on_interact(x, y, z, pid)
         hud.open_block(x, y, z)
     end
     return true
+end
+
+function on_block_tick(x, y, z)
+    fire.unattended(x, y, z)
 end

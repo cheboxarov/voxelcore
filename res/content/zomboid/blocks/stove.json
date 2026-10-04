@@ -21,5 +21,6 @@
         "zomboid:heat",
         "zomboid:electric"
     ],
-    "zomboid:loot": "stove"
+    "zomboid:loot": "stove",
+    "tick-interval": 100
 }

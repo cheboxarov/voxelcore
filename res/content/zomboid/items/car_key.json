@@ -1,0 +1,7 @@
+{
+    "icon-type": "sprite",
+    "icon": "items:car_key",
+    "caption": "Ключ от машины",
+    "description": "Подходит к одной машине в городе",
+    "stack-size": 1
+}

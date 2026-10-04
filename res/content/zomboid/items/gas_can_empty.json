@@ -1,0 +1,7 @@
+{
+    "icon-type": "sprite",
+    "icon": "items:gas_can_empty",
+    "caption": "Пустая канистра",
+    "description": "Наполните на заправке или слейте бензин из машины (ПКМ по машине)",
+    "stack-size": 1
+}

@@ -1,18 +1,16 @@
-local sandbox = require "zomboid:sandbox"
-local clock = require "zomboid:clock"
+local power = require "zomboid:power"
 
 local heat = {}
 
 function heat.near(x, y, z, radius)
     x, y, z = math.floor(x), math.floor(y), math.floor(z)
     radius = radius or 2
-    local powered = clock.day() < sandbox.get("power_shutoff_day")
     for dx = -radius, radius do
         for dz = -radius, radius do
             for dy = -1, 1 do
                 local id = block.get(x + dx, y + dy, z + dz)
                 if id > 0 and block.has_tag(id, "zomboid:heat")
-                    and (powered or not block.has_tag(id, "zomboid:electric")) then
+                    and (not block.has_tag(id, "zomboid:electric") or power.has_power(x + dx, y + dy, z + dz)) then
                     return true
                 end
             end

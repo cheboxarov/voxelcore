@@ -2,6 +2,9 @@ local survival = require "zomboid:survival"
 local traits = require "zomboid:traits"
 local firearms = require "zomboid:firearms"
 local combat = require "zomboid:combat"
+    end)
+local mapping = require "zomboid:mapping"
+local cars = require "zomboid:cars"
 
 local function toggle(layout)
     if hud.is_open(layout) then
@@ -42,6 +45,19 @@ function on_hud_open(playerid)
     end)
     input.add_callback("zomboid.gear", function()
         toggle("zomboid:gear")
+    end)
+    input.add_callback("zomboid.building", function()
+        toggle("zomboid:build")
+    end)
+    input.add_callback("zomboid.map", function()
+        if hud.is_open("zomboid:map") or mapping.has_map(hud.get_player()) then
+            toggle("zomboid:map")
+        else
+            survival.notify(hud.get_player(), "Нужна карта города. Поищите её в домах или на заправке")
+        end
+    end)
+    input.add_callback("zomboid.car", function()
+        cars.toggle(hud.get_player())
     end)
     events.on("zomboid:player_died", function(pid)
         if pid == hud.get_player() then

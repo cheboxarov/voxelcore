@@ -6,6 +6,8 @@ local firearms = require "zomboid:firearms"
 local combat = require "zomboid:combat"
 local inv = require "zomboid:inv"
 local vitals = require "zomboid:vitals"
+local weather = require "zomboid:weather"
+local cars = require "zomboid:cars"
 
 local BAR_WIDTH = 220
 
@@ -84,7 +86,7 @@ local function update()
         hud.show_overlay(sandbox.configured and "zomboid:character" or "zomboid:sandbox", false)
     end
     local h = clock.hour()
-    local part = (h >= 21 or h < 6) and "[ночь]" or ""
+    local part = ((h >= 21 or h < 6) and "[ночь]" or "") .. (weather.raining and " дождь" or "")
     document.clock.text = string.format("День %d, %s %s", clock.day(), clock.format(), part)
     bar("bar_health", state.health)
     bar("bar_hunger", state.hunger)
@@ -92,6 +94,10 @@ local function update()
     bar("bar_energy", state.energy)
     bar("bar_stamina", state.stamina)
     local text, count = status_lines(state)
+    local car = cars.status(pid)
+    if car then
+        text, count = "[#e0c060]" .. car .. "\n" .. text, count + 1
+    end
     if document.status.text ~= text then
         document.status.text = text
         document.status_box.size = {236, count * 24 + 6}

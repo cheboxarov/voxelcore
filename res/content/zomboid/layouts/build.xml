@@ -1,0 +1,6 @@
+<container id="root" size-func="unpack(gui.get_viewport())">
+    <panel gravity="center-right" margin="0,0,30,0" size="440,470" color="#000000c0" padding="12" interval="6">
+        <label color="#ffe0a0">Строительство (B - закрыть). Нужен молоток</label>
+        <panel id="recipes" size="416,410" color="#00000000" interval="2" max-length="410" scrollable="true"></panel>
+    </panel>
+</container>

@@ -1,0 +1,7 @@
+{
+    "icon-type": "sprite",
+    "icon": "items:map",
+    "caption": "Карта города",
+    "description": "M - открыть. Изученные места отмечаются на карте",
+    "stack-size": 1
+}

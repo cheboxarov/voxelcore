@@ -1,0 +1,26 @@
+{
+    "caption": "Лампа",
+    "texture": "lamp_on",
+    "emission": [
+        14,
+        13,
+        10
+    ],
+    "shadeless": true,
+    "model": "aabb",
+    "hitbox": [
+        0.25,
+        0.7,
+        0.25,
+        0.5,
+        0.3,
+        0.5
+    ],
+    "light-passing": true,
+    "sky-light-passing": true,
+    "obstacle": false,
+    "material": "base:glass",
+    "script-name": "lamp",
+    "base:durability": 0.5,
+    "base:loot": []
+}

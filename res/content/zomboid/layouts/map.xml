@@ -1,0 +1,7 @@
+<container id="root" size-func="unpack(gui.get_viewport())">
+    <panel gravity="center-center" size="536,590" color="#14120ee8" padding="12" interval="6">
+        <label color="#ffe0a0">Карта города (M - закрыть). Красная точка - вы</label>
+        <canvas id="map" size="512,512"/>
+        <label id="legend" markup="md" size="512,24"></label>
+    </panel>
+</container>

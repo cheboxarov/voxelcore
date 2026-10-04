@@ -1,0 +1,25 @@
+{
+    "caption": "Дощатый настил",
+    "texture": "wood_floor",
+    "material": "base:wood",
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.5,
+        1
+    ],
+    "base:durability": 5.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

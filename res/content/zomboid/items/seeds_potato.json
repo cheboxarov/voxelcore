@@ -1,0 +1,9 @@
+{
+    "icon-type": "sprite",
+    "icon": "items:seeds_potato",
+    "caption": "Семена картофеля",
+    "description": "ПКМ по грядке - посадить. Поливайте из бутылки",
+    "stack-size": 20,
+    "script-name": "seeds",
+    "zomboid:crop": "potato"
+}

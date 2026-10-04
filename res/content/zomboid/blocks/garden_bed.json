@@ -1,0 +1,19 @@
+{
+    "caption": "Грядка",
+    "texture-faces": [
+        "garden_bed",
+        "garden_bed",
+        "garden_bed",
+        "garden_bed",
+        "garden_bed",
+        "garden_bed"
+    ],
+    "material": "base:ground",
+    "hidden": true,
+    "picking-item": "zomboid:shovel",
+    "base:durability": 3.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:garden_bed"
+    ]
+}

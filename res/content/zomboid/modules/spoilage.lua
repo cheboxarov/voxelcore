@@ -26,8 +26,8 @@ function spoilage.ratio(invid, slot)
     return days and spoilage.age(invid, slot) / 24 / days or 0
 end
 
--- Ages perishable food in the inventory; cold marks the inventory as a fridge
-function spoilage.check(invid, cold)
+-- Ages perishable food in the inventory; cold marks the inventory as a fridge, generator - powered by one now
+function spoilage.check(invid, cold, generator)
     local rotten = item.index("zomboid:rotten_food")
     for slot = 0, inventory.size(invid) - 1 do
         local itemid, count = inventory.get(invid, slot)
@@ -37,7 +37,12 @@ function spoilage.check(invid, cold)
                 inventory.set_data(invid, slot, "born", clock.hours)
             end
             local chilled = inventory.get_data(invid, slot, "cold")
-            if cold and chilled == nil then
+            if generator and chilled ~= nil then
+                local cooled = clock.hours - math.max(chilled, power_off_hour())
+                local age = spoilage.age(invid, slot) - math.max(0, cooled) * (1 - spoilage.FRIDGE_RATE)
+                inventory.set_data(invid, slot, "born", clock.hours - age)
+                inventory.set_data(invid, slot, "cold", clock.hours)
+            elseif cold and chilled == nil then
                 inventory.set_data(invid, slot, "cold", clock.hours)
             elseif not cold and chilled ~= nil then
                 inventory.set_data(invid, slot, "born", clock.hours - spoilage.age(invid, slot))

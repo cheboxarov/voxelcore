@@ -1,4 +1,5 @@
 local town = require "zomboid:town"
+local cars = require "zomboid:cars"
 
 local loot = {}
 
@@ -14,6 +15,7 @@ local TABLES = {
         {"zomboid:rag", 2, 1, 2}, {"zomboid:chocolate", 1, 1, 1}, {"zomboid:book_cooking_1", 1, 1, 1},
         {"zomboid:alarm_clock.item", 1, 1, 1},
         {"zomboid:cooking_pot", 2, 1, 1}, {"zomboid:potato", 2, 1, 2}, {"zomboid:cigarettes", 1, 1, 1},
+        {"zomboid:seeds_carrot", 1, 1, 2}, {"zomboid:radio", 1, 1, 1}, {"zomboid:map", 1, 1, 1},
     },
     stove = {
         {"zomboid:frying_pan", 3, 1, 1}, {"zomboid:canned_beans", 1, 1, 1}, {"zomboid:book_cooking_2", 1, 1, 1},
@@ -28,6 +30,7 @@ local TABLES = {
         {"zomboid:jeans", 3, 1, 1}, {"zomboid:leather_jacket", 1, 1, 1}, {"zomboid:raincoat", 2, 1, 1},
         {"zomboid:boots", 2, 1, 1}, {"zomboid:school_bag", 1, 1, 1}, {"zomboid:novel", 2, 1, 1},
         {"zomboid:magazine", 2, 1, 2}, {"zomboid:cigarettes", 1, 1, 1},
+        {"zomboid:map", 1, 1, 1}, {"zomboid:radio", 1, 1, 1},
     },
     medicine_cabinet = {
         {"zomboid:bandage", 5, 1, 3}, {"zomboid:disinfectant", 3, 1, 1}, {"zomboid:painkillers", 3, 1, 1},
@@ -39,6 +42,7 @@ local TABLES = {
         {"zomboid:empty_bottle", 2, 1, 2}, {"zomboid:flashlight", 1, 1, 1}, {"zomboid:bat", 1, 1, 1},
         {"zomboid:crowbar", 1, 1, 1}, {"zomboid:book_carpentry_1", 1, 1, 1}, {"zomboid:stick", 2, 1, 3},
         {"zomboid:hiking_bag", 1, 1, 1},
+        {"zomboid:seeds_potato", 1, 1, 2}, {"zomboid:shovel", 1, 1, 1}, {"zomboid:gas_can_empty", 1, 1, 1},
     },
     shelf = {
         {"zomboid:canned_beans", 5, 1, 3}, {"zomboid:chips", 4, 1, 3}, {"zomboid:chocolate", 3, 1, 2},
@@ -56,6 +60,7 @@ local BUILDING = {
             {"zomboid:matches", 2, 1, 1}, {"zomboid:book_carpentry_1", 2, 1, 1}, {"zomboid:book_carpentry_2", 1, 1, 1},
             {"zomboid:shotgun_shells", 1, 2, 6}, {"zomboid:alarm_clock.item", 1, 1, 1},
             {"zomboid:stick", 2, 2, 4}, {"zomboid:raincoat", 1, 1, 1}, {"zomboid:boots", 2, 1, 1},
+            {"zomboid:shovel", 3, 1, 1}, {"zomboid:gas_can_empty", 3, 1, 1}, {"zomboid:gas_can", 1, 1, 1}, {"zomboid:generator.item", 1, 1, 1}, {"zomboid:seeds_carrot", 2, 1, 3}, {"zomboid:seeds_potato", 2, 1, 3},
         },
     },
     police = {
@@ -66,6 +71,7 @@ local BUILDING = {
             {"zomboid:pistol", 1, 1, 1}, {"zomboid:shotgun", 0.5, 1, 1},
             {"zomboid:ammo_9mm", 2, 4, 12}, {"zomboid:shotgun_shells", 1.5, 2, 6}, {"zomboid:siren.item", 0.5, 1, 1},
             {"zomboid:hiking_bag", 1, 1, 1},
+            {"zomboid:radio", 2, 1, 1}, {"zomboid:map", 2, 1, 1},
         },
         wardrobe = {
             {"zomboid:flashlight", 3, 1, 1}, {"zomboid:bandage", 3, 1, 2}, {"zomboid:bat", 2, 1, 1},
@@ -78,6 +84,13 @@ local BUILDING = {
             {"zomboid:bandage", 5, 2, 5}, {"zomboid:disinfectant", 4, 1, 1}, {"zomboid:painkillers", 4, 1, 1},
             {"zomboid:antibiotics", 3, 1, 1}, {"zomboid:book_first_aid_1", 1, 1, 1}, {"zomboid:book_first_aid_2", 1, 1, 1},
             {"zomboid:splint", 2, 1, 1},
+        },
+    },
+    gas_station = {
+        shelf = {
+            {"zomboid:chips", 4, 1, 3}, {"zomboid:soda", 4, 1, 3}, {"zomboid:chocolate", 3, 1, 2},
+            {"zomboid:water_bottle", 2, 1, 2}, {"zomboid:map", 3, 1, 1}, {"zomboid:gas_can_empty", 3, 1, 1},
+            {"zomboid:gas_can", 2, 1, 1}, {"zomboid:matches", 2, 1, 1},
         },
     },
 }
@@ -135,6 +148,9 @@ function loot.fill(invid, container, x, z, apocalypse_hour)
             local rest = inventory.add(invid, itemid, count)
             added = added + count - rest
         end
+    end
+    if cars.add_key(invid, container, x, z) then
+        added = added + 1
     end
     return added
 end

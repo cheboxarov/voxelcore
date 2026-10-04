@@ -1,0 +1,32 @@
+{
+    "caption": "Бензоколонка",
+    "texture-faces": [
+        "fuel_pump_side",
+        "fuel_pump_side",
+        "fuel_pump_side",
+        "fuel_pump_side",
+        "fuel_pump_front",
+        "fuel_pump_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "size": [
+        1,
+        2,
+        1
+    ],
+    "script-name": "fuel_pump",
+    "base:durability": 40.0,
+    "base:loot": [],
+    "fields": {
+        "fuel": {
+            "type": "float32"
+        },
+        "tapped": {
+            "type": "int8"
+        }
+    },
+    "tags": [
+        "zomboid:interactive"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "components": [
+        "zomboid:car"
+    ],
+    "skeleton-name": "zomboid_car",
+    "hitbox": [2.2, 1.4, 2.2],
+    "step-height": 0.6,
+    "mass": 1200,
+    "blocking": true,
+    "save-skeleton-textures": true
+}

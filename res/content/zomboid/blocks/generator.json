@@ -1,0 +1,48 @@
+{
+    "caption": "Генератор",
+    "texture-faces": [
+        "generator_side",
+        "generator_side",
+        "generator_top",
+        "generator_top",
+        "generator_front",
+        "generator_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "model": "aabb",
+    "hitbox": [
+        0.05,
+        0,
+        0.1,
+        0.9,
+        0.8,
+        0.8
+    ],
+    "script-name": "generator",
+    "base:durability": 10.0,
+    "state-based": {
+        "offset": 0,
+        "bits": 1,
+        "variants": [
+            {
+                "texture-faces": [
+                    "generator_side",
+                    "generator_side",
+                    "generator_top",
+                    "generator_top",
+                    "generator_front_on",
+                    "generator_front_on"
+                ]
+            }
+        ]
+    },
+    "fields": {
+        "fuel": {
+            "type": "float32"
+        }
+    },
+    "tags": [
+        "zomboid:interactive"
+    ]
+}

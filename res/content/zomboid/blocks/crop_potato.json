@@ -1,0 +1,62 @@
+{
+    "caption": "Картофель (грядка)",
+    "texture": "crop_potato_0",
+    "material": "base:grass",
+    "draw-group": 1,
+    "model": "X",
+    "hitbox": [
+        0.15,
+        0,
+        0.15,
+        0.7,
+        0.6,
+        0.7
+    ],
+    "light-passing": true,
+    "sky-light-passing": true,
+    "obstacle": false,
+    "grounded": true,
+    "hidden": true,
+    "script-name": "crop",
+    "tick-interval": 100,
+    "base:durability": 0.5,
+    "base:loot": [],
+    "picking-item": "zomboid:seeds_potato",
+    "state-based": {
+        "offset": 0,
+        "bits": 3,
+        "variants": [
+            {
+                "texture": "crop_potato_1"
+            },
+            {
+                "texture": "crop_potato_2"
+            },
+            {
+                "texture": "crop_potato_3"
+            },
+            {
+                "texture": "crop_dead"
+            }
+        ]
+    },
+    "fields": {
+        "growth": {
+            "type": "float32"
+        },
+        "water": {
+            "type": "float32"
+        },
+        "dry": {
+            "type": "float32"
+        },
+        "last": {
+            "type": "float32"
+        }
+    },
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:crop"
+    ],
+    "zomboid:crop": "potato"
+}

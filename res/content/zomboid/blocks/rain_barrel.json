@@ -1,0 +1,32 @@
+{
+    "caption": "Бочка для дождевой воды",
+    "texture-faces": [
+        "rain_barrel_side",
+        "rain_barrel_side",
+        "rain_barrel_top",
+        "rain_barrel_top",
+        "rain_barrel_side",
+        "rain_barrel_side"
+    ],
+    "material": "base:wood",
+    "model": "aabb",
+    "hitbox": [
+        0.1,
+        0,
+        0.1,
+        0.8,
+        0.95,
+        0.8
+    ],
+    "script-name": "rain_barrel",
+    "base:durability": 6.0,
+    "fields": {
+        "water": {
+            "type": "float32"
+        }
+    },
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:flammable"
+    ]
+}

@@ -7,6 +7,7 @@ local sandbox = require "zomboid:sandbox"
 local skills = require "zomboid:skills"
 local population = require "zomboid:population"
 local spoilage = require "zomboid:spoilage"
+local environment = require "zomboid:environment"
 
 local SAVE_FILE = "state.json"
 local STRICT_RULES = {
@@ -59,6 +60,7 @@ function on_world_open()
     if not load_state() then
         clock.reset(clock.START_HOUR)
     end
+    environment.open()
     events.on("zomboid:player_died", function(pid, pos, items, infected)
         if infected then
             local x, y, z = math.floor(pos[1]), math.floor(pos[2] - 0.9), math.floor(pos[3])
@@ -74,6 +76,7 @@ end
 
 function on_world_save()
     save_state()
+    environment.save()
 end
 
 function on_world_tick()
@@ -101,6 +104,7 @@ function on_world_tick()
     end
     zombies.tick(survival)
     population.tick(survival)
+    environment.tick()
 end
 
 local function break_multiplier(blockid, itemid)
