@@ -3,6 +3,7 @@
     "description": "ЛКМ - выстрел, R - перезарядка. Патроны 9 мм. Выстрел слышен на полгорода",
     "icon-type": "sprite",
     "icon": "items:pistol",
+    "model-name": "zomboid_item_pistol",
     "stack-size": 1,
     "script-name": "gun",
     "zomboid:gun": {

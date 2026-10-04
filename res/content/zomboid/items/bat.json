@@ -3,6 +3,7 @@
     "description": "Надёжное оружие: хороший урон и отбрасывание",
     "icon-type": "sprite",
     "icon": "items:bat",
+    "model-name": "zomboid_item_bat",
     "stack-size": 1,
     "uses": 70,
     "uses-display": "vbar",

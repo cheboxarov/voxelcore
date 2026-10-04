@@ -90,10 +90,12 @@ def box(frm, to, tex, net=None, sheet=None, extra=""):
     return head + " {\n" + "\n".join(parts) + "\n}"
 
 
-def bone(name, move, children, rotate=None):
+def bone(name, move, children, rotate=None, scale=None):
     attrs = (" name '%s'" % name if name else "") + (" move %s" % vec(move) if move else "")
     if rotate:
         attrs += " rotate (%s)" % ",".join("%g" % a for a in rotate)
+    if scale:
+        attrs += " scale (%g,%g,%g)" % (scale, scale, scale)
     body = "\n".join(children)
     return "@bone%s {\n%s\n}" % (attrs, "\n".join("    " + line for line in body.split("\n")))
 
@@ -913,7 +915,93 @@ def car():
     write_model("zomboid_car_wreck", [bone(None, (32, 19.5, 48), [bone(None, None, wreck, rotate=(1.5, 0, -2.5))])])
 
 
+# ---------- items in hand / on the ground ----------
+
+def materials():
+    def tile(name, tones, fn):
+        c = Canvas(32, 32, seed=zlib.crc32(name.encode()))
+        for x, y in c.rect_m(0, 0, 31, 31):
+            c.set(x, y, tones[fn(x, y, c.r)])
+        save_tex("mdl_" + name, c)
+
+    grain = lambda x, y, r: 1 if x % 5 == 0 else 3 if x % 5 == 2 and y % 9 > 2 else 2
+    tile("wood", PAL["wood"], grain)
+    tile("wood_dark", PAL["wood_dark"], grain)
+    tile("steel", PAL["steel"], lambda x, y, r: 3 if x % 6 == 1 else 2)
+    tile("blade", ramp("c8ced6"), lambda x, y, r: 4 if x % 8 == 3 else 3 if x % 8 < 3 else 2)
+    tile("iron", PAL["iron"], lambda x, y, r: 3 if (x + y) % 11 == 0 else 2)
+    tile("gunmetal", ramp("33363e"), lambda x, y, r: 3 if y % 8 == 0 else 2)
+    tile("grip", ramp("2a2a2e"), lambda x, y, r: 1 if (x + y) % 4 == 0 else 3 if (x + y) % 4 == 2 else 2)
+    tile("red", PAL["plastic_red"], lambda x, y, r: 3 if (x * 3 + y) % 17 == 0 else 2)
+    tile("yellow", PAL["cloth_yellow"], lambda x, y, r: 2)
+    tile("lens", ramp("f0e8a0"), lambda x, y, r: 4 if x + y < 20 else 3)
+
+
+ITEM_MODELS = {
+    "bat": (-45, 1, [
+        ((-2, 0, -2), (2, 1.5, 2), "grip"), ((-1, 1.5, -1), (1, 9, 1), "grip"),
+        ((-1.2, 9, -1.2), (1.2, 14, 1.2), "wood"), ((-1.6, 14, -1.6), (1.6, 20, 1.6), "wood"),
+        ((-2, 20, -2), (2, 25.5, 2), "wood"), ((-1.6, 25.5, -1.6), (1.6, 26, 1.6), "wood")]),
+    "axe": (-45, 1, [
+        ((-0.9, 0, -0.9), (0.9, 24, 0.9), "wood"), ((-1.5, 18, -1.2), (2.5, 23, 1.2), "iron"),
+        ((2.5, 17, -0.7), (7, 24, 0.7), "steel"), ((7, 16.5, -0.4), (8, 24.5, 0.4), "blade"),
+        ((-3, 19, -1), (-1.5, 22, 1), "iron")]),
+    "knife": (-45, 1, [
+        ((-0.9, 0, -0.7), (0.9, 7, 0.7), "grip"), ((-1.6, 7, -1), (1.6, 8, 1), "steel"),
+        ((-1, 8, -0.3), (1.2, 17, 0.3), "blade"), ((-0.4, 17, -0.25), (1, 19, 0.25), "blade")]),
+    "crowbar": (-45, 1, [
+        ((-0.8, 2, -0.8), (0.8, 22, 0.8), "red"), ((-0.8, 0, -0.6), (2.5, 2, 0.6), "red"),
+        ((0.8, 20, -0.8), (3.5, 22, 0.8), "red"), ((2.5, 22, -0.6), (4, 24.5, 0.6), "red"),
+        ((3, 24.5, -0.4), (4.5, 25.5, 0.4), "steel"), ((2.5, -0.5, -0.4), (3.5, 1, 0.4), "steel")]),
+    "hammer": (-45, 1, [
+        ((-0.8, 0, -0.8), (0.8, 17, 0.8), "wood"), ((-1, 0, -1), (1, 5, 1), "grip"),
+        ((-2, 15, -1.2), (4, 18, 1.2), "iron"), ((4, 15.3, -1.4), (5, 17.7, 1.4), "steel"),
+        ((-5, 16, -0.8), (-2, 17.5, 0.8), "iron"), ((-5.5, 14.5, -0.8), (-4, 16, 0.8), "iron")]),
+    "frying_pan": (-45, 1, [
+        ((-7, 7, -0.8), (7, 17, 0.8), "iron"), ((-6, 5, -0.8), (6, 19, 0.8), "iron"),
+        ((-4, 4, -0.8), (4, 20, 0.8), "iron"), ((-5, 6, 0.8), (5, 18, 1), "gunmetal"),
+        ((-0.9, -8, -0.6), (0.9, 4.5, 0.6), "iron"), ((-1.1, -8, -0.8), (1.1, -1, 0.8), "grip")]),
+    "spear": (-45, 0.8, [
+        ((-0.7, 0, -0.7), (0.7, 26, 0.7), "wood"), ((-1, 22, -1), (1, 25, 1), "grip"),
+        ((-1, 25, -0.3), (1.2, 31, 0.3), "blade"), ((-0.4, 31, -0.25), (0.8, 33, 0.25), "blade")]),
+    "pistol": (0, 1, [
+        ((-4, 3, -1), (6, 6, 1), "gunmetal"), ((-4, 1.5, -0.9), (4, 3, 0.9), "gunmetal"),
+        ((6, 3.8, -0.6), (6.5, 5.2, 0.6), "iron"), ((-4, -5, -0.95), (-0.5, 1.5, 0.95), "grip"),
+        ((-0.5, 0, -0.5), (2.5, 0.6, 0.5), "gunmetal"), ((2, 0.6, -0.5), (2.5, 1.5, 0.5), "gunmetal"),
+        ((0.5, 0.6, -0.3), (1, 1.5, 0.3), "iron"), ((5, 6, -0.3), (5.6, 6.6, 0.3), "iron")]),
+    "shotgun": (25, 0.8, [
+        ((-14, -2, -1), (-6, 2, 1), "wood"), ((-15, -3, -1.1), (-14, 2.2, 1.1), "grip"),
+        ((-6, -1, -0.9), (-3, 1.5, 0.9), "wood"), ((-3, -0.5, -1), (3, 2.5, 1), "gunmetal"),
+        ((3, 1, -0.7), (17, 2.4, 0.7), "iron"), ((3, -0.3, -0.6), (14, 1, 0.6), "iron"),
+        ((6, -1, -1), (11, 1.2, 1), "wood_dark"), ((-1, -1.5, -0.3), (0, -0.5, 0.3), "iron")]),
+    "flashlight": (-45, 1, [
+        ((-1.3, 0, -1.3), (1.3, 9, 1.3), "grip"), ((-2, 9, -2), (2, 12, 2), "iron"),
+        ((-1.6, 12, -1.6), (1.6, 12.3, 1.6), "lens"), ((1.3, 5, -0.5), (1.7, 6.5, 0.5), "red")]),
+    "gas_can": (0, 1, [
+        ((-5, 0, -2.5), (5, 11, 2.5), "red"), ((-4, 12, -0.8), (1, 13.5, 0.8), "red"),
+        ((-4, 11, -0.8), (-3, 12, 0.8), "red"), ((0, 11, -0.8), (1, 12, 0.8), "red"),
+        ((2, 11, -0.8), (4, 13, 0.8), "iron"), ((2.5, 13, -0.6), (3.5, 14, 0.6), "yellow"),
+        ((-5.2, 3, -2.7), (5.2, 4, 2.7), "red")]),
+}
+ITEM_MODELS["spiked_bat"] = (-45, 1, ITEM_MODELS["bat"][2] + [
+    b for y in (21, 23, 25) for b in (((-3.5, y, -0.25), (3.5, y + 0.5, 0.25), "steel"),
+                                      ((-0.25, y + 1, -3.5), (0.25, y + 1.5, 3.5), "steel"))])
+ITEM_USERS = {"gas_can_empty": "gas_can"}
+
+
+def items():
+    materials()
+    for name, (angle, scale, parts) in ITEM_MODELS.items():
+        lo = [min(p[0][i] for p in parts) for i in range(3)]
+        hi = [max(p[1][i] for p in parts) for i in range(3)]
+        center = tuple(-(a + b) / 2 for a, b in zip(lo, hi))
+        boxes = [box(a, b, "blocks:mdl_" + m) for a, b, m in parts]
+        write_model("zomboid_item_" + name, [bone(None, center, boxes, rotate=(0, 0, angle) if angle else None,
+                                                  scale=scale if scale != 1 else None)])
+
+
 if __name__ == "__main__":
     os.makedirs(BLOCKS, exist_ok=True)
     zombie()
     car()
+    items()

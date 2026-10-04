@@ -3,6 +3,7 @@
     "description": "ЛКМ - выстрел, R - перезарядка. Дробь разлетается широко. Грохот слышен на весь город",
     "icon-type": "sprite",
     "icon": "items:shotgun",
+    "model-name": "zomboid_item_shotgun",
     "stack-size": 1,
     "script-name": "gun",
     "zomboid:gun": {

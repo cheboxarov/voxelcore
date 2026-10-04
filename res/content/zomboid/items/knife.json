@@ -3,6 +3,7 @@
     "description": "Быстрые удары, часто критические, но малый радиус",
     "icon-type": "sprite",
     "icon": "items:knife",
+    "model-name": "zomboid_item_knife",
     "stack-size": 1,
     "uses": 45,
     "uses-display": "vbar",

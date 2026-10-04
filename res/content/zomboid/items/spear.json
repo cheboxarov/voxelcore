@@ -3,6 +3,7 @@
     "description": "Длинная дистанция удара",
     "icon-type": "sprite",
     "icon": "items:spear",
+    "model-name": "zomboid_item_spear",
     "stack-size": 1,
     "uses": 35,
     "uses-display": "vbar",

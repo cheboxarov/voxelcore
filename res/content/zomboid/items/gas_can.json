@@ -1,6 +1,7 @@
 {
     "icon-type": "sprite",
     "icon": "items:gas_can",
+    "model-name": "zomboid_item_gas_can",
     "caption": "Канистра с бензином",
     "description": "ПКМ по генератору или машине - залить бензин (литры)",
     "stack-size": 1,

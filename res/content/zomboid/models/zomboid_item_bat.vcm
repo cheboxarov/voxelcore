@@ -1,0 +1,8 @@
+@bone move (0,-0.40625,0) rotate (0,0,-45) {
+    @box from (-0.0625,0,-0.0625) to (0.0625,0.046875,0.0625) texture "blocks:mdl_grip"
+    @box from (-0.03125,0.046875,-0.03125) to (0.03125,0.28125,0.03125) texture "blocks:mdl_grip"
+    @box from (-0.0375,0.28125,-0.0375) to (0.0375,0.4375,0.0375) texture "blocks:mdl_wood"
+    @box from (-0.05,0.4375,-0.05) to (0.05,0.625,0.05) texture "blocks:mdl_wood"
+    @box from (-0.0625,0.625,-0.0625) to (0.0625,0.796875,0.0625) texture "blocks:mdl_wood"
+    @box from (-0.05,0.796875,-0.05) to (0.05,0.8125,0.05) texture "blocks:mdl_wood"
+}

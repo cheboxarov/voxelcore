@@ -3,6 +3,7 @@
     "description": "ПКМ по окну или двери - заколотить (доска + 2 гвоздя)",
     "icon-type": "sprite",
     "icon": "items:hammer",
+    "model-name": "zomboid_item_hammer",
     "stack-size": 1,
     "uses": 80,
     "uses-display": "vbar",

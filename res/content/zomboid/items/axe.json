@@ -3,6 +3,7 @@
     "description": "Огромный урон, медленный замах. Быстро рубит дерево",
     "icon-type": "sprite",
     "icon": "items:axe",
+    "model-name": "zomboid_item_axe",
     "stack-size": 1,
     "uses": 90,
     "uses-display": "vbar",

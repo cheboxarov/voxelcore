@@ -3,6 +3,7 @@
     "description": "Светит в руке. Ночью зомби заметят вас издалека",
     "icon-type": "sprite",
     "icon": "items:flashlight",
+    "model-name": "zomboid_item_flashlight",
     "stack-size": 1,
     "emission": [
         14,

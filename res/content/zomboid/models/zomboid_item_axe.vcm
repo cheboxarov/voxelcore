@@ -1,0 +1,7 @@
+@bone move (-0.078125,-0.382812,0) rotate (0,0,-45) {
+    @box from (-0.028125,0,-0.028125) to (0.028125,0.75,0.028125) texture "blocks:mdl_wood"
+    @box from (-0.046875,0.5625,-0.0375) to (0.078125,0.71875,0.0375) texture "blocks:mdl_iron"
+    @box from (0.078125,0.53125,-0.021875) to (0.21875,0.75,0.021875) texture "blocks:mdl_steel"
+    @box from (0.21875,0.515625,-0.0125) to (0.25,0.765625,0.0125) texture "blocks:mdl_blade"
+    @box from (-0.09375,0.59375,-0.03125) to (-0.046875,0.6875,0.03125) texture "blocks:mdl_iron"
+}

@@ -3,6 +3,7 @@
     "description": "Звонко отбрасывает зомби",
     "icon-type": "sprite",
     "icon": "items:frying_pan",
+    "model-name": "zomboid_item_frying_pan",
     "stack-size": 1,
     "uses": 55,
     "uses-display": "vbar",
