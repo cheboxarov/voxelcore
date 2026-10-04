@@ -1,8 +1,8 @@
 {
     "caption": "Картофель",
-    "description": "Сырой не очень. Портится за 12 дней",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:potato",
+    "icon": "items:potato_stale",
     "stack-size": 8,
     "script-name": "food",
     "zomboid:hunger": 10,
@@ -13,5 +13,6 @@
     ],
     "zomboid:spoil-days": 12,
     "zomboid:mood": -5,
-    "zomboid:stale": "zomboid:potato_stale"
+    "model-name": "zomboid:potato_stale.model",
+    "zomboid:fresh": "zomboid:potato"
 }

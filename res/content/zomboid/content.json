@@ -118,7 +118,15 @@
     "map",
     "seeds_potato",
     "car_key",
-    "seeds_carrot"
+    "seeds_carrot",
+    "apple_stale",
+    "bread_stale",
+    "carrot_stale",
+    "potato_stale",
+    "raw_meat_stale",
+    "cooked_meat_stale",
+    "soup_stale",
+    "stew_stale"
   ],
   "entities": [
     "player",

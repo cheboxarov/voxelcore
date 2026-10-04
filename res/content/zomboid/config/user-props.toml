@@ -26,3 +26,5 @@
 "zomboid:slots" = {}
 "zomboid:weight-reduction" = {}
 "zomboid:crop" = {}
+"zomboid:stale" = {}
+"zomboid:fresh" = {}

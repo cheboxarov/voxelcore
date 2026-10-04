@@ -1,8 +1,8 @@
 {
     "caption": "Рагу с мясом",
-    "description": "Очень сытно. Портится за 6 дней",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:stew",
+    "icon": "items:stew_stale",
     "stack-size": 4,
     "script-name": "food",
     "zomboid:hunger": 75,
@@ -13,5 +13,6 @@
     ],
     "zomboid:spoil-days": 6,
     "zomboid:mood": 25,
-    "zomboid:stale": "zomboid:stew_stale"
+    "model-name": "zomboid:stew_stale.model",
+    "zomboid:fresh": "zomboid:stew"
 }

@@ -1,8 +1,8 @@
 {
     "caption": "Жареное мясо",
-    "description": "Сытно. Портится за 4 дня",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:cooked_meat",
+    "icon": "items:cooked_meat_stale",
     "stack-size": 8,
     "script-name": "food",
     "zomboid:hunger": 45,
@@ -13,5 +13,6 @@
     ],
     "zomboid:spoil-days": 4,
     "zomboid:mood": 12,
-    "zomboid:stale": "zomboid:cooked_meat_stale"
+    "model-name": "zomboid:cooked_meat_stale.model",
+    "zomboid:fresh": "zomboid:cooked_meat"
 }

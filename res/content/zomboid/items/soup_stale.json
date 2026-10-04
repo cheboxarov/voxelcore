@@ -1,8 +1,8 @@
 {
     "caption": "Овощной суп",
-    "description": "Горячий и сытный. Портится за 5 дней",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:soup",
+    "icon": "items:soup_stale",
     "stack-size": 4,
     "script-name": "food",
     "zomboid:hunger": 45,
@@ -13,5 +13,6 @@
     ],
     "zomboid:spoil-days": 5,
     "zomboid:mood": 18,
-    "zomboid:stale": "zomboid:soup_stale"
+    "model-name": "zomboid:soup_stale.model",
+    "zomboid:fresh": "zomboid:soup"
 }

@@ -52,6 +52,10 @@ function spoilage.check(invid, cold, generator)
             if ratio > 1.5 then
                 inventory.set(invid, slot, rotten, count)
             elseif ratio > 1.0 then
+                local stale = item.properties[itemid]["zomboid:stale"]
+                if stale then
+                    inventory.set(invid, slot, item.index(stale), count, inventory.get_all_data(invid, slot))
+                end
                 inventory.set_description(invid, slot, "Несвежее. Может вызвать отравление")
             elseif ratio > 0.6 then
                 inventory.set_description(invid, slot, "Скоро испортится")

@@ -1,8 +1,8 @@
 {
     "caption": "Сырое мясо",
-    "description": "Лучше пожарить. Портится за 2 дня",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:raw_meat",
+    "icon": "items:raw_meat_stale",
     "stack-size": 8,
     "script-name": "food",
     "zomboid:hunger": 15,
@@ -14,5 +14,6 @@
     "zomboid:spoil-days": 2,
     "zomboid:mood": -10,
     "zomboid:sickness": 35,
-    "zomboid:stale": "zomboid:raw_meat_stale"
+    "model-name": "zomboid:raw_meat_stale.model",
+    "zomboid:fresh": "zomboid:raw_meat"
 }

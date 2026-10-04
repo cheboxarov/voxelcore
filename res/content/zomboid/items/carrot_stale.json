@@ -1,8 +1,8 @@
 {
     "caption": "Морковь",
-    "description": "Портится за 8 дней",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:carrot",
+    "icon": "items:carrot_stale",
     "stack-size": 8,
     "script-name": "food",
     "zomboid:hunger": 8,
@@ -12,5 +12,6 @@
         "zomboid:food"
     ],
     "zomboid:spoil-days": 8,
-    "zomboid:stale": "zomboid:carrot_stale"
+    "model-name": "zomboid:carrot_stale.model",
+    "zomboid:fresh": "zomboid:carrot"
 }

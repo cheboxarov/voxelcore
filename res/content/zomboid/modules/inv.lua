@@ -7,12 +7,17 @@ local function id_of(item_name)
     return item.index(item_name)
 end
 
+local function matches(id, itemid)
+    local fresh = id ~= 0 and item.properties[id]["zomboid:fresh"]
+    return id == itemid or (fresh and item.index(fresh) == itemid)
+end
+
 function inv.count(invid, item_name)
     local itemid = id_of(item_name)
     local total = 0
     for slot = 0, inventory.size(invid) - 1 do
         local id, count = inventory.get(invid, slot)
-        if id == itemid then
+        if matches(id, itemid) then
             total = total + count
         end
     end
@@ -30,7 +35,7 @@ function inv.take(invid, item_name, amount)
             break
         end
         local id, count = inventory.get(invid, slot)
-        if id == itemid then
+        if matches(id, itemid) then
             local taken = math.min(count, amount)
             inventory.decrement(invid, slot, taken)
             amount = amount - taken

@@ -1,8 +1,8 @@
 {
     "caption": "Яблоко",
-    "description": "Немного утоляет жажду. Портится за 5 дней",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:apple",
+    "icon": "items:apple_stale",
     "stack-size": 8,
     "script-name": "food",
     "zomboid:hunger": 12,
@@ -13,5 +13,6 @@
     "zomboid:spoil-days": 5,
     "zomboid:weight": 0.2,
     "zomboid:mood": 4,
-    "zomboid:stale": "zomboid:apple_stale"
+    "model-name": "zomboid:apple_stale.model",
+    "zomboid:fresh": "zomboid:apple"
 }

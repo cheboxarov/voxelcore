@@ -1,8 +1,8 @@
 {
     "caption": "Хлеб",
-    "description": "Портится за 3 дня",
+    "description": "Несвежее. Может вызвать отравление",
     "icon-type": "sprite",
-    "icon": "items:bread",
+    "icon": "items:bread_stale",
     "stack-size": 8,
     "script-name": "food",
     "zomboid:hunger": 25,
@@ -12,5 +12,6 @@
     ],
     "zomboid:spoil-days": 3,
     "zomboid:weight": 0.4,
-    "zomboid:stale": "zomboid:bread_stale"
+    "model-name": "zomboid:bread_stale.model",
+    "zomboid:fresh": "zomboid:bread"
 }
