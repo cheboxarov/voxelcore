@@ -883,7 +883,7 @@ function town.house_interiors()
     local points = {}
     for _, c in ipairs(cell_list) do
         local p = town.plan(c.cx, c.cz)
-        if p and p.kind == "house" and p.rot == 0 and p.cx == c.cx and p.cz == c.cz then
+        if p and p.kind == "house" and p.rot == 0 and p.zone ~= "downtown" and p.cx == c.cx and p.cz == c.cz then
             local x, z = town.to_world(p, p.mid, 2)
             local dist = math.abs(x - town.CENTER[1]) + math.abs(z - town.CENTER[2])
             table.insert(points, {x, GROUND + 1, z, dist = dist})

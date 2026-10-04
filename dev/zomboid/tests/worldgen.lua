@@ -71,7 +71,9 @@ for _, c in ipairs(town.cells()) do
         for hx = 0, p.w - 1, math.max(1, p.w - 1) do
             for hz = 0, p.d - 1, math.max(1, p.d - 1) do
                 local x, z = town.to_world(p, hx, hz)
-                check(town.column(x, z) == "building", p.kind .. " corner is not a building")
+                local kind = town.column(x, z)
+                check(kind == "building" or (p.def.kind_at and kind == p.def.kind_at(p, hx, hz)),
+                    p.kind .. " corner is not a building")
                 local _, owner, lx, lz = town.building_at(x, z)
                 check(owner == p and lx == hx and lz == hz, "to_world and to_local agree")
             end
