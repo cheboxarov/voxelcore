@@ -137,6 +137,13 @@ local e = entities.get(player.get_entity(pid))
 check(e.rigidbody:is_enabled(), "player body enabled")
 check(vec3.distance({player.get_pos(pid)}, car.get_pos()) > 1.2, "standing beside the car")
 
+-- dying at the wheel frees the seat and the body
+check(cars.toggle(pid), "back in the car")
+survival.kill(pid, "zombies")
+app.sleep(0.5)
+check(cars.driving[pid] == nil and car.driver == nil, "dead driver left the car")
+check(entities.get(player.get_entity(pid)).rigidbody:is_enabled(), "body enabled after death")
+
 -- house car spots exist and get keys from their own house
 local houses = 0
 for cx = -3, 2 do
