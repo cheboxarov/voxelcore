@@ -63,7 +63,7 @@ function farming.update(x, y, z)
     local growth = block.get_field(x, y, z, "growth") or 0
     local dry = block.get_field(x, y, z, "dry") or 0
     local rained = weather.raining and now or weather.started
-    if rained and rained >= last and weather.sky_open(x, y, z) then
+    if rained and rained >= last - 0.01 and weather.sky_open(x, y, z) then
         growth = growth + rained - last
         last, water, dry = rained, 100, 0
     end
