@@ -189,5 +189,27 @@ weather.set_raining(true)
 farming.update(bx, by + 1, bz)
 check(block.get_field(bx, by + 1, bz, "water") >= 99, "rain watered the plant")
 
+-- a crop in an unloaded chunk gets the rain that fell while nobody was around
+weather.set_raining(false)
+block.set(bx, by + 1, bz, 0, 0)
+hold("zomboid:seeds_potato", 1)
+events.emit("zomboid:seeds_potato.useon", bx, by, bz, pid, {0, 1, 0})
+player.set_pos(pid, bx + 400.5, G + 30, bz)
+app.sleep_until(function() return block.get(bx, by + 1, bz) == -1 end, 6000)
+for _, step in ipairs({{40, true}, {4, false}, {40}}) do
+    clock.reset(clock.hours + step[1])
+    if step[2] ~= nil then
+        weather.set_raining(step[2])
+        weather.next_change = clock.hours + 1000
+    end
+end
+player.set_pos(pid, spawn[1], spawn[2], spawn[3])
+app.sleep_until(function() return block.get(bx, by + 1, bz) ~= -1 end, 6000)
+app.sleep(7)
+log(string.format("potato after 84h away with rain: growth %.1f, dry %.1f",
+    block.get_field(bx, by + 1, bz, "growth"), block.get_field(bx, by + 1, bz, "dry")))
+check(block.get_variant(bx, by + 1, bz) ~= farming.DEAD, "crop died despite the rain")
+check(block.get_field(bx, by + 1, bz, "growth") > 60, "crop grew while unloaded")
+
 app.close_world(false)
 app.delete_world("zout")

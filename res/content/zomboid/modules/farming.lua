@@ -58,16 +58,21 @@ function farming.update(x, y, z)
         return
     end
     local now = clock.hours
-    local elapsed = math.max(0, now - (block.get_field(x, y, z, "last") or now))
-    block.set_field(x, y, z, "last", now)
+    local last = block.get_field(x, y, z, "last") or now
     local water = block.get_field(x, y, z, "water") or 0
-    if weather.raining and weather.sky_open(x, y, z) then
-        water = 100
+    local growth = block.get_field(x, y, z, "growth") or 0
+    local dry = block.get_field(x, y, z, "dry") or 0
+    local rained = weather.raining and now or weather.started
+    if rained and rained >= last and weather.sky_open(x, y, z) then
+        growth = growth + rained - last
+        last, water, dry = rained, 100, 0
     end
+    local elapsed = math.max(0, now - last)
+    block.set_field(x, y, z, "last", now)
     local wet = math.min(elapsed, water / farming.WATER_PER_HOUR)
-    local growth = (block.get_field(x, y, z, "growth") or 0) + wet
+    growth = growth + wet
     water = math.max(0, water - elapsed * farming.WATER_PER_HOUR)
-    local dry = water > 0 and 0 or (block.get_field(x, y, z, "dry") or 0) + elapsed - wet
+    dry = water > 0 and 0 or dry + elapsed - wet
     block.set_field(x, y, z, "growth", growth)
     block.set_field(x, y, z, "water", water)
     block.set_field(x, y, z, "dry", dry)
