@@ -1,13 +1,15 @@
 local clock = require "zomboid:clock"
 local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
+local sandbox = require "zomboid:sandbox"
 
 local function arm(x, y, z, pid)
-    local props = block.properties[block.get(x, y, z)]
-    block.set_field(x, y, z, "ring_at", clock.hours + props["zomboid:noise-delay"] / 60)
+    local id = block.get(x, y, z)
+    local delay = block.properties[id]["zomboid:noise-delay"]
+    block.set_field(x, y, z, "ring_at", clock.hours + delay / 60)
     if pid and pid >= 0 then
-        survival.notify(pid, string.format("%s сработает через %d сек.",
-            block.caption(block.get(x, y, z)), props["zomboid:noise-delay"]), "#e0d090")
+        survival.notify(pid, string.format("%s сработает через %d сек.", block.caption(id),
+            math.floor(delay * sandbox.get("day_minutes") / 24 + 0.5)), "#e0d090")
     end
 end
 

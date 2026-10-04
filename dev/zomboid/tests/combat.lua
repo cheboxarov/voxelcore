@@ -251,6 +251,11 @@ block.set(ax, ay, az, block.index("zomboid:alarm_clock"), 0)
 events.emit("zomboid:alarm_clock.placed", ax, ay, az, pid)
 local ring_at = block.get_field(ax, ay, az, "ring_at")
 check(ring_at and ring_at > clock.hours, "alarm armed")
+local sandbox = require "zomboid:sandbox"
+sandbox.values.day_minutes = 48
+events.emit("zomboid:alarm_clock.interact", ax, ay, az, pid)
+sandbox.values.day_minutes = nil
+check(state.messages[#state.messages].text:find("40 сек", 1, true), "alarm delay shown in real seconds")
 local _, lured = spawn_at(ROAD_X, -62.5)
 app.sleep(1)
 check(lured.mode ~= "investigate", "silent before the timer")
