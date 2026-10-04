@@ -1,0 +1,13 @@
+{
+    "caption": "Обшивка (белая)",
+    "texture": "siding_white",
+    "material": "base:wood",
+    "base:durability": 14.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 1,
+            "max": 2
+        }
+    ]
+}

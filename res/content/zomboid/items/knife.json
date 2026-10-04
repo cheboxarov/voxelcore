@@ -1,0 +1,17 @@
+{
+    "caption": "Кухонный нож",
+    "description": "Быстрые удары, часто критические, но малый радиус",
+    "icon-type": "sprite",
+    "icon": "items:knife",
+    "stack-size": 1,
+    "uses": 45,
+    "uses-display": "vbar",
+    "zomboid:damage": 22,
+    "zomboid:knockback": 1.5,
+    "zomboid:cooldown": 0.45,
+    "zomboid:range": 2.0,
+    "zomboid:stamina": 4,
+    "tags": [
+        "zomboid:weapon"
+    ]
+}

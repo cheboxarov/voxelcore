@@ -1,0 +1,14 @@
+{
+    "caption": "Бутылка воды",
+    "description": "ПКМ — выпить глоток",
+    "icon-type": "sprite",
+    "icon": "items:water_bottle",
+    "stack-size": 1,
+    "uses": 4,
+    "uses-display": "relation",
+    "script-name": "drink",
+    "zomboid:thirst": 25,
+    "tags": [
+        "zomboid:drink"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "caption": "Разбитое окно",
+    "texture": "window_broken",
+    "material": "base:glass",
+    "draw-group": 2,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "obstacle": false,
+    "base:durability": 0.3,
+    "base:loot": [],
+    "tags": [
+        "zomboid:window"
+    ]
+}

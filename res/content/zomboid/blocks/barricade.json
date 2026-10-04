@@ -1,0 +1,39 @@
+{
+    "caption": "Заколоченное окно",
+    "texture": "barricade_1",
+    "material": "base:wood",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "draw-group": 1,
+    "base:durability": 30.0,
+    "base:loot": [],
+    "hidden": true,
+    "picking-item": "zomboid:plank",
+    "state-based": {
+        "offset": 0,
+        "bits": 2,
+        "variants": [
+            {
+                "texture": "barricade_2"
+            },
+            {
+                "texture": "barricade_3"
+            },
+            {
+                "texture": "barricade_4"
+            }
+        ]
+    },
+    "fields": {
+        "hp": {
+            "type": "int16"
+        },
+        "glass": {
+            "type": "int8"
+        }
+    },
+    "tags": [
+        "zomboid:bashable",
+        "zomboid:barricade"
+    ]
+}

@@ -1,0 +1,79 @@
+{
+    "caption": "Заколоченная дверь",
+    "texture-faces": [
+        "door_barricade_1",
+        "door_barricade_1",
+        "trim",
+        "trim",
+        "door_barricade_1",
+        "door_barricade_1"
+    ],
+    "material": "base:wood",
+    "size": [
+        1,
+        2,
+        1
+    ],
+    "rotation": "pane",
+    "model": "aabb",
+    "hitbox": [
+        0.0,
+        0.0,
+        0.8,
+        1.0,
+        2.0,
+        0.2
+    ],
+    "light-passing": true,
+    "sky-light-passing": true,
+    "ambient-occlusion": false,
+    "base:durability": 30.0,
+    "base:loot": [],
+    "hidden": true,
+    "picking-item": "zomboid:plank",
+    "state-based": {
+        "offset": 0,
+        "bits": 2,
+        "variants": [
+            {
+                "texture-faces": [
+                    "door_barricade_2",
+                    "door_barricade_2",
+                    "trim",
+                    "trim",
+                    "door_barricade_2",
+                    "door_barricade_2"
+                ]
+            },
+            {
+                "texture-faces": [
+                    "door_barricade_3",
+                    "door_barricade_3",
+                    "trim",
+                    "trim",
+                    "door_barricade_3",
+                    "door_barricade_3"
+                ]
+            },
+            {
+                "texture-faces": [
+                    "door_barricade_4",
+                    "door_barricade_4",
+                    "trim",
+                    "trim",
+                    "door_barricade_4",
+                    "door_barricade_4"
+                ]
+            }
+        ]
+    },
+    "fields": {
+        "hp": {
+            "type": "int16"
+        }
+    },
+    "tags": [
+        "zomboid:bashable",
+        "zomboid:barricade"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "caption": "Самодельное копьё",
+    "description": "Длинная дистанция удара",
+    "icon-type": "sprite",
+    "icon": "items:spear",
+    "stack-size": 1,
+    "uses": 35,
+    "uses-display": "vbar",
+    "zomboid:damage": 30,
+    "zomboid:knockback": 3.0,
+    "zomboid:cooldown": 0.8,
+    "zomboid:range": 3.2,
+    "zomboid:stamina": 8,
+    "tags": [
+        "zomboid:weapon"
+    ]
+}

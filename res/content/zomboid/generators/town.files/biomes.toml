@@ -1,0 +1,16 @@
+[countryside]
+parameters = []
+layers = [
+    {below-sea-level=false, height=1, block="base:grass_block"},
+    {below-sea-level=false, height=4, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.3
+plants = [
+    {weight=1, block="base:grass"},
+    {weight=0.02, block="base:flower"}
+]

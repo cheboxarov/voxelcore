@@ -1,0 +1,13 @@
+{
+    "caption": "Обезболивающее",
+    "description": "Снимает замедление от ран на 6 часов",
+    "icon-type": "sprite",
+    "icon": "items:painkillers",
+    "stack-size": 1,
+    "script-name": "medical",
+    "tags": [
+        "zomboid:medical"
+    ],
+    "uses": 6,
+    "uses-display": "relation"
+}

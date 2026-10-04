@@ -1,0 +1,12 @@
+{
+    "caption": "Фонарик",
+    "description": "Светит в руке. Ночью зомби заметят вас издалека",
+    "icon-type": "sprite",
+    "icon": "items:flashlight",
+    "stack-size": 1,
+    "emission": [
+        14,
+        14,
+        11
+    ]
+}

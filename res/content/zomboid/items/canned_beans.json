@@ -1,0 +1,13 @@
+{
+    "caption": "Консервированная фасоль",
+    "description": "Не портится",
+    "icon-type": "sprite",
+    "icon": "items:canned_beans",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 35,
+    "zomboid:thirst": -5,
+    "tags": [
+        "zomboid:food"
+    ]
+}

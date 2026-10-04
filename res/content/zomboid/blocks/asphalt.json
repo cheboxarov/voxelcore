@@ -1,0 +1,6 @@
+{
+    "caption": "Асфальт",
+    "texture": "asphalt",
+    "material": "base:stone",
+    "base:durability": 25.0
+}

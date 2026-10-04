@@ -1,0 +1,29 @@
+<container id="root" size-func="unpack(gui.get_viewport())" interactive="false" z-index="-3">
+    <container id="hurt" color="#a0000000" size-func="unpack(gui.get_viewport())" interactive="false"/>
+    <container id="night" color="#00001000" size-func="unpack(gui.get_viewport())" interactive="false"/>
+    <panel id="stats" pos="10,10" size="236,0" color="#0000008c" padding="8" interval="5" interactive="false">
+        <label id="clock" color="#ffe0a0">День 1, 08:00</label>
+        <container size="220,16" color="#2a2a2acc">
+            <container id="bar_health" size="220,16" color="#b83232"/>
+            <label pos="5,0" size="210,16" valign="center">Здоровье</label>
+        </container>
+        <container size="220,16" color="#2a2a2acc">
+            <container id="bar_hunger" size="220,16" color="#b07a30"/>
+            <label pos="5,0" size="210,16" valign="center">Сытость</label>
+        </container>
+        <container size="220,16" color="#2a2a2acc">
+            <container id="bar_thirst" size="220,16" color="#3070b8"/>
+            <label pos="5,0" size="210,16" valign="center">Жажда</label>
+        </container>
+        <container size="220,16" color="#2a2a2acc">
+            <container id="bar_energy" size="220,16" color="#7a5ab0"/>
+            <label pos="5,0" size="210,16" valign="center">Бодрость</label>
+        </container>
+        <container size="220,10" color="#2a2a2acc">
+            <container id="bar_stamina" size="220,10" color="#d8d8a0"/>
+        </container>
+        <label id="status" markup="md" multiline="true" size="220,0" autoresize="true"></label>
+    </panel>
+    <label id="messages" markup="md" multiline="true" size="600,140" valign="bottom" text-align="center"
+           gravity="bottom-center" margin="0,0,0,90" interactive="false"></label>
+</container>

@@ -1,0 +1,7 @@
+{
+    "caption": "Гвозди",
+    "description": "Для баррикад и крафта",
+    "icon-type": "sprite",
+    "icon": "items:nails",
+    "stack-size": 50
+}

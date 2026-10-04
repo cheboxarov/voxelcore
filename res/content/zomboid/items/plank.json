@@ -1,0 +1,8 @@
+{
+    "caption": "Доска",
+    "description": "Для баррикад и строительства. ПКМ — поставить блок досок",
+    "icon-type": "sprite",
+    "icon": "items:plank",
+    "stack-size": 20,
+    "placing-block": "base:planks"
+}

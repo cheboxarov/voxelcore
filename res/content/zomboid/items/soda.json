@@ -1,0 +1,13 @@
+{
+    "caption": "Газировка",
+    "description": "Утоляет жажду",
+    "icon-type": "sprite",
+    "icon": "items:soda",
+    "stack-size": 6,
+    "script-name": "food",
+    "zomboid:hunger": 6,
+    "zomboid:thirst": 30,
+    "tags": [
+        "zomboid:food"
+    ]
+}

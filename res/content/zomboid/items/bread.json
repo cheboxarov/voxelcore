@@ -1,0 +1,14 @@
+{
+    "caption": "Хлеб",
+    "description": "Портится за 3 дня",
+    "icon-type": "sprite",
+    "icon": "items:bread",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 25,
+    "zomboid:thirst": -3,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:spoil-days": 3
+}

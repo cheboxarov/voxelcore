@@ -1,0 +1,6 @@
+{
+    "caption": "Кафель",
+    "texture": "tiles",
+    "material": "base:stone",
+    "base:durability": 10.0
+}

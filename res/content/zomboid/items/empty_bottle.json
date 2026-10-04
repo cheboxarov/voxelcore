@@ -1,0 +1,8 @@
+{
+    "caption": "Пустая бутылка",
+    "description": "ПКМ по воде или крану — наполнить",
+    "icon-type": "sprite",
+    "icon": "items:empty_bottle",
+    "stack-size": 4,
+    "script-name": "empty_bottle"
+}

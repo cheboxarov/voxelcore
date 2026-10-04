@@ -1,0 +1,10 @@
+{
+    "id": "zomboid",
+    "title": "Zomboid",
+    "version": "0.1",
+    "creator": "cheboxarov",
+    "description": "Выживание в городке, захваченном зомби: голод, жажда, раны, инфекция, баррикады и орды по ночам",
+    "dependencies": [
+        "base"
+    ]
+}

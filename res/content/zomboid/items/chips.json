@@ -1,0 +1,13 @@
+{
+    "caption": "Чипсы",
+    "description": "Вызывают жажду",
+    "icon-type": "sprite",
+    "icon": "items:chips",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 15,
+    "zomboid:thirst": -8,
+    "tags": [
+        "zomboid:food"
+    ]
+}

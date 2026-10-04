@@ -1,0 +1,15 @@
+{
+    "caption": "Разметка",
+    "texture-faces": [
+        "asphalt",
+        "asphalt",
+        "asphalt",
+        "road_line",
+        "asphalt",
+        "asphalt"
+    ],
+    "rotation": "pane",
+    "material": "base:stone",
+    "base:durability": 25.0,
+    "picking-item": "zomboid:asphalt.item"
+}

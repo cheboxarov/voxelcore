@@ -1,0 +1,6 @@
+{
+    "caption": "Кровля",
+    "texture": "roof",
+    "material": "base:wood",
+    "base:durability": 14.0
+}

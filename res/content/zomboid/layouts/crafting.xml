@@ -1,0 +1,6 @@
+<container id="root" size-func="unpack(gui.get_viewport())">
+    <panel gravity="center-right" margin="0,0,30,0" size="420,0" color="#000000c0" padding="12" interval="6">
+        <label color="#ffe0a0">Крафт (G — закрыть)</label>
+        <panel id="recipes" size="396,0" color="#00000000" interval="4" max-length="420" scrollable="true"></panel>
+    </panel>
+</container>

@@ -1,0 +1,23 @@
+{
+    "caption": "Аптечка",
+    "texture-faces": [
+        "fridge_side",
+        "fridge_side",
+        "fridge_side",
+        "fridge_side",
+        "medcab_front",
+        "medcab_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "base:durability": 8.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container"
+    ],
+    "zomboid:loot": "medicine_cabinet"
+}

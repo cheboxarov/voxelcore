@@ -1,0 +1,6 @@
+{
+    "caption": "Тротуар",
+    "texture": "sidewalk",
+    "material": "base:stone",
+    "base:durability": 20.0
+}

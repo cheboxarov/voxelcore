@@ -1,0 +1,17 @@
+{
+    "caption": "Бита с гвоздями",
+    "description": "Страшное оружие ближнего боя",
+    "icon-type": "sprite",
+    "icon": "items:spiked_bat",
+    "stack-size": 1,
+    "uses": 60,
+    "uses-display": "vbar",
+    "zomboid:damage": 46,
+    "zomboid:knockback": 6.0,
+    "zomboid:cooldown": 0.95,
+    "zomboid:range": 2.7,
+    "zomboid:stamina": 10,
+    "tags": [
+        "zomboid:weapon"
+    ]
+}

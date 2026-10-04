@@ -1,0 +1,14 @@
+{
+    "caption": "Яблоко",
+    "description": "Немного утоляет жажду. Портится за 5 дней",
+    "icon-type": "sprite",
+    "icon": "items:apple",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 12,
+    "zomboid:thirst": 6,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:spoil-days": 5
+}

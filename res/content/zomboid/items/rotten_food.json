@@ -1,0 +1,14 @@
+{
+    "caption": "Испорченная еда",
+    "description": "Лучше не есть...",
+    "icon-type": "sprite",
+    "icon": "items:rotten_food",
+    "stack-size": 8,
+    "script-name": "food",
+    "zomboid:hunger": 10,
+    "zomboid:thirst": 0,
+    "tags": [
+        "zomboid:food"
+    ],
+    "zomboid:sickness": 45
+}

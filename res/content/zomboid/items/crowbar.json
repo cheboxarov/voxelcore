@@ -1,0 +1,20 @@
+{
+    "caption": "Лом",
+    "description": "Прочный. ПКМ по баррикаде — снять доску",
+    "icon-type": "sprite",
+    "icon": "items:crowbar",
+    "stack-size": 1,
+    "uses": 140,
+    "uses-display": "vbar",
+    "zomboid:damage": 30,
+    "zomboid:knockback": 5.0,
+    "zomboid:cooldown": 1.0,
+    "zomboid:range": 2.5,
+    "zomboid:stamina": 9,
+    "tags": [
+        "zomboid:weapon"
+    ],
+    "zomboid:pry": 1,
+    "zomboid:chop": 1.5,
+    "script-name": "crowbar"
+}

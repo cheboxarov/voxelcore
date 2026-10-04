@@ -1,0 +1,9 @@
+{
+    "caption": "Спички",
+    "description": "Нужны для костра и факелов",
+    "icon-type": "sprite",
+    "icon": "items:matches",
+    "stack-size": 1,
+    "uses": 8,
+    "uses-display": "relation"
+}

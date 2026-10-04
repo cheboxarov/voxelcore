@@ -1,0 +1,13 @@
+{
+    "caption": "Антибиотики",
+    "description": "Лечат воспаление и отравление",
+    "icon-type": "sprite",
+    "icon": "items:antibiotics",
+    "stack-size": 1,
+    "script-name": "medical",
+    "tags": [
+        "zomboid:medical"
+    ],
+    "uses": 4,
+    "uses-display": "relation"
+}

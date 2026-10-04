@@ -1,0 +1,17 @@
+{
+    "caption": "Сковорода",
+    "description": "Звонко отбрасывает зомби",
+    "icon-type": "sprite",
+    "icon": "items:frying_pan",
+    "stack-size": 1,
+    "uses": 55,
+    "uses-display": "vbar",
+    "zomboid:damage": 25,
+    "zomboid:knockback": 5.5,
+    "zomboid:cooldown": 0.95,
+    "zomboid:range": 2.2,
+    "zomboid:stamina": 8,
+    "tags": [
+        "zomboid:weapon"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "sounds": [
+        "zombie/groan",
+        "player/hit",
+        "player/hurt",
+        "player/swing",
+        "player/eat",
+        "world/glass_break",
+        "world/hammer",
+        "world/bash"
+    ]
+}

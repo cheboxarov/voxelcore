@@ -1,0 +1,13 @@
+{
+    "caption": "Антисептик",
+    "description": "Обрабатывает раны, лечит воспаление",
+    "icon-type": "sprite",
+    "icon": "items:disinfectant",
+    "stack-size": 1,
+    "script-name": "medical",
+    "tags": [
+        "zomboid:medical"
+    ],
+    "uses": 5,
+    "uses-display": "relation"
+}

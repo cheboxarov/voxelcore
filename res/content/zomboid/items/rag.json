@@ -1,0 +1,11 @@
+{
+    "caption": "Тряпка",
+    "description": "Останавливает кровотечение, но может занести инфекцию",
+    "icon-type": "sprite",
+    "icon": "items:rag",
+    "stack-size": 10,
+    "script-name": "medical",
+    "tags": [
+        "zomboid:medical"
+    ]
+}

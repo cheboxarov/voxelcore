@@ -1,0 +1,22 @@
+@bone name 'body' {
+    @box from (-0.22,0,-0.13) to (0.22,0.55,0.13) texture "$shirt"
+    @bone name 'head' move (0,0.55,0) {
+        @box from (-0.19,0,-0.19) to (0.19,0.36,0.19) texture "blocks:z_skin" {
+            @part tags (north) texture "blocks:z_face" region (0,0,1,1)
+        }
+    }
+    @bone name 'leg_left' move (-0.11,0,0) {
+        @box from (-0.1,-0.9,-0.11) to (0.1,0,0.11) texture "$pants"
+    }
+    @bone name 'leg_right' move (0.11,0,0) {
+        @box from (-0.1,-0.9,-0.11) to (0.1,0,0.11) texture "$pants"
+    }
+    @bone name 'arm_left' move (-0.31,0.52,0) {
+        @box from (-0.09,-0.6,-0.09) to (0.09,0,0.09) texture "$shirt"
+        @box from (-0.08,-0.75,-0.08) to (0.08,-0.6,0.08) texture "blocks:z_skin"
+    }
+    @bone name 'arm_right' move (0.31,0.52,0) {
+        @box from (-0.09,-0.6,-0.09) to (0.09,0,0.09) texture "$shirt"
+        @box from (-0.08,-0.75,-0.08) to (0.08,-0.6,0.08) texture "blocks:z_skin"
+    }
+}

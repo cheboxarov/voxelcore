@@ -1,0 +1,24 @@
+{
+    "caption": "Диван",
+    "texture": "couch",
+    "material": "base:carpet",
+    "rotation": "pane",
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.5,
+        1
+    ],
+    "light-passing": true,
+    "base:durability": 6.0,
+    "base:loot": [
+        {
+            "item": "zomboid:rag",
+            "min": 0,
+            "max": 2
+        }
+    ]
+}

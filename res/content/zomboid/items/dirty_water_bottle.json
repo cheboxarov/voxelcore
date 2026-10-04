@@ -1,0 +1,15 @@
+{
+    "caption": "Бутылка сырой воды",
+    "description": "Может вызвать болезнь. Прокипятите на костре или плите",
+    "icon-type": "sprite",
+    "icon": "items:dirty_water_bottle",
+    "stack-size": 1,
+    "uses": 4,
+    "uses-display": "relation",
+    "script-name": "drink",
+    "zomboid:thirst": 25,
+    "tags": [
+        "zomboid:drink"
+    ],
+    "zomboid:sickness": 30
+}

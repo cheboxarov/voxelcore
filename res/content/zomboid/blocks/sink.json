@@ -1,0 +1,20 @@
+{
+    "caption": "Раковина",
+    "texture-faces": [
+        "wood_side",
+        "wood_side",
+        "wood_side",
+        "sink_top",
+        "cabinet_front",
+        "cabinet_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "script-name": "sink",
+    "base:durability": 8.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:water_source"
+    ]
+}

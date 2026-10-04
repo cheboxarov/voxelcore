@@ -1,0 +1,24 @@
+{
+    "caption": "Плита",
+    "texture-faces": [
+        "fridge_side",
+        "fridge_side",
+        "fridge_side",
+        "stove_top",
+        "stove_front",
+        "stove_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "stove",
+    "base:durability": 8.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container",
+        "zomboid:heat"
+    ],
+    "zomboid:loot": "stove"
+}

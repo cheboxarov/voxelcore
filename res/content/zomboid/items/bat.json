@@ -1,0 +1,17 @@
+{
+    "caption": "Бейсбольная бита",
+    "description": "Надёжное оружие: хороший урон и отбрасывание",
+    "icon-type": "sprite",
+    "icon": "items:bat",
+    "stack-size": 1,
+    "uses": 70,
+    "uses-display": "vbar",
+    "zomboid:damage": 34,
+    "zomboid:knockback": 6.0,
+    "zomboid:cooldown": 0.9,
+    "zomboid:range": 2.7,
+    "zomboid:stamina": 9,
+    "tags": [
+        "zomboid:weapon"
+    ]
+}

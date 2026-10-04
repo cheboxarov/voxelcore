@@ -1,0 +1,2 @@
+generator = "zomboid:town"
+player-entity = "zomboid:player"
