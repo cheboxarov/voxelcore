@@ -1,0 +1,7 @@
+{
+    "caption": "Профнастил",
+    "texture": "bld_corrugated",
+    "material": "base:metal",
+    "base:durability": 14.0,
+    "base:loot": []
+}

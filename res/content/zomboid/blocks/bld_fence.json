@@ -1,0 +1,14 @@
+{
+    "caption": "Сетка-рабица",
+    "texture": "bld_fence",
+    "material": "base:metal",
+    "base:durability": 6.0,
+    "base:loot": [],
+    "draw-group": 1,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "tags": [
+        "zomboid:bashable"
+    ],
+    "zomboid:bash-hp": 60
+}

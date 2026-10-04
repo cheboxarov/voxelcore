@@ -1,0 +1,7 @@
+{
+    "caption": "Линолеум",
+    "texture": "bld_linoleum",
+    "material": "base:stone",
+    "base:durability": 10.0,
+    "base:loot": []
+}

@@ -1,0 +1,7 @@
+{
+    "caption": "Бетон",
+    "texture": "bld_concrete",
+    "material": "base:stone",
+    "base:durability": 16.0,
+    "base:loot": []
+}

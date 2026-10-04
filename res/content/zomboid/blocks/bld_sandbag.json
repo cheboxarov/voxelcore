@@ -1,0 +1,14 @@
+{
+    "caption": "Мешки с песком",
+    "texture-faces": [
+        "bld_sandbag",
+        "bld_sandbag",
+        "bld_sandbag_top",
+        "bld_sandbag_top",
+        "bld_sandbag",
+        "bld_sandbag"
+    ],
+    "material": "base:sand",
+    "base:durability": 10.0,
+    "base:loot": []
+}

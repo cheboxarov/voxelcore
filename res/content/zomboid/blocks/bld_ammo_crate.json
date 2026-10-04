@@ -1,0 +1,23 @@
+{
+    "caption": "Армейский ящик",
+    "texture-faces": [
+        "bld_ammo_side",
+        "bld_ammo_side",
+        "bld_ammo_side",
+        "bld_ammo_top",
+        "bld_ammo_front",
+        "bld_ammo_front"
+    ],
+    "material": "base:wood",
+    "rotation": "pane",
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "base:durability": 8.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container"
+    ],
+    "zomboid:loot": "ammo_crate"
+}

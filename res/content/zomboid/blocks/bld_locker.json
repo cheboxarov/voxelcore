@@ -1,0 +1,28 @@
+{
+    "caption": "Шкафчик",
+    "texture-faces": [
+        "bld_locker_side",
+        "bld_locker_side",
+        "bld_locker_side",
+        "bld_locker_side",
+        "bld_locker_front",
+        "bld_locker_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "base:durability": 8.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container"
+    ],
+    "zomboid:loot": "locker",
+    "size": [
+        1,
+        2,
+        1
+    ]
+}

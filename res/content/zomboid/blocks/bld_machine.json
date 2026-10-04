@@ -1,0 +1,20 @@
+{
+    "caption": "Станок",
+    "texture-faces": [
+        "bld_machine_side",
+        "bld_machine_side",
+        "bld_machine_side",
+        "bld_machine_top",
+        "bld_machine_front",
+        "bld_machine_front"
+    ],
+    "material": "base:metal",
+    "rotation": "pane",
+    "size": [
+        1,
+        2,
+        1
+    ],
+    "base:durability": 14.0,
+    "base:loot": []
+}

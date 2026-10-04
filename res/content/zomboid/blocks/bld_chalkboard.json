@@ -1,0 +1,19 @@
+{
+    "caption": "Школьная доска",
+    "texture": "bld_chalkboard",
+    "material": "base:wood",
+    "base:durability": 4.0,
+    "base:loot": [],
+    "rotation": "pane",
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0.12
+    ],
+    "light-passing": true,
+    "obstacle": false
+}

@@ -1,0 +1,33 @@
+{
+    "caption": "Стол",
+    "texture-faces": [
+        "bld_table_side",
+        "bld_table_side",
+        "bld_table_side",
+        "bld_table_top",
+        "bld_table_side",
+        "bld_table_side"
+    ],
+    "material": "base:wood",
+    "base:durability": 5.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 0,
+            "max": 2
+        }
+    ],
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.8,
+        1
+    ],
+    "light-passing": true,
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

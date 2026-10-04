@@ -1,0 +1,7 @@
+{
+    "caption": "Штукатурка",
+    "texture": "bld_plaster",
+    "material": "base:stone",
+    "base:durability": 12.0,
+    "base:loot": []
+}

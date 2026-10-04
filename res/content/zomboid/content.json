@@ -46,7 +46,22 @@
     "crop_potato",
     "wood_floor",
     "tv",
-    "wooden_gate"
+    "wooden_gate",
+    "bld_plaster",
+    "bld_concrete",
+    "bld_corrugated",
+    "bld_linoleum",
+    "bld_step",
+    "bld_sandbag",
+    "bld_fence",
+    "bld_gravestone",
+    "bld_pew",
+    "bld_table",
+    "bld_chalkboard",
+    "bld_locker",
+    "bld_ammo_crate",
+    "bld_stained_glass",
+    "bld_machine"
   ],
   "items": [
     "disinfectant",

@@ -1,0 +1,16 @@
+{
+    "caption": "Бетонная ступень",
+    "texture": "bld_concrete",
+    "material": "base:stone",
+    "base:durability": 10.0,
+    "base:loot": [],
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.5,
+        1
+    ]
+}
