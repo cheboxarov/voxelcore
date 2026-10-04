@@ -53,3 +53,5 @@ appimage-build/
 
 # vcstudio
 .vcstudio
+
+__pycache__/
