@@ -74,10 +74,6 @@ function is_dead()
     return dead
 end
 
-function debug_info()
-    return {stuck = stuck, bash = bash_target, dir = move_dir, path = use_path, goal = goal}
-end
-
 local function horizontal_distance(a, b)
     local dx, dz = a[1] - b[1], a[3] - b[3]
     return math.sqrt(dx * dx + dz * dz)

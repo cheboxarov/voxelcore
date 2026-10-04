@@ -39,10 +39,15 @@ function water.is_container(itemid)
     return name == "zomboid:empty_bottle" or name == "zomboid:water_bottle" or name == "zomboid:dirty_water_bottle"
 end
 
-function water.find_source(pid)
+function water.find_source(pid, bx, by, bz)
+    if bx and block.name(block.get(bx, by + 1, bz)) == "base:water" then
+        return true
+    end
     local x, y, z = player.get_pos(pid)
     local eye = {x, y + 0.7, z}
-    local hit = block.raycast(eye, player.get_dir(pid), 4.5, nil, nil, true)
+    local hit = world.raycast({
+        start = eye, dir = player.get_dir(pid), distance = 4.5, entities = false, nonselect_blocks = true,
+    })
     return hit and block.name(hit.block) == "base:water"
 end
 

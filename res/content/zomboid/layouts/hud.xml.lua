@@ -42,6 +42,7 @@ local function status_lines(state)
     if state.pain > 0 then
         table.insert(lines, "[#a0e0a0]Обезболивающее")
     end
+    table.insert(lines, "[#a0a0a0]Выжито: " .. clock.duration(clock.hours - state.born))
     table.insert(lines, "[#a0a0a0]Убито зомби: " .. (state.kills or 0))
     return table.concat(lines, "\n"), #lines
 end
@@ -60,7 +61,7 @@ local function update()
     local text, count = status_lines(state)
     if document.status.text ~= text then
         document.status.text = text
-        document.status.size = {BAR_WIDTH, count * 24}
+        document.status_box.size = {236, count * 24 + 6}
     end
 
     local now = time.uptime()
