@@ -41,7 +41,7 @@ local function refresh()
         end
         table.sort(effects)
         list:add(string.format(
-            "<label color='#909090' multiline='true' text-wrap='true' size='436,18' margin='0,0,0,6'>%s</label>",
+            "<label color='#909090' multiline='true' text-wrap='true' size='436,18' margin='0,0,0,2'>%s</label>",
             table.concat(effects, "; ")))
     end
 
@@ -54,8 +54,8 @@ local function refresh()
         end
     end
     list:add(string.format(
-        "<label color='#808080' multiline='true' text-wrap='true' size='436,72' margin='0,6,0,0'>Мир. %s</label>",
-        table.concat(world_lines, ", ")))
+        "<label color='#808080' multiline='true' size='436,150' margin='0,4,0,0'>%s</label>",
+        table.concat(world_lines, "\n")))
 end
 
 function on_open()
