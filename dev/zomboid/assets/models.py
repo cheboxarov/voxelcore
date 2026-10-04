@@ -204,7 +204,8 @@ SHIRTS = {
     "red": ("tee", "a83a34"), "blue": ("hoodie", "3a5a8a"), "green": ("tee", "4a6a3a"),
     "gray": ("hoodie", "6e6e72"), "white": ("button", "d0ccc0"), "police": ("police", "26324e"),
     "plaid": ("plaid", "8a2a26"), "suit": ("suit", "34343c"), "tank": ("tank", "d8d2bc"),
-    "sport": ("sport", "d8a828"),
+    "sport": ("sport", "d8a828"), "doctor": ("doctor", "e4e4de"), "patient": ("patient", "a8c8d8"),
+    "military": ("military", "4e5a32"), "firefighter": ("firefighter", "6a5232"),
 }
 PANTS = {
     "jeans": ("pants", "3a5480"), "brown": ("pants", "5e4a34"), "black": ("pants", "2c2c32"),
@@ -219,8 +220,8 @@ def shirt_sheet(name, style, col):
     tones = ramp(col)
     torso = sh.net(*TORSO)
     arms = [(sh.net(*UPPER), sh.net(*LOWER)) for _ in range(2)]
-    sleeves = {"tee": 6, "sport": 4, "tank": 0, "button": 10, "police": 10, "hoodie": 10, "plaid": 10, "suit": 10}[style]
-    cuff = style in ("hoodie", "police", "plaid", "suit", "button")
+    sleeves = {"tee": 6, "sport": 4, "tank": 0, "patient": 5}.get(style, 10)
+    cuff = sleeves == 10
 
     for s, f in torso.items():
         bevel(f, tones)
@@ -309,6 +310,53 @@ def shirt_sheet(name, style, col):
             front.set(6, y, hexc("a8323a") if 2 < y < 8 else front.get(6, y))
         front.rect(6, 0, 7, 0, ZSKIN[2])
 
+    if style == "doctor":
+        scrubs = ramp("4a8ab0")
+        for y in range(0, 9):
+            for x in range(6 - y // 3, 8 + y // 3):
+                front.set(x, y, scrubs[2] if x not in (6 - y // 3, 7 + y // 3) else scrubs[1])
+        for y in range(9, 14):
+            front.set(6, y, tones[1])
+            front.set(7, y, tones[1])
+        front.rect(9, 4, 11, 6, tones[1])
+        front.set(10, 3, hexc("3a6aa0"))
+        for x, y in ((4, 2), (4, 3), (4, 4), (5, 5), (5, 6), (6, 7), (8, 7), (9, 6)):
+            front.set(x, y, hexc("2a2a30"))
+        front.set(7, 8, hexc("a8b0b8"))
+    if style == "patient":
+        for f in list(torso.values()) + [a[0][k] for a in arms for k in a[0]]:
+            for x, y in f.cells():
+                if (x * 2 + y) % 7 == 0 and f.get(x, y) == tones[2]:
+                    f.set(x, y, tones[3])
+        back.rect(6, 0, 7, 13, ZSKIN[2])
+        back.set(5, 3, tones[0])
+        back.set(8, 3, tones[0])
+        back.set(5, 9, tones[0])
+        back.set(8, 9, tones[0])
+        front.rect(5, 0, 8, 1, ZSKIN[2])
+    if style == "military":
+        camo = (ramp("2e3420")[2], ramp("6a6040")[2], ramp("3a4a28")[1])
+        for f in list(torso.values()) + [a[k][s_] for a in arms for k in (0, 1) for s_ in a[k]]:
+            for x, y in f.cells():
+                n = zlib.crc32(b"%d,%d,%d" % (f.x + x // 3, f.y + y // 2, x // 5)) % 9
+                if n < 3 and f.get(x, y) not in (tones[0],):
+                    f.set(x, y, camo[n])
+        front.rect(2, 3, 4, 5, tones[1])
+        front.rect(9, 3, 11, 5, tones[1])
+        front.rect(5, 0, 8, 0, ZSKIN[2])
+        front.rect(9, 6, 11, 6, hexc("1c1c1c"))
+    if style == "firefighter":
+        stripe, glow = hexc("c8c8c0"), hexc("e8d830")
+        for f in list(torso.values()) + [a[k][s_] for a in arms for k in (0, 1) for s_ in a[k] if s_ not in ("top", "bottom")]:
+            for x in range(f.w):
+                for y in (f.h - 4, f.h - 2):
+                    if 0 <= y < f.h:
+                        f.set(x, y, stripe)
+                if 0 <= f.h - 3 < f.h:
+                    f.set(x, f.h - 3, glow)
+        for y in range(1, 10):
+            front.set(7, y, hexc("1c1c1c") if y % 2 else hexc("8a8a86"))
+        back.rect(3, 3, 10, 5, glow)
     holes = {"tank": 1, "sport": 2}.get(style, 3)
     for f in (front, back):
         for _ in range(r.randint(1, holes)):
