@@ -1,6 +1,7 @@
 local survival = require "zomboid:survival"
 local clock = require "zomboid:clock"
 local zombies = require "zomboid:zombies"
+local sandbox = require "zomboid:sandbox"
 
 local BAR_WIDTH = 220
 
@@ -42,6 +43,9 @@ local function status_lines(state)
     if state.pain > 0 then
         table.insert(lines, "[#a0e0a0]Обезболивающее")
     end
+    if state.reading then
+        table.insert(lines, string.format("[#ffd070]Чтение: %d%%", math.floor((state.reading.progress or 0) * 100)))
+    end
     table.insert(lines, "[#a0a0a0]Выжито: " .. clock.duration(clock.hours - state.born))
     table.insert(lines, "[#a0a0a0]Убито зомби: " .. (state.kills or 0))
     return table.concat(lines, "\n"), #lines
@@ -50,6 +54,10 @@ end
 local function update()
     local pid = hud.get_player()
     local state = survival.get(pid)
+    if (state.setup or not sandbox.configured) and not state.dead and not hud.is_inventory_open()
+            and not hud.is_paused() then
+        hud.show_overlay(sandbox.configured and "zomboid:character" or "zomboid:sandbox", false)
+    end
     local h = clock.hour()
     local part = (h >= 21 or h < 6) and "[ночь]" or ""
     document.clock.text = string.format("День %d, %s %s", clock.day(), clock.format(), part)

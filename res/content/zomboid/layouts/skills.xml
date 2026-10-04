@@ -1,0 +1,7 @@
+<container id="root" size-func="unpack(gui.get_viewport())">
+    <panel gravity="center-center" size="460,640" color="#000000c0" padding="12" interval="6">
+        <label color="#ffe0a0">Персонаж (K - закрыть)</label>
+        <label id="who" markup="md" multiline="true" text-wrap="true" size="436,40" valign="top"></label>
+        <panel id="skills" size="436,550" max-length="550" scrollable="true" color="#00000000" interval="4"></panel>
+    </panel>
+</container>

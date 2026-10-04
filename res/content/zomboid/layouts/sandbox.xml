@@ -1,0 +1,8 @@
+<container id="root" size-func="unpack(gui.get_viewport())" color="#000000b0">
+    <panel gravity="center-center" size="460,0" color="#000000d0" padding="16" interval="8">
+        <label color="#ffe0a0" text-align="center">Новый мир: настройки песочницы</label>
+        <label color="#a0a0a0">Нажмите на строку, чтобы сменить значение</label>
+        <panel id="options" size="428,0" color="#00000000" interval="4"></panel>
+        <button onclick="confirm()" padding="8">Создать мир</button>
+    </panel>
+</container>

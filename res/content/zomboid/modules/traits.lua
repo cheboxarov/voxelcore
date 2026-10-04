@@ -24,7 +24,7 @@ traits.LIST = {
     {id = "hearty_appetite", title = "Обжора", cost = -3, text = "Голод растёт на 30% быстрее",
         mods = {hunger = 1.3}},
     {id = "cowardly", title = "Трусливый", cost = -3,
-        text = "Паника, когда рядом 3+ зомби: урон -30%, удары тратят на 50% больше выносливости",
+        text = "Рядом 3+ зомби - паника: урон -30%, удары тяжелее на 50%",
         mods = {panic_damage = 0.7, panic_stamina = 1.5}},
     {id = "short_sighted", title = "Близорукий", cost = -2, text = "Всё вдали размыто",
         mods = {}},

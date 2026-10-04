@@ -1,0 +1,18 @@
+<container id="root" size-func="unpack(gui.get_viewport())" color="#000000b0">
+    <panel gravity="center-center" size="780,0" color="#000000d0" padding="14" interval="8">
+        <label color="#ffe0a0" text-align="center">Создание персонажа</label>
+        <panel orientation="horizontal" size="752,380" color="#00000000" interval="12">
+            <panel size="250,380" color="#00000000" interval="4">
+                <label color="#c0c0c0">Профессия</label>
+                <panel id="professions" size="250,0" color="#00000000" interval="3"></panel>
+                <label id="prof_info" markup="md" multiline="true" text-wrap="true" size="250,170" valign="top"></label>
+            </panel>
+            <panel size="490,380" color="#00000000" interval="4">
+                <label color="#c0c0c0">Черты: хорошие стоят очков, плохие их дают</label>
+                <panel id="traits" size="490,350" max-length="350" scrollable="true" color="#00000000" interval="3"></panel>
+            </panel>
+        </panel>
+        <label id="points" markup="md" text-align="center">...</label>
+        <button id="start" onclick="start()" padding="8">Начать игру</button>
+    </panel>
+</container>

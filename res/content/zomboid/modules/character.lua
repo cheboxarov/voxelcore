@@ -2,6 +2,7 @@ local survival = require "zomboid:survival"
 local skills = require "zomboid:skills"
 local traits = require "zomboid:traits"
 local inv = require "zomboid:inv"
+local sandbox = require "zomboid:sandbox"
 
 local character = {}
 
@@ -82,6 +83,7 @@ function character.apply(pid, prof_id, trait_ids)
         inv.give(pid, entry[1], entry[2])
     end
     state.setup = nil
+    sandbox.apply()
     survival.notify(pid, "Профессия: " .. prof.title .. ". K - навыки персонажа", "#ffe0a0")
     events.emit("zomboid:character_ready", pid)
     return true

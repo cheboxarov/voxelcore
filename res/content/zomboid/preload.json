@@ -8,5 +8,8 @@
         "world/glass_break",
         "world/hammer",
         "world/bash"
+    ],
+    "post-effects": [
+        "zomboid_myopia"
     ]
 }

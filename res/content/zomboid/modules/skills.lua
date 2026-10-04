@@ -22,7 +22,7 @@ local skills = {
         food_poison = {skill = "cooking", per_level = -0.08, title = "Отравление несвежим"},
         treat_heal = {skill = "first_aid", per_level = 0.01, title = "Лечение при перевязке"},
         noise = {skill = "sneaking", per_level = -0.06, title = "Шум шагов"},
-        sight = {skill = "sneaking", per_level = -0.05, title = "Дальность, с которой зомби видят вас вприсядку"},
+        sight = {skill = "sneaking", per_level = -0.05, title = "Заметность вприсядку"},
     },
     BOOKS = {
         {min = 0, max = 4, mult = 3.0},
