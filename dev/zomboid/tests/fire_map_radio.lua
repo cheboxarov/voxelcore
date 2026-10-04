@@ -116,6 +116,42 @@ check(block.name(block.get(fx + 4, fy, fz)) == "zomboid:fire", "set on fire with
 check(inventory.get_uses(invid, slot) == 7, "a match used")
 fire.extinguish(fx + 4, fy, fz)
 
+-- a fire replaced before its present event leaves no ghost: the counter stays exact and the new block survives
+local burn_seconds = fire.BURN_SECONDS
+fire.BURN_SECONDS = {2, 3}
+app.tick()
+local count0 = fire.count
+block.set(fx + 6, fy, fz, block.index("zomboid:fire"), 0)
+block.set(fx + 6, fy, fz, block.index("base:stone"), 0)
+app.sleep(6)
+check(block.name(block.get(fx + 6, fy, fz)) == "base:stone", "ghost fire erased the block")
+check(fire.count == count0, "fire counter leaked: " .. fire.count .. " vs " .. count0)
+block.set(fx + 6, fy, fz, 0, 0)
+
+-- fire burns out within SPREAD_RADIUS of where it started instead of eating a whole forest
+fire.SPREAD_CHANCE = 1
+local ry = G + 12
+for dx = 0, 30 do
+    block.set(fx + dx, ry, fz + 3, block.index("base:planks"), 0)
+end
+player.set_pos(pid, fx + 15.5, G + 2, fz + 0.5)
+app.tick()
+check(fire.burn(fx, ry, fz + 3), "line ignited")
+app.sleep_until(function()
+    return block.name(block.get(fx + fire.SPREAD_RADIUS, ry, fz + 3)) ~= "base:planks"
+end, 1200)
+app.sleep(8)
+local survived = 0
+for dx = 0, 30 do
+    if block.name(block.get(fx + dx, ry, fz + 3)) == "base:planks" then
+        check(dx > fire.SPREAD_RADIUS, "plank inside the radius survived at " .. dx)
+        survived = survived + 1
+    end
+end
+log("planks beyond the fire radius: " .. survived .. ", fires " .. fire.count)
+check(survived == 30 - fire.SPREAD_RADIUS, "fire spread past its radius")
+fire.SPREAD_CHANCE, fire.BURN_SECONDS = 0.07, burn_seconds
+
 -- city map: explored area is remembered, the map needs the item
 player.set_pos(pid, spawn[1], spawn[2], spawn[3])
 app.sleep(2)

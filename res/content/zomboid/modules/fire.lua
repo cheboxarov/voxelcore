@@ -7,6 +7,7 @@ local inv = require "zomboid:inv"
 local fire = {
     MAX = 160,
     SPREAD_CHANCE = 0.07,
+    SPREAD_RADIUS = 16,
     BURN_SECONDS = {20, 40},
     UNATTENDED_RADIUS = 10,
     UNATTENDED_CHANCE = 0.05,
@@ -31,7 +32,7 @@ function fire.is_flammable(id)
     return FLAMMABLE_MATERIALS[block.material(id)] or block.has_tag(id, "zomboid:flammable")
 end
 
-function fire.burn(x, y, z)
+function fire.burn(x, y, z, origin)
     if fire.count >= fire.MAX then
         return false
     end
@@ -42,15 +43,17 @@ function fire.burn(x, y, z)
         x, y, z = block.seek_origin(x, y, z)
     end
     block.set(x, y, z, block.index("zomboid:fire"), 0)
+    fire.track(x, y, z, origin)
     return true
 end
 
-function fire.track(x, y, z)
+function fire.track(x, y, z, origin)
     local k = key(x, y, z)
-    if fire.fires[k] == nil then
-        fire.count = fire.count + 1
+    if fire.fires[k] or block.name(block.get(x, y, z)) ~= "zomboid:fire" then
+        return
     end
-    fire.fires[k] = {age = 0, life = math.random(fire.BURN_SECONDS[1], fire.BURN_SECONDS[2])}
+    fire.count = fire.count + 1
+    fire.fires[k] = {age = 0, life = math.random(fire.BURN_SECONDS[1], fire.BURN_SECONDS[2]), origin = origin or {x, y, z}}
 end
 
 function fire.untrack(x, y, z)
@@ -89,11 +92,12 @@ local function hurt_nearby(x, y, z)
 end
 
 function fire.update(x, y, z, tps)
-    local entry = fire.fires[key(x, y, z)]
-    if entry == nil then
-        fire.track(x, y, z)
-        entry = fire.fires[key(x, y, z)]
+    if block.name(block.get(x, y, z)) ~= "zomboid:fire" then
+        fire.untrack(x, y, z)
+        return
     end
+    fire.track(x, y, z)
+    local entry = fire.fires[key(x, y, z)]
     entry.age = entry.age + 1 / tps
     if weather.raining and weather.sky_open(x, y, z) and math.random() < 0.3 then
         block.set(x, y, z, 0, 0)
@@ -104,12 +108,14 @@ function fire.update(x, y, z, tps)
         audio.play_sound("world/fire", x + 0.5, y + 0.5, z + 0.5, 0.7, 0.8 + math.random() * 0.4)
     end
     local fuel = false
+    local o = entry.origin
     for _, d in ipairs(NEIGHBORS) do
         local nx, ny, nz = x + d[1], y + d[2], z + d[3]
         if fire.is_flammable(block.get(nx, ny, nz)) then
             fuel = true
-            if math.random() < fire.SPREAD_CHANCE then
-                fire.burn(nx, ny, nz)
+            if math.random() < fire.SPREAD_CHANCE
+                and (nx - o[1]) ^ 2 + (ny - o[2]) ^ 2 + (nz - o[3]) ^ 2 <= fire.SPREAD_RADIUS ^ 2 then
+                fire.burn(nx, ny, nz, o)
             end
         end
     end
@@ -123,8 +129,12 @@ function fire.heat(x, y, z, hours)
 end
 
 function fire.unattended(x, y, z)
-    local until_hours = fire.hot[key(x, y, z)]
-    if block.name(block.get(x, y, z)) ~= "zomboid:campfire" and (until_hours == nil or until_hours < clock.hours) then
+    local k = key(x, y, z)
+    local until_hours = fire.hot[k]
+    if until_hours and until_hours < clock.hours then
+        fire.hot[k], until_hours = nil, nil
+    end
+    if until_hours == nil and block.name(block.get(x, y, z)) ~= "zomboid:campfire" then
         return false
     end
     local center = {x + 0.5, y + 0.5, z + 0.5}
