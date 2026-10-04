@@ -109,7 +109,7 @@ function firearms.fire(pid)
     if vc.is_client() then
         gfx.particles.emit(vec3.add(eye, vec3.mul(dir, 0.8)), 6, {
             lifetime = 0.08, spawn_interval = 0.0001, explosion = {0.5, 0.5, 0.5},
-            texture = "blocks:z_shirt_police", size = {0.06, 0.06, 0.06}, lighting = false,
+            texture = "particles:fire_0", size = {0.08, 0.08, 0.08}, lighting = false,
         })
     end
     return true, hits

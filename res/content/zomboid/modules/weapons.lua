@@ -35,7 +35,8 @@ function weapons.attack(pid, target_pos)
         return nil
     end
     local itemid, _, invid, slot = inv.held(pid)
-    if itemid ~= 0 and item.properties[itemid]["zomboid:gun"] then
+    local props = itemid ~= 0 and item.properties[itemid]
+    if props and props["zomboid:gun"] then
         return nil
     end
     local stats, is_weapon = weapons.stats(itemid)
