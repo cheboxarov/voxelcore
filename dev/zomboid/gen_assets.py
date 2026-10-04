@@ -959,6 +959,250 @@ def combat_assets():
           * (1 if (t * 16) % 2 < 1 else 0) * (1 if t < 0.8 else 0))
     write("world/siren", 1.0, lambda t, r: math.sin(2 * math.pi * (600 * t + 250 / math.pi * math.sin(math.pi * t)))
           * 0.8 * min(1, t * 20, (1 - t) * 20))
+def world_textures():
+    def block(name, seed, fn):
+        img = Img(seed=seed)
+        fn(img)
+        img.save(BLOCKS, name)
+
+    def lamp(on):
+        def draw(img):
+            img.p = [(0, 0, 0, 0)] * 256
+            img.rect(6, 0, 9, 3, hexc("505050"))
+            img.rect(3, 4, 12, 9, hexc("f8f0c0") if on else hexc("8a8678"))
+            img.rect(5, 5, 10, 8, hexc("fffbe0") if on else hexc("a09c8c"))
+        return draw
+    block("lamp_on", 300, lamp(True))
+    block("lamp_off", 301, lamp(False))
+
+    def metal(img, base="5a6a4a"):
+        img.noise(hexc(base), 0.06)
+        img.frame(0, 0, 15, 15, shade(hexc(base), 0.6))
+
+    block("generator_side", 302, lambda img: (metal(img), img.rect(3, 4, 12, 11, hexc("303030")),
+                                              [img.line(4, y, 11, y, hexc("505050")) for y in (5, 7, 9)]))
+    block("generator_top", 303, lambda img: (metal(img), img.rect(5, 5, 10, 10, hexc("c0a030")),
+                                             img.rect(7, 7, 8, 8, hexc("202020"))))
+
+    def gen_front(on):
+        def draw(img):
+            metal(img)
+            img.rect(3, 3, 8, 8, hexc("202020"))
+            img.rect(10, 3, 12, 5, hexc("40e040") if on else hexc("304030"))
+            img.rect(3, 11, 12, 12, hexc("303030"))
+        return draw
+    block("generator_front", 304, gen_front(False))
+    block("generator_front_on", 305, gen_front(True))
+
+    def pump_front(img):
+        metal(img, "c03a30")
+        img.rect(3, 2, 12, 6, hexc("e8e8d8"))
+        img.rect(4, 3, 11, 5, hexc("203020"))
+        img.rect(10, 8, 12, 13, hexc("202020"))
+        img.line(11, 13, 11, 15, hexc("202020"))
+    block("fuel_pump_front", 306, pump_front)
+    block("fuel_pump_side", 307, lambda img: (metal(img, "c03a30"), img.rect(2, 2, 13, 4, hexc("e8e8d8"))))
+
+    def tv_front(img):
+        img.noise(hexc("2a2a2a"), 0.05)
+        img.rect(1, 2, 12, 12, hexc("101418"))
+        img.line(3, 4, 6, 4, hexc("303a44"))
+        img.rect(13, 4, 14, 5, hexc("707070"))
+        img.rect(13, 8, 14, 9, hexc("707070"))
+    block("tv_front", 308, tv_front)
+    block("tv_side", 309, lambda img: img.noise(hexc("2a2a2a"), 0.05))
+
+    def barrel_side(img):
+        img.noise(hexc("3a6a9a"), 0.06)
+        for y in (2, 13):
+            img.line(0, y, 15, y, hexc("23445f"))
+    block("rain_barrel_side", 310, barrel_side)
+    block("rain_barrel_top", 311, lambda img: (img.noise(hexc("3a6a9a"), 0.06),
+                                               img.rect(2, 2, 13, 13, hexc("2a5aa0")),
+                                               img.line(4, 5, 8, 5, hexc("6aa0e0"))))
+
+    def soil(img):
+        img.noise(hexc("5a3e26"), 0.12)
+        for y in (3, 7, 11, 15):
+            img.line(0, y, 15, y, hexc("3e2a18"))
+    block("garden_bed", 312, soil)
+
+    def crop(stage, leaf, fruit):
+        def draw(img):
+            img.p = [(0, 0, 0, 0)] * 256
+            h = (4, 8, 12, 13)[stage]
+            for x in (3, 7, 11):
+                img.line(x, 15, x - 1, 15 - h, hexc(leaf))
+                img.line(x + 1, 15, x + 2, 16 - h, shade(hexc(leaf), 0.8))
+            if stage == 3:
+                for x in (3, 7, 11):
+                    img.rect(x - 1, 13, x + 1, 15, hexc(fruit))
+        return draw
+    for kind, leaf, fruit in (("carrot", "4aa040", "e07a20"), ("potato", "3a8a3a", "b89a60")):
+        for stage in range(4):
+            block("crop_%s_%d" % (kind, stage), 320 + stage, crop(stage, leaf, fruit))
+
+    def dead(img):
+        img.p = [(0, 0, 0, 0)] * 256
+        for x in (3, 7, 11):
+            img.line(x, 15, x + 2, 9, hexc("7a6a3a"))
+    block("crop_dead", 330, dead)
+
+    def fire(seed):
+        def draw(img):
+            img.p = [(0, 0, 0, 0)] * 256
+            for x in range(16):
+                h = 6 + img.r.randrange(9)
+                for y in range(16 - h, 16):
+                    k = (y - (16 - h)) / h
+                    img.set(x, y, hexc("f8e060") if k > 0.6 else hexc("f08020") if k > 0.25 else hexc("c03010", 220))
+        return draw
+    block("fire", 331, fire(331))
+
+    def planks_wall(img):
+        img.noise(hexc("9a7444"), 0.08)
+        for y in (0, 5, 10, 15):
+            img.line(0, y, 15, y, hexc("5e4628"))
+        for x, y in ((2, 2), (13, 2), (2, 7), (13, 7), (2, 12), (13, 12)):
+            img.set(x, y, hexc("c0c4c8"))
+    block("plank_wall", 332, planks_wall)
+
+    def gate(img):
+        planks_wall(img)
+        img.line(1, 1, 14, 14, hexc("5e4628"))
+        img.line(1, 2, 13, 14, hexc("6e5232"))
+    block("wooden_gate", 333, gate)
+
+    def palisade(img):
+        img.p = [(0, 0, 0, 0)] * 256
+        for x0 in (0, 4, 8, 12):
+            img.rect(x0, 1, x0 + 3, 15, shade(hexc("6a4c2c"), 0.9 + 0.05 * x0 / 4))
+            img.line(x0, 1, x0, 15, hexc("4a3420"))
+            img.rect(x0 + 1, 0, x0 + 2, 0, hexc("8a6a44"))
+    block("palisade", 334, palisade)
+    block("palisade_top", 335, lambda img: (img.noise(hexc("8a6a44"), 0.1), img.frame(0, 0, 15, 15, hexc("5a4028"))))
+
+    def ladder(img):
+        img.p = [(0, 0, 0, 0)] * 256
+        img.rect(2, 0, 3, 15, hexc("8a6a3a"))
+        img.rect(12, 0, 13, 15, hexc("8a6a3a"))
+        for y in (2, 6, 10, 14):
+            img.rect(4, y, 11, y, hexc("a07c48"))
+    block("ladder", 336, ladder)
+
+    def floor(img):
+        img.noise(hexc("a88050"), 0.07)
+        for x in (0, 4, 8, 12):
+            img.line(x, 0, x, 15, hexc("6e5232"))
+    block("wood_floor", 337, floor)
+
+    for name, col in (("red", "a83228"), ("blue", "30589a"), ("white", "d8d8d0"), ("green", "3a6a3a")):
+        block("car_" + name, 340 + len(name), lambda img, c=col: (img.noise(hexc(c), 0.04),
+                                                                   img.line(0, 15, 15, 15, shade(hexc(c), 0.7))))
+    block("car_glass", 350, lambda img: (img.noise(hexc("4a6a80"), 0.05), img.line(2, 3, 6, 7, hexc("9ac0d8"))))
+    block("car_wheel", 351, lambda img: (img.noise(hexc("1a1a1a"), 0.1), img.rect(5, 5, 10, 10, hexc("8a8a8a"))))
+    block("car_light", 352, lambda img: img.noise(hexc("f0f0c0"), 0.03))
+
+
+@item
+def gas_can(img):
+    img.rect(3, 5, 12, 14, hexc("c82820"))
+    img.rect(4, 2, 7, 4, hexc("303030"))
+    img.rect(9, 3, 11, 4, hexc("e0c030"))
+    img.line(4, 7, 11, 12, hexc("e04838"))
+
+
+@item
+def gas_can_empty(img):
+    img.rect(3, 5, 12, 14, hexc("8a3a34"))
+    img.rect(4, 2, 7, 4, hexc("303030"))
+    img.rect(9, 3, 11, 4, hexc("707070"))
+
+
+@item
+def car_key(img):
+    img.rect(3, 3, 7, 7, hexc("303030"))
+    img.rect(4, 4, 6, 6, hexc("101010"))
+    img.line(7, 7, 13, 13, hexc("c0c4c8"))
+    img.line(10, 12, 11, 11, hexc("c0c4c8"))
+    img.line(12, 14, 13, 13, hexc("c0c4c8"))
+
+
+def map_item(img):
+    img.rect(2, 3, 13, 12, hexc("e8dcb0"))
+    img.line(2, 7, 13, 7, hexc("707070"))
+    img.line(7, 3, 7, 12, hexc("707070"))
+    img.rect(9, 9, 11, 10, hexc("c04040"))
+    img.rect(3, 4, 5, 5, hexc("60a060"))
+
+
+ITEM_ART["map"] = map_item
+
+
+@item
+def radio(img):
+    img.rect(2, 5, 13, 13, hexc("4a4a44"))
+    img.rect(3, 7, 7, 11, hexc("202020"))
+    img.rect(9, 7, 12, 8, hexc("e0c060"))
+    img.rect(10, 10, 11, 11, hexc("a0a0a0"))
+    img.line(11, 4, 14, 1, hexc("a0a0a0"))
+
+
+@item
+def shovel(img):
+    img.line(3, 12, 10, 5, hexc("8a6a3a"))
+    img.line(4, 12, 11, 5, hexc("7a5a2a"))
+    img.rect(10, 1, 14, 5, hexc("9aa0a8"))
+    img.rect(2, 12, 4, 14, hexc("303030"))
+
+
+def _seeds(img, col):
+    img.rect(4, 3, 11, 13, hexc("e8e0c8"))
+    img.rect(5, 5, 10, 9, hexc(col))
+    img.line(5, 11, 10, 11, hexc("707070"))
+
+
+@item
+def seeds_carrot(img):
+    _seeds(img, "e07a20")
+
+
+@item
+def seeds_potato(img):
+    _seeds(img, "b89a60")
+
+
+def world_sounds():
+    rate = 22050
+
+    def engine(path, seed, freq, dur, rough):
+        r = random.Random(seed)
+        out = []
+        lp = 0.0
+        for i in range(int(rate * dur)):
+            t = i / rate
+            lp += (r.uniform(-1, 1) - lp) * 0.1
+            v = math.sin(2 * math.pi * freq * t) * 0.4 + math.sin(2 * math.pi * freq * 2 * t) * 0.2
+            v = (v + lp * rough) * (0.75 + 0.25 * math.sin(2 * math.pi * freq / 4 * t))
+            fade = min(1.0, t / 0.05, (dur - t) / 0.05)
+            out.append(v * 0.7 * fade)
+        save_wav(path, out, rate)
+
+    engine(os.path.join(SOUNDS, "world", "generator.wav"), 400, 55, 1.0, 1.2)
+    engine(os.path.join(SOUNDS, "world", "engine.wav"), 401, 38, 1.0, 0.8)
+
+    r = random.Random(402)
+    out = []
+    lp = 0.0
+    for i in range(int(rate * 1.2)):
+        lp += (r.uniform(-1, 1) - lp) * 0.3
+        crack = r.uniform(-1, 1) if r.random() < 0.004 else 0
+        out.append((lp * 0.5 + crack) * 0.6)
+    save_wav(os.path.join(SOUNDS, "world", "fire.wav"), out, rate)
+
+    r = random.Random(403)
+    out = [r.uniform(-1, 1) * 0.35 * (0.7 + 0.3 * math.sin(i / rate * 9)) for i in range(int(rate * 1.0))]
+    save_wav(os.path.join(SOUNDS, "world", "static.wav"), out, rate)
 
 
 if __name__ == "__main__":
@@ -969,3 +1213,5 @@ if __name__ == "__main__":
     icon()
     sounds()
     combat_assets()
+    world_textures()
+    world_sounds()

@@ -13,7 +13,11 @@
         "player/reload",
         "player/dry_fire",
         "world/alarm",
-        "world/siren"
+        "world/siren",
+        "world/generator",
+        "world/engine",
+        "world/fire",
+        "world/static"
     ],
     "post-effects": [
         "zomboid_myopia"
