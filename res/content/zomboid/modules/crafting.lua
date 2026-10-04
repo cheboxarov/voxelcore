@@ -47,11 +47,19 @@ crafting.RECIPES = {
     },
 }
 
+local CAPTIONS = {
+    ["base:wood.item"] = "Бревно",
+    ["base:torch.item"] = "Факел",
+}
+
+local function caption(name)
+    return CAPTIONS[name] or item.caption(item.index(name))
+end
+
 local function names(list)
     local out = {}
     for _, entry in ipairs(list or {}) do
-        local id = item.index(type(entry) == "table" and entry[1] or entry)
-        local text = item.caption(id)
+        local text = caption(type(entry) == "table" and entry[1] or entry)
         if type(entry) == "table" then
             text = text .. " x" .. entry[2]
         end

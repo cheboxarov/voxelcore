@@ -22,7 +22,7 @@
         <container size="220,10" color="#2a2a2acc">
             <container id="bar_stamina" size="220,10" color="#d8d8a0"/>
         </container>
-        <label id="status" markup="md" multiline="true" size="220,0" autoresize="true"></label>
+        <label id="status" markup="md" multiline="true" size="220,20" valign="top"></label>
     </panel>
     <label id="messages" markup="md" multiline="true" size="600,140" valign="bottom" text-align="center"
            gravity="bottom-center" margin="0,0,0,90" interactive="false"></label>

@@ -1,8 +1,8 @@
 <container id="root" size-func="unpack(gui.get_viewport())" color="#200000c0">
-    <panel gravity="center-center" size="460,0" color="#000000b0" padding="18" interval="10">
+    <panel gravity="center-center" size="480,330" color="#000000c0" padding="18" interval="10">
         <label id="title" color="#e04030" text-align="center">Так вы и погибли</label>
         <label id="cause" text-align="center" color="#e0c0a0">...</label>
-        <label id="stats" markup="md" multiline="true" text-align="center" size="420,0" autoresize="true">...</label>
+        <label id="stats" markup="md" multiline="true" text-align="center" size="444,130">...</label>
         <button id="respawn" onclick="new_character()">Новый персонаж</button>
         <button onclick="app_quit()">Сохранить и выйти в меню</button>
     </panel>

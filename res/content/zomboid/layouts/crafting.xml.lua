@@ -8,10 +8,10 @@ local function refresh()
     for i, recipe in ipairs(crafting.RECIPES) do
         local ok = crafting.can_craft(invid, recipe)
         list:add(string.format(
-            "<button onclick='craft(%d)' enabled='%s' padding='6' text-align='left' size='396,44'>%s</button>",
+            "<button onclick='craft(%d)' enabled='%s' padding='4' text-align='left' size='404,26'>%s</button>",
             i, tostring(ok), recipe.title))
         list:add(string.format(
-            "<label color='%s' multiline='true' text-wrap='true' size='396,0' autoresize='true'>%s</label>",
+            "<label color='%s' multiline='true' text-wrap='true' size='404,38' margin='4,0,0,6'>%s</label>",
             ok and "#c0e0c0" or "#909090", crafting.describe(recipe)))
     end
 end

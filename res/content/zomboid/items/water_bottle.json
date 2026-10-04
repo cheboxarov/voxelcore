@@ -1,6 +1,6 @@
 {
     "caption": "Бутылка воды",
-    "description": "ПКМ — выпить глоток",
+    "description": "ПКМ - выпить глоток",
     "icon-type": "sprite",
     "icon": "items:water_bottle",
     "stack-size": 1,

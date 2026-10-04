@@ -1,6 +1,6 @@
 {
     "caption": "Лом",
-    "description": "Прочный. ПКМ по баррикаде — снять доску",
+    "description": "Прочный. ПКМ по баррикаде - снять доску",
     "icon-type": "sprite",
     "icon": "items:crowbar",
     "stack-size": 1,

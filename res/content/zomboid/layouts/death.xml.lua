@@ -36,7 +36,7 @@ function app_quit()
 end
 
 function on_close()
-    if closing then
+    if closing or not hud then
         return
     end
     local pid = hud.get_player()

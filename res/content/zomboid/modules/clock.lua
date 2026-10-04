@@ -20,8 +20,8 @@ function clock.tick()
     end
     local delta = (daytime - prev_daytime) % 1.0
     prev_daytime = daytime
-    clock.delta = delta * 24.0
-    clock.hours = clock.hours + clock.delta
+    clock.hours = clock.hours + delta * 24.0
+    clock.delta = delta * 24.0 > 0.5 and 0.0 or delta * 24.0
     return clock.delta
 end
 

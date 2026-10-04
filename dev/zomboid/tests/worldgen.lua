@@ -7,6 +7,7 @@ app.set_setting("chunks.load-speed", 4)
 local town = require "zomboid:town"
 local G = town.GROUND
 local pid = player.create("tester")
+require("zomboid:survival").get(pid).fresh = nil
 player.set_pos(pid, 2, G + 3, 2)
 
 local function wait_area(x, z, r)

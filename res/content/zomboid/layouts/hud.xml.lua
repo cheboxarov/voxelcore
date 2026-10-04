@@ -43,7 +43,7 @@ local function status_lines(state)
         table.insert(lines, "[#a0e0a0]Обезболивающее")
     end
     table.insert(lines, "[#a0a0a0]Убито зомби: " .. (state.kills or 0))
-    return table.concat(lines, "\n")
+    return table.concat(lines, "\n"), #lines
 end
 
 local function update()
@@ -57,7 +57,11 @@ local function update()
     bar("bar_thirst", state.thirst)
     bar("bar_energy", state.energy)
     bar("bar_stamina", state.stamina)
-    document.status.text = status_lines(state)
+    local text, count = status_lines(state)
+    if document.status.text ~= text then
+        document.status.text = text
+        document.status.size = {BAR_WIDTH, count * 24}
+    end
 
     local now = time.uptime()
     local lines = {}

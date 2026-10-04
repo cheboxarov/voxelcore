@@ -1,6 +1,6 @@
 {
     "caption": "Молоток",
-    "description": "ПКМ по окну или двери — заколотить (доска + 2 гвоздя)",
+    "description": "ПКМ по окну или двери - заколотить (доска + 2 гвоздя)",
     "icon-type": "sprite",
     "icon": "items:hammer",
     "stack-size": 1,
