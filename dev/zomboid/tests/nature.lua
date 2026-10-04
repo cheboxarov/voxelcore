@@ -108,6 +108,16 @@ local c, b = check_mirror(rx, rz, 16)
 print("[zomboid-test] river mirror at " .. rx .. "," .. rz .. ": " .. c .. " columns, " .. b .. " biome tops")
 assert(b > 10)
 
+-- the highway, the village and the town stand on flat ground
+for _, x in ipairs({-600, -400, -300, 300, 450, 615, 800}) do
+    local z = math.floor(town.highway_z(x) + 0.5)
+    assert(town.column(x, z) == "road", "highway at " .. x)
+    for dz = -12, 12, 4 do
+        assert(nature.height(x, z + dz) == town.GROUND, string.format("ground by the highway at %d,%d: %d", x, z + dz,
+            nature.height(x, z + dz)))
+    end
+end
+
 local LOGS = {["zomboid:nature_spruce_log"] = true, ["zomboid:nature_birch_log"] = true, ["base:wood"] = true,
     ["base:stone"] = true, ["zomboid:nature_mossy_stone"] = true}
 local totals = {}

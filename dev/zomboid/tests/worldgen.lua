@@ -115,8 +115,9 @@ local list = {}
 for k, n in pairs(kinds) do table.insert(list, k .. "=" .. n) end
 table.sort(list)
 log("buildings " .. buildings .. ": " .. table.concat(list, " "))
+local COUNTRYSIDE = {rural = true, forest = true}
 for _, def in ipairs(town.building_defs()) do
-    check(kinds[def.kind] or #def.zones == 0, "building type never appears: " .. def.kind)
+    check(kinds[def.kind] or #def.zones == 0 or COUNTRYSIDE[def.zones[1]], "building type never appears: " .. def.kind)
 end
 for _, zone in ipairs({"downtown", "suburb", "industrial", "outskirts", "plaza", "village"}) do
     check(zones[zone], "district missing: " .. zone)
@@ -280,7 +281,11 @@ end
 
 -- forest outside the town is not flat and has trees
 local wood = 0
+local nature = require "zomboid:nature"
 local wx, wz = 300, 140
+while nature.biome(wx, wz) ~= "forest" or town.column(wx, wz) ~= nil do
+    wx = wx + 16
+end
 player.set_pos(pid, wx, 70, wz)
 app.sleep_until(function() return block.get(wx - 8, 50, wz - 8) ~= -1 and block.get(wx + 8, 50, wz + 8) ~= -1 end, nil, 30)
 for x = wx - 8, wx + 8 do

@@ -126,12 +126,8 @@ local function fields(x, y, w, h, bpd, seed)
     local river = copy(X)
     river:sub(s1)
     river:abs()
-    local cheb, az = copy(X), copy(Z)
-    cheb:abs()
-    az:abs()
-    cheb:max(az)
     return {
-        X = X, Z = Z, river = river, cheb = cheb,
+        X = X, Z = Z, river = river,
         open = noise(x, y, w, h, bpd, seed + 11, 1 / 170, 2),
         wet = noise(x, y, w, h, bpd, seed + 12, 1 / 210, 2),
         rock = noise(x, y, w, h, bpd, seed + 13, 1 / 190, 2),
@@ -161,12 +157,45 @@ local function pad_mask(f, x, y, w, h, bpd, lots_only)
     return mask
 end
 
+-- fn(town.flat_dist) at the corners of the grid, spread bilinearly over it
+local function town_field(f, x, y, w, h, bpd, fn)
+    local x0, z0, x1, z1 = x * bpd, y * bpd, (x + w - 1) * bpd, (y + h - 1) * bpd
+    local a, b = fn(town.flat_dist(x0, z0)), fn(town.flat_dist(x1, z0))
+    local c, d = fn(town.flat_dist(x0, z1)), fn(town.flat_dist(x1, z1))
+    local u, v = copy(f.X), copy(f.Z)
+    u:sub(x0)
+    u:mul(1 / (x1 - x0))
+    v:sub(z0)
+    v:mul(1 / (z1 - z0))
+    local m = Heightmap(w, h)
+    m:add(a)
+    local t = copy(u)
+    t:mul(b - a)
+    m:add(t)
+    t = copy(v)
+    t:mul(c - a)
+    m:add(t)
+    u:mul(v)
+    u:mul(d - c - b + a)
+    m:add(u)
+    return m
+end
+
+local function wildness(dist)
+    return math.min(1, math.max(0, (dist - 28) / nature.FLAT_RAMP))
+end
+
+local function townness(dist)
+    return math.min(1, math.max(0, 1 - dist / 8))
+end
+
+local function nearness(dist)
+    return 0.35 * math.min(1, math.max(0, 1 - dist / 300))
+end
+
 function nature.heightmap(x, y, w, h, bpd, seed)
     local f = fields(x, y, w, h, bpd, seed)
-    local amp = copy(f.cheb)
-    amp:sub(town.FLAT_EXTENT)
-    amp:mul(1 / nature.FLAT_RAMP)
-    clamp01(amp)
+    local amp = town_field(f, x, y, w, h, bpd, wildness)
     local pads = pad_mask(f, x, y, w, h, bpd)
     if pads then
         pads:mul(-1)
@@ -238,16 +267,8 @@ end
 
 function nature.biome_params(x, y, w, h, bpd, seed)
     local f = fields(x, y, w, h, bpd, seed)
-    local inside = copy(f.cheb)
-    inside:mul(-1 / 8)
-    inside:add((town.FLAT_EXTENT - 4) / 8)
-    local near = copy(f.cheb)
-    near:mul(-1 / 300)
-    near:add(1 + town.FLAT_EXTENT / 300)
-    clamp01(near)
-    near:mul(0.35)
-    f.open:add(near)
-    f.open:mixin(3, clamp01(inside))
+    f.open:add(town_field(f, x, y, w, h, bpd, nearness))
+    f.open:mixin(3, town_field(f, x, y, w, h, bpd, townness))
     local pads = pad_mask(f, x, y, w, h, bpd, true)
     if pads then
         f.open:mixin(0.7, pads)

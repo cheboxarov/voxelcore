@@ -130,8 +130,11 @@ function countryside.lane(i)
     local n, s = hz, hz
     local j0 = floor(hz / CELL)
     for j = j0 - countryside.REACH, j0 + countryside.REACH do
-        for _, p in ipairs({countryside.lot(i, j), countryside.lot(i - 1, j)}) do
-            n, s = math.min(n, p.spur_z), math.max(s, p.spur_z)
+        for di = -1, 0 do
+            local p = countryside.lot(i + di, j)
+            if p then
+                n, s = math.min(n, p.spur_z), math.max(s, p.spur_z)
+            end
         end
     end
     if n == s then
