@@ -1,5 +1,6 @@
 local inv = require "zomboid:inv"
 local zombies = require "zomboid:zombies"
+local skills = require "zomboid:skills"
 
 local barricade = {
     HP_PER_PLANK = 25,
@@ -41,28 +42,30 @@ function barricade.add(pid, x, y, z)
         return false, "Нужна доска и 2 гвоздя"
     end
     local name = block.name(id)
+    local plank_hp = math.floor(barricade.HP_PER_PLANK * skills.mul(pid, "barricade_hp"))
     x, y, z = origin(x, y, z)
     if name == "zomboid:window" or name == "zomboid:window_broken" then
         block.set(x, y, z, block.index("zomboid:barricade"), 0)
         block.set_field(x, y, z, "glass", name == "zomboid:window" and 1 or 0)
-        block.set_field(x, y, z, "hp", barricade.HP_PER_PLANK)
+        block.set_field(x, y, z, "hp", plank_hp)
     elseif name == "base:wooden_door" then
         local rot = block.get_rotation(x, y, z)
         block.set(x, y, z, block.index("zomboid:door_barricade"), block.compose_state({rot, 0, 0}))
-        block.set_field(x, y, z, "hp", barricade.HP_PER_PLANK)
+        block.set_field(x, y, z, "hp", plank_hp)
     else
         local planks = block.get_variant(x, y, z) + 1
         if planks >= barricade.MAX_PLANKS then
             return false, "Больше досок не поместится"
         end
         block.set_variant(x, y, z, planks)
-        block.set_field(x, y, z, "hp", math.min(barricade.HP_PER_PLANK * (planks + 1),
-            (block.get_field(x, y, z, "hp") or 0) + barricade.HP_PER_PLANK))
+        block.set_field(x, y, z, "hp", math.min(plank_hp * (planks + 1),
+            (block.get_field(x, y, z, "hp") or 0) + plank_hp))
     end
     inv.take(invid, "zomboid:plank", 1)
     inv.take(invid, "zomboid:nails", 2)
     sound("world/hammer", x, y, z)
-    zombies.noise({x, y, z}, 16, pid)
+    zombies.noise({x, y, z}, 16 * skills.mul(pid, "hammer_noise"), pid)
+    skills.add_xp(pid, "carpentry", 15)
     return true
 end
 

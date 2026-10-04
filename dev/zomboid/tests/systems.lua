@@ -84,7 +84,7 @@ local count = zombies.count()
 log("zombies after 25s on night 2: " .. count .. ", horde day " .. zombies.horde_day)
 check(zombies.horde_day == 2, "horde triggered")
 check(count >= 8, "population grows")
-check(count <= zombies.MAX + 12, "population capped")
+check(count <= zombies.limit() + 12, "population capped")
 local chasing = 0
 for _, z in pairs(zombies.registry) do
     if z.mode == "chase" or z.mode == "investigate" then chasing = chasing + 1 end

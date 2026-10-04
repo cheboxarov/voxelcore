@@ -582,6 +582,26 @@ def matches(img):
     img.rect(6, 2, 6, 2, hexc("c02020"))
 
 
+BOOK_COLORS = {"melee": "8a2a2a", "carpentry": "9a6a34", "cooking": "c89a28", "first_aid": "d8d8d0", "sneaking": "3e5a3a"}
+
+
+def book_art(cover, volume):
+    def draw(img):
+        img.rect(3, 2, 12, 13, cover)
+        img.frame(3, 2, 12, 13, shade(cover, 0.6))
+        img.rect(3, 2, 4, 13, shade(cover, 0.7))
+        img.rect(5, 13, 12, 14, hexc("f0ead8"))
+        img.rect(6, 4, 11, 6, hexc("f0ead8"))
+        for i in range(volume):
+            img.rect(7 + i * 3, 9, 8 + i * 3, 10, hexc("f0d040"))
+    return draw
+
+
+for _skill, _color in BOOK_COLORS.items():
+    for _volume in (1, 2):
+        ITEM_ART["book_%s_%d" % (_skill, _volume)] = book_art(hexc(_color), _volume)
+
+
 def item_textures():
     for name, fn in ITEM_ART.items():
         img = Img(seed=zlib.crc32(name.encode()) & 0xFFFF)

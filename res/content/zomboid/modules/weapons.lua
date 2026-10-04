@@ -1,6 +1,8 @@
 local inv = require "zomboid:inv"
 local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
+local skills = require "zomboid:skills"
+local traits = require "zomboid:traits"
 
 local weapons = {}
 
@@ -39,14 +41,20 @@ function weapons.attack(pid, target_pos)
         return nil
     end
     next_attack[pid] = now + stats.cooldown
-    local damage = stats.damage * (0.85 + math.random() * 0.3)
+    local damage = stats.damage * (0.85 + math.random() * 0.3) * skills.mul(pid, "melee_damage")
+    local stamina = stats.stamina * skills.mul(pid, "melee_stamina")
+    if zombies.count_near(ppos, 6) >= 3 then
+        damage = damage * traits.mul(state, "panic_damage")
+        stamina = stamina * traits.mul(state, "panic_stamina")
+    end
     if state.stamina < 10 then
         damage = damage * 0.5
     end
     if math.random() < stats.crit then
         damage = damage * 2
     end
-    state.stamina = math.max(0, state.stamina - stats.stamina)
+    state.stamina = math.max(0, state.stamina - stamina)
+    skills.add_xp(pid, "melee", is_weapon and 4 or 3)
     if is_weapon then
         inventory.use(invid, slot)
         if inventory.get(invid, slot) == 0 then
@@ -57,7 +65,7 @@ function weapons.attack(pid, target_pos)
     if vc.is_client() then
         audio.play_sound("player/hit", target_pos[1], target_pos[2], target_pos[3], 1.0, 0.85 + math.random() * 0.3)
     end
-    return damage, stats.knockback
+    return damage, stats.knockback * skills.mul(pid, "knockback")
 end
 
 return weapons

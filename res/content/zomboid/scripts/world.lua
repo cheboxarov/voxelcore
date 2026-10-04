@@ -3,6 +3,8 @@ local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
 local town = require "zomboid:town"
 local inv = require "zomboid:inv"
+local sandbox = require "zomboid:sandbox"
+local skills = require "zomboid:skills"
 
 local SAVE_FILE = "state.json"
 local STRICT_RULES = {
@@ -77,6 +79,7 @@ function on_world_open()
     for _, name in ipairs(STRICT_RULES) do
         rules.set(name, false)
     end
+    sandbox.load()
     if not load_state() then
         clock.reset(clock.START_HOUR)
     end
@@ -112,6 +115,7 @@ function on_world_tick()
             enforce_survival_mode(pid)
         end
         survival.update(pid, dh, 1 / 20)
+        skills.update(pid, dh, 1 / 20)
     end
     if clock.hours >= spoil_check_at then
         spoil_check_at = clock.hours + 0.25

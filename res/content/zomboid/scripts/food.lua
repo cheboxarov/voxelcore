@@ -1,12 +1,13 @@
 local survival = require "zomboid:survival"
 local inv = require "zomboid:inv"
 local clock = require "zomboid:clock"
+local skills = require "zomboid:skills"
 
 local function eat(pid)
     local itemid, _, invid, slot = inv.held(pid)
     local props = item.properties[itemid]
     local state = survival.get(pid)
-    local hunger = props["zomboid:hunger"] or 0
+    local hunger = (props["zomboid:hunger"] or 0) * skills.mul(pid, "food_value")
     local thirst = props["zomboid:thirst"] or 0
     local sickness = props["zomboid:sickness"] or 0
     if hunger > thirst and state.hunger >= 97 then
@@ -17,7 +18,7 @@ local function eat(pid)
     local born = inventory.get_data(invid, slot, "born")
     if days and born and (clock.hours - born) / 24 > days then
         hunger = hunger * 0.6
-        sickness = sickness + 25
+        sickness = sickness + 25 * skills.mul(pid, "food_poison")
         survival.notify(pid, "На вкус так себе...", "#c0d060")
     end
     survival.eat(pid, hunger, thirst, sickness)

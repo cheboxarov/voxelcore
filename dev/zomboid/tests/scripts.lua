@@ -9,6 +9,7 @@ local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
 local clock = require "zomboid:clock"
 local inv = require "zomboid:inv"
+local sandbox = require "zomboid:sandbox"
 local G = town.GROUND
 
 local function log(...)
@@ -156,7 +157,7 @@ events.emit("zomboid:bed.interact", bx, by, bz, pid)
 check(clock.hours - hours > 3, "slept")
 
 -- tap water stops after the shutoff day
-clock.reset(24 * (survival.WATER_SHUTOFF_DAY - 1) + 10)
+clock.reset(24 * (sandbox.get("water_shutoff_day") - 1) + 10)
 hold("zomboid:empty_bottle")
 events.emit("zomboid:sink.interact", sx, sy, sz, pid)
 check(held_name() == "zomboid:empty_bottle", "no tap water after shutoff")

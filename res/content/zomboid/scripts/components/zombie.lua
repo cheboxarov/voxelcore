@@ -10,6 +10,8 @@ local survival = require "zomboid:survival"
 local barricade = require "zomboid:barricade"
 local weapons = require "zomboid:weapons"
 local loot = require "zomboid:loot"
+local sandbox = require "zomboid:sandbox"
+local skills = require "zomboid:skills"
 
 local SHIRTS = {"red", "blue", "green", "gray", "white", "police"}
 local PANTS = {"jeans", "brown", "black"}
@@ -99,7 +101,7 @@ function hear(pos, pid, dist)
 end
 
 local function speed_multiplier()
-    local m = clock.is_night() and 1.3 or 1.0
+    local m = (clock.is_night() and 1.3 or 1.0) * sandbox.get("zombie_speed")
     if mode == "chase" then
         if data.sprinter then m = m * 2.0 end
     elseif mode == "investigate" then
@@ -118,7 +120,7 @@ local function can_see(pid, ppos, dist)
     local night = clock.is_night()
     local sight = night and 11 or 22
     if state.crouching then
-        sight = sight * 0.6
+        sight = sight * 0.6 * skills.mul(pid, "sight")
     end
     if night and state.light then
         sight = 24

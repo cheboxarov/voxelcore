@@ -1,0 +1,13 @@
+{
+    "caption": "Охота и маскировка. Том 1",
+    "description": "Учебник: опыт скрытности x3, пока качаете уровни 1-5. ПКМ - читать",
+    "icon-type": "sprite",
+    "icon": "items:book_sneaking_1",
+    "stack-size": 1,
+    "script-name": "book",
+    "zomboid:skill-book": "sneaking",
+    "zomboid:book-volume": 1,
+    "tags": [
+        "zomboid:book"
+    ]
+}

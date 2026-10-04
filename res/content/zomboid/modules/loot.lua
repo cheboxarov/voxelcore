@@ -10,23 +10,24 @@ local TABLES = {
     kitchen_cabinet = {
         {"zomboid:canned_beans", 5, 1, 2}, {"zomboid:chips", 3, 1, 2}, {"zomboid:empty_bottle", 3, 1, 2},
         {"zomboid:knife", 2, 1, 1}, {"zomboid:frying_pan", 2, 1, 1}, {"zomboid:matches", 2, 1, 1},
-        {"zomboid:rag", 2, 1, 2}, {"zomboid:chocolate", 1, 1, 1},
+        {"zomboid:rag", 2, 1, 2}, {"zomboid:chocolate", 1, 1, 1}, {"zomboid:book_cooking_1", 1, 1, 1},
     },
     stove = {
-        {"zomboid:frying_pan", 3, 1, 1}, {"zomboid:canned_beans", 1, 1, 1},
+        {"zomboid:frying_pan", 3, 1, 1}, {"zomboid:canned_beans", 1, 1, 1}, {"zomboid:book_cooking_2", 1, 1, 1},
     },
     wardrobe = {
         {"zomboid:rag", 6, 1, 3}, {"zomboid:bat", 1, 1, 1}, {"zomboid:flashlight", 2, 1, 1},
         {"zomboid:bandage", 1, 1, 1}, {"zomboid:painkillers", 1, 1, 1}, {"zomboid:matches", 1, 1, 1},
+        {"zomboid:book_melee_1", 1, 1, 1}, {"zomboid:book_sneaking_1", 1, 1, 1},
     },
     medicine_cabinet = {
         {"zomboid:bandage", 5, 1, 3}, {"zomboid:disinfectant", 3, 1, 1}, {"zomboid:painkillers", 3, 1, 1},
-        {"zomboid:antibiotics", 1, 1, 1}, {"zomboid:rag", 2, 1, 2},
+        {"zomboid:antibiotics", 1, 1, 1}, {"zomboid:rag", 2, 1, 2}, {"zomboid:book_first_aid_1", 1, 1, 1},
     },
     crate = {
         {"zomboid:plank", 4, 2, 6}, {"zomboid:nails", 4, 5, 20}, {"zomboid:hammer", 2, 1, 1},
         {"zomboid:empty_bottle", 2, 1, 2}, {"zomboid:flashlight", 1, 1, 1}, {"zomboid:bat", 1, 1, 1},
-        {"zomboid:crowbar", 1, 1, 1},
+        {"zomboid:crowbar", 1, 1, 1}, {"zomboid:book_carpentry_1", 1, 1, 1},
     },
     shelf = {
         {"zomboid:canned_beans", 5, 1, 3}, {"zomboid:chips", 4, 1, 3}, {"zomboid:chocolate", 3, 1, 2},
@@ -39,14 +40,14 @@ local BUILDING = {
         crate = {
             {"zomboid:plank", 5, 4, 12}, {"zomboid:nails", 5, 10, 40}, {"zomboid:hammer", 4, 1, 1},
             {"zomboid:axe", 2, 1, 1}, {"zomboid:crowbar", 2, 1, 1}, {"zomboid:flashlight", 2, 1, 1},
-            {"zomboid:matches", 2, 1, 1},
+            {"zomboid:matches", 2, 1, 1}, {"zomboid:book_carpentry_1", 2, 1, 1}, {"zomboid:book_carpentry_2", 1, 1, 1},
         },
     },
     police = {
         crate = {
             {"zomboid:bat", 3, 1, 1}, {"zomboid:crowbar", 3, 1, 1}, {"zomboid:axe", 1, 1, 1},
             {"zomboid:knife", 3, 1, 1}, {"zomboid:flashlight", 4, 1, 1}, {"zomboid:bandage", 3, 1, 2},
-            {"zomboid:spiked_bat", 1, 1, 1},
+            {"zomboid:spiked_bat", 1, 1, 1}, {"zomboid:book_melee_2", 1, 1, 1}, {"zomboid:book_sneaking_2", 1, 1, 1},
         },
         wardrobe = {
             {"zomboid:flashlight", 3, 1, 1}, {"zomboid:bandage", 3, 1, 2}, {"zomboid:bat", 2, 1, 1},
@@ -55,7 +56,7 @@ local BUILDING = {
     pharmacy = {
         medicine_cabinet = {
             {"zomboid:bandage", 5, 2, 5}, {"zomboid:disinfectant", 4, 1, 1}, {"zomboid:painkillers", 4, 1, 1},
-            {"zomboid:antibiotics", 3, 1, 1},
+            {"zomboid:antibiotics", 3, 1, 1}, {"zomboid:book_first_aid_1", 1, 1, 1}, {"zomboid:book_first_aid_2", 1, 1, 1},
         },
     },
 }

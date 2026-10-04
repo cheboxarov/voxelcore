@@ -30,7 +30,17 @@
     "apple",
     "spiked_bat",
     "plank",
-    "empty_bottle"
+    "empty_bottle",
+    "book_melee_1",
+    "book_melee_2",
+    "book_carpentry_1",
+    "book_carpentry_2",
+    "book_cooking_1",
+    "book_cooking_2",
+    "book_first_aid_1",
+    "book_first_aid_2",
+    "book_sneaking_1",
+    "book_sneaking_2"
   ],
   "blocks": [
     "bed",

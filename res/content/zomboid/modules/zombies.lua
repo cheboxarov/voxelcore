@@ -1,9 +1,9 @@
 local clock = require "zomboid:clock"
 local town = require "zomboid:town"
+local sandbox = require "zomboid:sandbox"
 
 local zombies = {
     registry = {},
-    MAX = 34,
     SPAWN_MIN = 26,
     SPAWN_MAX = 52,
     DESPAWN_DISTANCE = 110,
@@ -99,20 +99,24 @@ local function pick_spot(ppos, look, min_dist, max_dist, behind)
     return nil
 end
 
+function zombies.limit()
+    return math.floor(34 * sandbox.get("zombie_density") + 0.5)
+end
+
 function zombies.target_population()
     local base = clock.is_night() and 16 or 8
-    return math.min(zombies.MAX, base + (clock.day() - 1) * 2)
+    return math.min(zombies.limit(), math.floor((base + (clock.day() - 1) * 2) * sandbox.get("zombie_density") + 0.5))
 end
 
 function zombies.spawn_horde(pid)
     local ppos = {player.get_pos(pid)}
-    local size = math.min(22, 6 + clock.day() * 3)
+    local size = math.floor(math.min(22, 6 + clock.day() * 3) * sandbox.get("zombie_density") + 0.5)
     local angle = math.random() * math.pi * 2
     local cx = ppos[1] + math.cos(angle) * 48
     local cz = ppos[3] + math.sin(angle) * 48
     local spawned = 0
     for _ = 1, size * 3 do
-        if spawned >= size or zombies.count() >= zombies.MAX + 12 then
+        if spawned >= size or zombies.count() >= zombies.limit() + 12 then
             break
         end
         local x = math.floor(cx + (math.random() - 0.5) * 16)
@@ -152,7 +156,7 @@ function zombies.tick(survival)
                 end
             end
             local near = zombies.count_near(ppos, zombies.SPAWN_MAX + 20)
-            if near < zombies.target_population() and zombies.count() < zombies.MAX then
+            if near < zombies.target_population() and zombies.count() < zombies.limit() then
                 local look = player.get_dir(pid)
                 local x, y, z = pick_spot(ppos, look, zombies.SPAWN_MIN, zombies.SPAWN_MAX, true)
                 if x then

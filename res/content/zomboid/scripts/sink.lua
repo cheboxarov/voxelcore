@@ -1,10 +1,11 @@
 local survival = require "zomboid:survival"
 local clock = require "zomboid:clock"
+local sandbox = require "zomboid:sandbox"
 local water = require "zomboid:water"
 local inv = require "zomboid:inv"
 
 function on_interact(x, y, z, pid)
-    if clock.day() >= survival.WATER_SHUTOFF_DAY then
+    if clock.day() >= sandbox.get("water_shutoff_day") then
         survival.notify(pid, "Из крана не течёт ни капли. Водоснабжение отключено")
         return true
     end

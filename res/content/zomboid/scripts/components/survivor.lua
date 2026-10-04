@@ -5,6 +5,7 @@ local mob = entity:require_component("core:mob")
 local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
 local inv = require "zomboid:inv"
+local skills = require "zomboid:skills"
 
 local BASE_SPEED = 27.0
 local tick = 0
@@ -24,6 +25,7 @@ function on_update(tps)
     local speed = math.sqrt(vel[1] * vel[1] + vel[3] * vel[3])
     state.crouching = body:is_crouching()
     state.sprinting = speed > 3.4 and body:is_grounded()
+    state.moving = speed > 0.8
 
     local itemid = inv.held(pid)
     local emission = itemid ~= 0 and item.emission(itemid)
@@ -34,6 +36,6 @@ function on_update(tps)
 
     tick = tick + 1
     if tick % 10 == 0 and speed > 0.8 and not state.crouching then
-        zombies.noise(tsf:get_pos(), state.sprinting and 11 or 4.5, pid)
+        zombies.noise(tsf:get_pos(), (state.sprinting and 11 or 4.5) * skills.mul(pid, "noise"), pid)
     end
 end

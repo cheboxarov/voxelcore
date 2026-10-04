@@ -1,11 +1,11 @@
 local clock = require "zomboid:clock"
 local inv = require "zomboid:inv"
+local traits = require "zomboid:traits"
+local sandbox = require "zomboid:sandbox"
 
 local survival = {
     states = {},
     INFECTION_HOURS = 30.0,
-    WATER_SHUTOFF_DAY = 5,
-    POWER_SHUTOFF_DAY = 4,
 }
 
 local HUNGER_RATE = 4.0
@@ -139,17 +139,18 @@ function survival.update(pid, dh, dt)
         return
     end
     local mul = state.sprinting and 1.6 or 1.0
-    state.hunger = clamp(state.hunger - HUNGER_RATE * dh * mul)
-    state.thirst = clamp(state.thirst - THIRST_RATE * dh * mul)
+    local food = sandbox.get("hunger_rate")
+    state.hunger = clamp(state.hunger - HUNGER_RATE * dh * mul * food * traits.mul(state, "hunger"))
+    state.thirst = clamp(state.thirst - THIRST_RATE * dh * mul * food)
     if state.sleeping then
         state.energy = clamp(state.energy + 12.5 * dh)
     else
-        state.energy = clamp(state.energy - ENERGY_RATE * dh * mul)
+        state.energy = clamp(state.energy - ENERGY_RATE * dh * mul * traits.mul(state, "energy"))
     end
     state.pain = math.max(0, state.pain - dh)
 
     if state.sprinting then
-        state.stamina = clamp(state.stamina - SPRINT_STAMINA * dt)
+        state.stamina = clamp(state.stamina - SPRINT_STAMINA * dt * traits.mul(state, "sprint_stamina"))
     else
         local regen = STAMINA_REGEN * (state.energy < 20 and 0.4 or 1.0)
         state.stamina = clamp(state.stamina + regen * dt)
@@ -364,6 +365,7 @@ local STARTER_KIT = {
 
 function survival.new_character(pid, pos)
     local state = new_state()
+    state.setup = true
     survival.states[pid] = state
     local invid = player.get_inventory(pid)
     inv.clear(invid)

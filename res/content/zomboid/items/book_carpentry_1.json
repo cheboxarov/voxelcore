@@ -1,0 +1,13 @@
+{
+    "caption": "Плотницкое дело. Том 1",
+    "description": "Учебник: опыт плотницкого дела x3, пока качаете уровни 1-5. ПКМ - читать",
+    "icon-type": "sprite",
+    "icon": "items:book_carpentry_1",
+    "stack-size": 1,
+    "script-name": "book",
+    "zomboid:skill-book": "carpentry",
+    "zomboid:book-volume": 1,
+    "tags": [
+        "zomboid:book"
+    ]
+}

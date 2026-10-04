@@ -1,5 +1,6 @@
 local survival = require "zomboid:survival"
 local clock = require "zomboid:clock"
+local sandbox = require "zomboid:sandbox"
 local water = require "zomboid:water"
 local inv = require "zomboid:inv"
 local loot = require "zomboid:loot"
@@ -11,7 +12,7 @@ end
 function on_interact(x, y, z, pid)
     local itemid = inv.held(pid)
     if itemid == item.index("zomboid:dirty_water_bottle") then
-        if clock.day() >= survival.POWER_SHUTOFF_DAY then
+        if clock.day() >= sandbox.get("power_shutoff_day") then
             survival.notify(pid, "Плита не работает: электричества больше нет")
         else
             water.purify_held(pid)

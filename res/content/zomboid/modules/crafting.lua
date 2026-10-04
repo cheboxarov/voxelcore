@@ -1,5 +1,6 @@
 local inv = require "zomboid:inv"
 local survival = require "zomboid:survival"
+local skills = require "zomboid:skills"
 
 local crafting = {}
 
@@ -8,12 +9,14 @@ crafting.RECIPES = {
         title = "Бинт",
         result = {"zomboid:bandage", 1},
         need = {{"zomboid:rag", 2}},
+        xp = {"first_aid", 5},
     },
     {
         title = "Бита с гвоздями",
         result = {"zomboid:spiked_bat", 1},
         need = {{"zomboid:bat", 1}, {"zomboid:nails", 5}},
         tools = {"zomboid:hammer"},
+        xp = {"carpentry", 20},
     },
     {
         title = "Копьё",
@@ -26,6 +29,7 @@ crafting.RECIPES = {
         result = {"zomboid:plank", 3},
         need = {{"base:wood.item", 1}},
         tools = {"zomboid:axe"},
+        xp = {"carpentry", 10},
     },
     {
         title = "Костёр",
@@ -44,6 +48,7 @@ crafting.RECIPES = {
         result = {"zomboid:crate.item", 1},
         need = {{"zomboid:plank", 6}, {"zomboid:nails", 4}},
         tools = {"zomboid:hammer"},
+        xp = {"carpentry", 25},
     },
 }
 
@@ -115,6 +120,9 @@ function crafting.craft(pid, index)
         end
     end
     inv.give(pid, recipe.result[1], recipe.result[2])
+    if recipe.xp then
+        skills.add_xp(pid, recipe.xp[1], recipe.xp[2])
+    end
     survival.notify(pid, "Создано: " .. recipe.title, "#90e090")
     return true
 end

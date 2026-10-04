@@ -1,0 +1,13 @@
+{
+    "caption": "Домашняя кухня. Том 2",
+    "description": "Учебник: опыт кулинарии x5, пока качаете уровни 6-10. ПКМ - читать",
+    "icon-type": "sprite",
+    "icon": "items:book_cooking_2",
+    "stack-size": 1,
+    "script-name": "book",
+    "zomboid:skill-book": "cooking",
+    "zomboid:book-volume": 2,
+    "tags": [
+        "zomboid:book"
+    ]
+}

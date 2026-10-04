@@ -1,5 +1,6 @@
 local inv = require "zomboid:inv"
 local survival = require "zomboid:survival"
+local skills = require "zomboid:skills"
 
 local water = {}
 
@@ -12,6 +13,7 @@ function water.purify_held(pid)
     inventory.set(invid, slot, item.index("zomboid:water_bottle"), 1)
     inventory.set_data(invid, slot, "uses", uses)
     survival.notify(pid, "Вода прокипячена и теперь безопасна", "#90c0ff")
+    skills.add_xp(pid, "cooking", 10)
     return true
 end
 
