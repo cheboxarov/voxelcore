@@ -23,11 +23,19 @@ inv.clear(invid)
 local bread, stale = item.index("zomboid:bread"), item.index("zomboid:bread_stale")
 local days = item.properties[bread]["zomboid:spoil-days"]
 
+local own = {name = true, icon = true, description = true, ["model-name"] = true, ["zomboid:stale"] = true, ["zomboid:fresh"] = true}
 for _, name in ipairs({"apple", "bread", "carrot", "potato", "raw_meat", "cooked_meat", "soup", "stew"}) do
     local fresh, old = item.index("zomboid:" .. name), item.index("zomboid:" .. name .. "_stale")
     check(item.properties[fresh]["zomboid:stale"] == "zomboid:" .. name .. "_stale", name .. " links its stale item")
     check(item.icon(old) == "items:" .. name .. "_stale" and item.icon(old) ~= item.icon(fresh), name .. " stale icon differs")
-    check(item.properties[old]["zomboid:hunger"] == item.properties[fresh]["zomboid:hunger"], name .. " stale keeps food values")
+    for _, pair in ipairs({{fresh, old}, {old, fresh}}) do
+        for key, value in pairs(item.properties[pair[1]]) do
+            if type(value) ~= "table" and not own[key] then
+                check(item.properties[pair[2]][key] == value, name .. " stale keeps " .. key .. ", rerun dev/zomboid/assets/items.py")
+            end
+        end
+    end
+    check(item.stack_size(old) == item.stack_size(fresh) and item.has_tag(old, "zomboid:food"), name .. " stale stacks and is food")
 end
 
 inventory.set(invid, 0, bread, 3)
@@ -41,6 +49,7 @@ spoilage.check(invid, false)
 local id, count = inventory.get(invid, 0)
 check(id == stale and count == 3, "bread turned stale")
 check(math.abs(spoilage.age(invid, 0) - age) < 0.01, "stale bread keeps its age")
+check(spoilage.ratio(invid, 0) > 1, "eating stale bread still carries the stale penalty")
 log(string.format("stale bread: age %.1fh, ratio %.2f", spoilage.age(invid, 0), spoilage.ratio(invid, 0)))
 
 check(inv.count(invid, "zomboid:bread") == 3, "stale bread counts as bread")
