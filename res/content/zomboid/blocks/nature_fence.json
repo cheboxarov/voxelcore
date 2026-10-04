@@ -1,0 +1,39 @@
+{
+    "caption": "Забор",
+    "texture-faces": [
+        "nature_fence_end",
+        "nature_fence_end",
+        "nature_fence_end",
+        "nature_fence_end",
+        "nature_fence",
+        "nature_fence"
+    ],
+    "material": "base:wood",
+    "draw-group": 1,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "rotation": "pane",
+    "model": "aabb",
+    "hitbox": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        1.0,
+        0.2
+    ],
+    "ambient-occlusion": false,
+    "base:durability": 4.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 1,
+            "max": 2
+        }
+    ],
+    "zomboid:bash-hp": 30,
+    "tags": [
+        "zomboid:bashable",
+        "zomboid:flammable"
+    ]
+}

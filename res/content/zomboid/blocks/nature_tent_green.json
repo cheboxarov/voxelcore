@@ -1,0 +1,10 @@
+{
+    "caption": "Палатка",
+    "texture": "nature_tent_green",
+    "material": "base:grass",
+    "base:durability": 1.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

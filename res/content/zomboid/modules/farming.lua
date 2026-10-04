@@ -57,6 +57,10 @@ function farming.update(x, y, z)
     if kind == nil or block.get_variant(x, y, z) == farming.DEAD then
         return
     end
+    if block.get_field(x, y, z, "last") == nil then
+        block.set_field(x, y, z, "growth", farming.GROW_HOURS[kind])
+        block.set_field(x, y, z, "water", 100)
+    end
     local now = clock.hours
     local last = block.get_field(x, y, z, "last") or now
     local water = block.get_field(x, y, z, "water") or 0

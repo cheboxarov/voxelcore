@@ -1,0 +1,18 @@
+{
+    "caption": "Стена амбара",
+    "texture": "nature_barn_wood",
+    "material": "base:wood",
+    "base:durability": 12.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 1,
+            "max": 2
+        }
+    ],
+    "zomboid:bash-hp": 60,
+    "tags": [
+        "zomboid:bashable",
+        "zomboid:flammable"
+    ]
+}

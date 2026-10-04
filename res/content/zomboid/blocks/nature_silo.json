@@ -1,0 +1,14 @@
+{
+    "caption": "Силосная башня",
+    "texture-faces": [
+        "nature_silo",
+        "nature_silo",
+        "nature_metal_roof",
+        "nature_metal_roof",
+        "nature_silo",
+        "nature_silo"
+    ],
+    "material": "base:metal",
+    "base:durability": 14.0,
+    "base:loot": []
+}

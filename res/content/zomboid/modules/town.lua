@@ -722,6 +722,12 @@ function town.column(wx, wz, out)
     local g, col, row, ox, oz = locate(wx, wz)
     if g == nil then
         local kind = highway(wx, wz, out)
+        if kind == nil then
+            kind = require("zomboid:countryside").column(wx, wz, out)
+            if kind then
+                return kind
+            end
+        end
         if out then
             decorate(kind or "wild", kind and "highway" or "wild", nil, nil, nil, nil, wx, wz, out)
         end
@@ -825,7 +831,7 @@ end
 function town.building_at(wx, wz)
     local g, col, row = locate(wx, wz)
     if g == nil then
-        return nil
+        return require("zomboid:countryside").building_at(wx, wz)
     end
     local p
     if col % 2 == 1 and row % 2 == 1 then

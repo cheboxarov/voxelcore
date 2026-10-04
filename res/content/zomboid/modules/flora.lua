@@ -1,5 +1,6 @@
 local town = require "zomboid:town"
 local nature = require "zomboid:nature"
+local countryside = require "zomboid:countryside"
 
 local flora = {}
 
@@ -135,11 +136,9 @@ local function pick(mix, r)
 end
 
 local function clear(wx, wz, radius)
-    if nature.occupied and nature.occupied(wx, wz) then
-        return false
-    end
-    for _, o in ipairs({{radius, 0}, {-radius, 0}, {0, radius}, {0, -radius}, {0, 0}}) do
-        if town.column(wx + o[1], wz + o[2]) ~= nil or (nature.occupied and nature.occupied(wx + o[1], wz + o[2])) then
+    local k = radius - 1
+    for _, o in ipairs({{0, 0}, {radius, 0}, {-radius, 0}, {0, radius}, {0, -radius}, {k, k}, {-k, k}, {k, -k}, {-k, -k}}) do
+        if town.column(wx + o[1], wz + o[2]) ~= nil or countryside.occupied(wx + o[1], wz + o[2]) then
             return false
         end
     end
@@ -168,10 +167,10 @@ function flora.column(out, wx, wz, lx, lz, h, biome, hmap, seed)
     if wx - cx * CELL == spot % CELL and wz - cz * CELL == math.floor(spot / CELL) then
         if hash(cx, cz, seed + 42) < mix[1] then
             local kind = pick(mix, hash(cx, cz, seed + 43))
-            if clear(wx, wz, 3) then
+            if clear(wx, wz, kind == "oak" and 6 or 3) then
                 local r = hash(wx, wz, seed + 44)
                 if kind == "oak" then
-                    out[#out + 1] = {"tree" .. math.floor(r * 3), {lx - 2, h, lz - 2}, math.floor(r * 40) % 4, 1}
+                    out[#out + 1] = {"tree" .. math.floor(r * 3), {lx - 3, h, lz - 3}, math.floor(r * 40) % 4, 1}
                 else
                     kind(out, wx, y, wz, r)
                 end

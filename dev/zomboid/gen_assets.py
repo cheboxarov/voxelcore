@@ -293,6 +293,73 @@ def nature_textures():
             img.set(x - 1, 15 - s * 2 - 1, hexc("f0e8e0"))
     block("nature_mushroom", 519, mushroom)
 
+    def planks(base, dark, seed):
+        def draw(img):
+            img.noise(hexc(base), 0.08)
+            for y in (0, 5, 10, 15):
+                img.line(0, y, 15, y, hexc(dark))
+            for y0, x in ((1, 4), (6, 11), (11, 7)):
+                img.line(x, y0, x, y0 + 3, hexc(dark))
+        return draw
+    block("nature_barn_wood", 520, planks("8e2e24", "5a1a14", 520))
+
+    def hay_side(img):
+        img.noise(hexc("c8a850"), 0.1)
+        for _ in range(30):
+            x, y = img.r.randrange(15), img.r.randrange(16)
+            img.line(x, y, x + 1, y, hexc(img.r.choice(("e0c470", "a88a3a"))))
+        for x in (4, 11):
+            img.line(x, 0, x, 15, hexc("6a5020"))
+    block("nature_hay_side", 521, hay_side)
+    block("nature_hay_top", 522, lambda img: (img.noise(hexc("c8a850"), 0.12), img.speckle(hexc("e8d080"), 20),
+                                              img.speckle(hexc("a08038"), 20)))
+
+    def canvas(base):
+        def draw(img):
+            img.noise(hexc(base), 0.05)
+            for y in range(0, 16, 4):
+                img.line(0, y, 15, y, shade(hexc(base), 0.85))
+            img.line(0, 15, 15, 15, shade(hexc(base), 0.6))
+        return draw
+    block("nature_tent_green", 523, canvas("4a6a3a"))
+    block("nature_tent_orange", 524, canvas("c8642a"))
+
+    def trailer(img):
+        img.noise(hexc("dcdcd4"), 0.03)
+        for y in range(1, 16, 3):
+            img.line(0, y, 15, y, hexc("b8b8b0"))
+        img.rect(0, 9, 15, 10, hexc("3a6a9a"))
+    block("nature_trailer_siding", 525, trailer)
+
+    def corrugated(base):
+        def draw(img):
+            img.noise(hexc(base), 0.04)
+            for x in range(0, 16, 3):
+                img.line(x, 0, x, 15, shade(hexc(base), 0.75))
+                img.line(x + 1, 0, x + 1, 15, shade(hexc(base), 1.12))
+            img.speckle(hexc("8a5a3a"), 6)
+        return draw
+    block("nature_metal_roof", 526, corrugated("8a9094"))
+
+    def silo(img):
+        img.noise(hexc("b0b4b0"), 0.04)
+        for y in (0, 8):
+            img.line(0, y, 15, y, hexc("7a7e7a"))
+        for x in range(1, 16, 4):
+            img.line(x, 0, x, 15, hexc("c8ccc8"))
+        img.speckle(hexc("8a6a4a"), 8)
+    block("nature_silo", 527, silo)
+
+    def fence(img):
+        img.p = [(0, 0, 0, 0)] * 256
+        wood = hexc("8a6a44")
+        img.rect(0, 0, 1, 15, wood)
+        img.rect(14, 0, 15, 15, wood)
+        img.rect(0, 3, 15, 5, shade(wood, 1.1))
+        img.rect(0, 10, 15, 12, shade(wood, 1.1))
+    block("nature_fence", 528, fence)
+    block("nature_fence_end", 529, lambda img: img.noise(hexc("8a6a44"), 0.06))
+
 
 if __name__ == "__main__":
     for d in (os.path.join(SOUNDS, "zombie"), os.path.join(SOUNDS, "player"), os.path.join(SOUNDS, "world")):

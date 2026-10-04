@@ -78,7 +78,15 @@
     "nature_flower_blue",
     "nature_flower_yellow",
     "nature_flower_white",
-    "nature_mushroom"
+    "nature_mushroom",
+    "nature_barn_wood",
+    "nature_hay",
+    "nature_tent_green",
+    "nature_tent_orange",
+    "nature_trailer_siding",
+    "nature_metal_roof",
+    "nature_silo",
+    "nature_fence"
   ],
   "items": [
     "disinfectant",

@@ -1,4 +1,5 @@
 local town = require "zomboid:town"
+local nature = require "zomboid:nature"
 local survival = require "zomboid:survival"
 local inv = require "zomboid:inv"
 
@@ -22,6 +23,8 @@ local COLORS = {
     plaza = {190, 180, 160},
     river = {50, 100, 190},
     bridge = {120, 100, 80},
+    yard = {104, 132, 66},
+    dirt_road = {140, 110, 70},
 }
 
 local ZONE_LAWN = {
@@ -76,7 +79,10 @@ function mapping.color(wx, wz)
             return tint
         end
     end
-    return COLORS[kind or "wild"] or COLORS.lawn
+    if kind == nil then
+        return nature.map_color(wx, wz)
+    end
+    return COLORS[kind] or COLORS.lawn
 end
 
 function mapping.tick()

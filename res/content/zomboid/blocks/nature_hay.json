@@ -1,0 +1,17 @@
+{
+    "caption": "Тюк сена",
+    "texture-faces": [
+        "nature_hay_side",
+        "nature_hay_side",
+        "nature_hay_top",
+        "nature_hay_top",
+        "nature_hay_side",
+        "nature_hay_side"
+    ],
+    "material": "base:grass",
+    "base:durability": 1.0,
+    "base:loot": [],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

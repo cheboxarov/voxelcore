@@ -100,8 +100,13 @@ for _, z in ipairs({8, 20}) do
     assert(nature.height(nature.RIVER_X, z) <= SEA - 3, "river is shallow at z=" .. z)
     assert(nature.water_at(nature.RIVER_X + 6, z) and not nature.water_at(nature.RIVER_X + 11, z))
 end
-local c, b = check_mirror(nature.RIVER_X, 20, 12)
-print("[zomboid-test] river mirror columns: " .. c .. ", biome tops: " .. b)
+local rz = town.FLAT_EXTENT + 150
+local rx = math.floor(nature.river_x(rz))
+visit(rx, rz, 16)
+assert(name_at(rx, SEA, rz) == "base:water" and nature.water_at(rx, rz), "river outside the town at " .. rx .. "," .. rz)
+local c, b = check_mirror(rx, rz, 16)
+print("[zomboid-test] river mirror at " .. rx .. "," .. rz .. ": " .. c .. " columns, " .. b .. " biome tops")
+assert(b > 10)
 
 local LOGS = {["zomboid:nature_spruce_log"] = true, ["zomboid:nature_birch_log"] = true, ["base:wood"] = true,
     ["base:stone"] = true, ["zomboid:nature_mossy_stone"] = true}

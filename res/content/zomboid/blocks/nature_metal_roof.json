@@ -1,0 +1,7 @@
+{
+    "caption": "Профнастил",
+    "texture": "nature_metal_roof",
+    "material": "base:metal",
+    "base:durability": 10.0,
+    "base:loot": []
+}

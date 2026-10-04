@@ -1,0 +1,11 @@
+{
+    "caption": "Стена трейлера",
+    "texture": "nature_trailer_siding",
+    "material": "base:metal",
+    "base:durability": 10.0,
+    "base:loot": [],
+    "zomboid:bash-hp": 80,
+    "tags": [
+        "zomboid:bashable"
+    ]
+}

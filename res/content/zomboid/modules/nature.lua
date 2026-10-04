@@ -1,4 +1,5 @@
 local town = require "zomboid:town"
+local countryside = require "zomboid:countryside"
 
 local nature = {
     SEA_LEVEL = town.SEA_LEVEL,
@@ -8,7 +9,6 @@ local nature = {
     HEIGHTS_BPD = 2,
     BIOMES_BPD = 4,
     FLAT_RAMP = 112,
-    PAD_RAMP = 40,
 }
 
 local G = town.GROUND
@@ -138,10 +138,10 @@ local function fields(x, y, w, h, bpd, seed)
     }
 end
 
--- 1 inside lot pads (flat ground at GROUND), fading to 0 over PAD_RAMP
-local function pad_mask(f, x, y, w, h, bpd)
-    local pads = nature.pads and nature.pads(x * bpd, y * bpd, (x + w) * bpd, (y + h) * bpd, nature.PAD_RAMP)
-    if pads == nil or #pads == 0 then
+-- 1 on countryside pads (flat ground at GROUND), fading to 0 over each pad's ramp
+local function pad_mask(f, x, y, w, h, bpd, lots_only)
+    local pads = countryside.pads(x * bpd, y * bpd, (x + w) * bpd, (y + h) * bpd, lots_only)
+    if #pads == 0 then
         return nil
     end
     local mask = Heightmap(w, h)
@@ -154,7 +154,7 @@ local function pad_mask(f, x, y, w, h, bpd)
         dz:abs()
         dz:sub(p[4])
         dx:max(dz)
-        dx:mul(-1 / nature.PAD_RAMP)
+        dx:mul(-1 / p[5])
         dx:add(1)
         mask:max(clamp01(dx))
     end
@@ -248,7 +248,7 @@ function nature.biome_params(x, y, w, h, bpd, seed)
     near:mul(0.35)
     f.open:add(near)
     f.open:mixin(3, clamp01(inside))
-    local pads = pad_mask(f, x, y, w, h, bpd)
+    local pads = pad_mask(f, x, y, w, h, bpd, true)
     if pads then
         f.open:mixin(0.7, pads)
     end
@@ -341,6 +341,22 @@ end
 
 function nature.water_at(wx, wz)
     return nature.height(wx, wz) < nature.SEA_LEVEL
+end
+
+local MAP_COLORS = {
+    town = {92, 140, 70}, river = {196, 182, 128}, meadow = {104, 150, 70}, forest = {38, 74, 40},
+    birch = {76, 118, 56}, swamp = {70, 84, 50}, hills = {96, 106, 80},
+}
+
+-- colour of a wild column on the paper map, shaded by height
+function nature.map_color(wx, wz)
+    local h = nature.height(wx, wz)
+    if h < nature.SEA_LEVEL then
+        return {52, 86, 140}
+    end
+    local c = MAP_COLORS[nature.biome(wx, wz)]
+    local k = math.min(1.3, math.max(0.8, 1 + (h - G) * 0.025))
+    return {math.floor(c[1] * k), math.floor(c[2] * k), math.floor(c[3] * k)}
 end
 
 return nature
