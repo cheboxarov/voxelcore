@@ -110,10 +110,31 @@ visit(50, 0)
 check(name_at(50, G - 2, 20) == "base:water", "river water: " .. name_at(50, G - 2, 20))
 check(name_at(50, G, 20) == "core:air", "open water surface")
 check(name_at(41, G, 20) == "zomboid:sidewalk", "quay: " .. name_at(41, G, 20))
-check(name_at(42, G + 1, 20) == "zomboid:layout_railing", "quay railing: " .. name_at(42, G + 1, 20))
+check(name_at(42, G + 1, 24) == "zomboid:layout_railing", "quay railing: " .. name_at(42, G + 1, 24))
 check(name_at(50, G, 1) == "zomboid:asphalt" or name_at(50, G, 1) == "zomboid:road_line", "bridge deck: " .. name_at(50, G, 1))
 check(name_at(50, G - 2, 1) == "base:water", "water under the bridge")
 check(name_at(50, G + 1, -4) == "zomboid:layout_railing", "bridge railing")
+
+-- no swimming in this engine: ladders lead out of the river, with a gap in the quay railing above
+check(town.column(43, 20) == "river" and name_at(43, G - 6, 20) == "zomboid:ladder", "river ladder: " .. name_at(43, G - 6, 20))
+check(name_at(43, G, 20) == "zomboid:ladder" and name_at(57, G - 3, 20) == "zomboid:ladder", "ladders on both quays")
+check(name_at(42, G + 1, 20) == "core:air" and name_at(42, G + 1, 21) == "zomboid:layout_railing", "gap in the railing")
+player.set_pos(pid, 43.5, G - 5.9, 20.5)
+player.set_rot(pid, 0, 80, 0)
+app.sleep(3)
+local _, climbed = player.get_pos(pid)
+log(string.format("climbed out of the river to %.1f", climbed))
+check(climbed > G + 1.5, "ladder lifts the player to the quay")
+for _ = 1, 40 do
+    local _, vy = player.get_vel(pid)
+    player.set_vel(pid, -3, vy, 0)
+    app.tick()
+end
+app.sleep(0.5)
+local qx, qy = player.get_pos(pid)
+log(string.format("stepped onto the quay at x %.1f y %.1f", qx, qy))
+check(qx < 43 and qy > G + 1.5, "player walks from the ladder onto the quay")
+player.set_rot(pid, 0, 0, 0)
 
 -- plaza with a fountain at the main crossing
 local fx, fz = town.CENTER[1], town.CENTER[2]

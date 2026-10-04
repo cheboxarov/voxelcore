@@ -614,12 +614,17 @@ local function river(ox, oz, horizontal_road, width, wx, wz, out)
         return "bridge"
     end
     if out then
+        local exit = wz % 40 == 20
         if bank then
             for dy = -6, -1 do table.insert(out, {dy, "base:stone", 0}) end
             surface(out, "zomboid:sidewalk")
-            if ox == 2 or ox == 18 then
+            if (ox == 2 or ox == 18) and not exit then
                 out[#out][2] = "zomboid:layout_railing"
             end
+        elseif exit and (ox == 3 or ox == 17) then
+            table.insert(out, {-7, "base:sand", 0})
+            for dy = -6, 0 do table.insert(out, {dy, "zomboid:ladder", ox == 3 and 3 or 1}) end
+            table.insert(out, {1, "core:struct_air", 0})
         else
             table.insert(out, {-7, "base:sand", 0})
             for dy = -6, -2 do table.insert(out, {dy, "base:water", 0}) end
