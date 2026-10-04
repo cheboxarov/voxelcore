@@ -173,6 +173,9 @@ check(near((hunger_before - state.hunger) / plain, 1.3), "hearty appetite")
 sandbox.save({zombie_density = 2.5, water_shutoff_day = 2, day_minutes = 48, hunger_rate = 1.5})
 check(sandbox.configured and zombies.limit() == 85, "zombie cap follows density: " .. zombies.limit())
 check(near(world.get_day_time_speed(), 0.5), "day length applied")
+state.traits, state.hunger = {}, 90
+survival.update(pid, 1.0, 0.05)
+check(near((90 - state.hunger) / plain, 1.5), "hunger rate follows the sandbox")
 clock.reset(24 + 10)
 local sx, sy, sz = ox + 2, G + 1, oz + p.d - 2
 check(block.name(block.get(sx, sy, sz)) == "zomboid:sink", "sink")
