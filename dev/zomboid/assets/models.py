@@ -612,10 +612,14 @@ def car_layout():
     return body
 
 
-def paint_pixel(tones, burnt, r, side, x, y, z, group):
+def paint_pixel(tones, mode, r, side, x, y, z, group, doors_tones=None):
+    burnt = mode == "burnt"
     if side == "bottom":
         return hexc("1e1e22")
     c = tones[3] if side == "top" else tones[2]
+    if doors_tones and side in ("west", "east") and -8 <= y < 3 and -22 < z < 21:
+        tones = doors_tones
+        c = tones[2]
     if side in ("west", "east"):
         if -3.5 <= y < -2.5:
             c = tones[1]
@@ -659,8 +663,15 @@ def paint_pixel(tones, burnt, r, side, x, y, z, group):
             c = hexc("c8c8c8") if not burnt else tones[1]
     if y < -10 and side != "top":
         c = mix(c, hexc("5a4a38"), 0.25)
+    n = zlib.crc32(b"%d,%d,%d" % (x // 5, y // 4, z // 6)) % 100
+    if mode == "wreck":
+        if n < 12:
+            c = mix(c, hexc("8a4a24"), 0.5 + n / 40)
+        elif n > 93:
+            c = tones[1]
+        elif side != "top" and abs((z + 2 * y) % 23 - 11) < 0.4 and n % 3 == 0:
+            c = tones[4]
     if burnt:
-        n = zlib.crc32(b"%d,%d,%d" % (x // 5, y // 4, z // 6)) % 100
         if n < 30:
             c = mix(c, hexc("8a4a24"), 0.45 + n / 100)
         elif n > 88:
@@ -670,7 +681,7 @@ def paint_pixel(tones, burnt, r, side, x, y, z, group):
     return c
 
 
-def paint_sheet(name, tones, burnt, layout):
+def paint_sheet(name, tones, mode, layout, doors_tones=None):
     sh = Sheet(name, 192, 120, seed=zlib.crc32(name.encode()))
     nets, todo = [], []
     for k, (group, frm, to, hidden, dark) in enumerate(layout.boxes):
@@ -684,7 +695,7 @@ def paint_sheet(name, tones, burnt, layout):
         group, frm, to = layout.boxes[k][:3]
         f = nets[k][side] = sh.face(w, h)
         for i, j in f.cells():
-            f.set(i, j, paint_pixel(tones, burnt, sh.r, side, *world(f, side, frm + to, i, j), group))
+            f.set(i, j, paint_pixel(tones, mode, sh.r, side, *world(f, side, frm + to, i, j), group, doors_tones))
         for i in range(f.w):
             f.set(i, 0, mix(f.get(i, 0), tones[4], 0.35))
             f.set(i, f.h - 1, mix(f.get(i, f.h - 1), tones[0], 0.35))
@@ -700,7 +711,8 @@ def paint_sheet(name, tones, burnt, layout):
     return sh, nets, plain
 
 
-def parts_sheet(name, burnt):
+def parts_sheet(name, mode):
+    burnt, broken = mode == "burnt", mode == "wreck"
     sh = Sheet(name, 128, 96, seed=zlib.crc32(name.encode()))
     r = sh.r
     F = {}
@@ -729,6 +741,14 @@ def parts_sheet(name, burnt):
                 f.set(i, j, mix(f.get(i, j), glass[4], 0.55))
         for i in range(f.w):
             f.set(i, 0, glass[3])
+        if broken:
+            cx, cy = r.randrange(f.w), r.randrange(f.h)
+            for i, j in f.cells():
+                d = abs(i - cx) + abs(j - cy) * 2
+                if d < 4 or (d < 7 and r.random() < 0.4):
+                    f.set(i, j, hexc("141418"))
+                elif (i - cx) * (j - cy) == 0 or abs(i - cx) == abs(j - cy) * 2:
+                    f.set(i, j, glass[4])
 
     F["side_sedan"] = sh.face(30, 12)
     window(F["side_sedan"], seats=2)
@@ -751,6 +771,9 @@ def parts_sheet(name, burnt):
         f.rect(1, 1, 8, 3, hexc("f0ecd0"))
         f.rect(2, 1, 4, 2, hexc("fffff4"))
         f.rect(6, 2, 8, 3, hexc("d8d0a0"))
+        if broken:
+            f.rect(4, 1, 8, 3, hexc("1a1a1e"))
+            f.set(5, 2, hexc("c8c4a8"))
     F["tail"] = sh.face(9, 4)
     f = F["tail"]
     f.rect(0, 0, 8, 3, hexc("8a1a14") if not burnt else hexc("1a1414"))
@@ -804,9 +827,8 @@ def parts_sheet(name, burnt):
     return sh, F
 
 
-def car_parts_vcm(psh, F, burnt):
+def car_parts_vcm(psh, F):
     out = []
-    lamp = {s: F["dark"] for s in SIDES}
 
     def part(frm, to, front_key, front_side, other="dark"):
         net = {s: F[other] for s in SIDES}
@@ -823,7 +845,6 @@ def car_parts_vcm(psh, F, burnt):
         out.append(box((-27.5, -13, z0), (27.5, -9, z1), "blocks:" + psh.name, net, psh))
     part((-5, -12.6, 50.5), (5, -9.4, 50.8), "plate", "south")
     part((-5, -7, -48.4), (5, -3, -48), "plate", "north")
-    del lamp
     return out
 
 
@@ -888,32 +909,41 @@ def pillars(sh, plain, group):
     return out
 
 
-def car_model(layout, sh, nets, plain, psh, F, tex, burnt=False):
+def car_model(layout, sh, nets, plain, psh, F, tex):
     groups = {"body": [], "sedan": [], "pickup": []}
     for net, (group, frm, to, hidden, dark) in zip(nets, layout.boxes):
         groups[group].append(box(frm, to, tex, net, sh))
     for group in ("sedan", "pickup"):
         groups[group] += cabin_glass(psh, F, group) + pillars(sh, plain, group)
-    groups["body"] += car_parts_vcm(psh, F, burnt)
+    groups["body"] += car_parts_vcm(psh, F)
     return groups
+
+
+WRECKS = {"red": ("a83228", None), "blue": ("30589a", None), "white": ("d8d8d0", None),
+          "police": ("26282e", "e0e0dc"), "army": ("4e5a34", None), "burnt": ("3a302a", None)}
 
 
 def car():
     layout = car_layout()
-    psh, F = parts_sheet("car_parts", False)
-    sheets = [paint_sheet("car_" + name, ramp(col), False, layout) for name, col in CAR_COLORS.items()]
+    psh, F = parts_sheet("car_parts", "clean")
+    sheets = [paint_sheet("car_" + name, ramp(col), "clean", layout) for name, col in CAR_COLORS.items()]
     sh, nets, plain = sheets[0]
     g = car_model(layout, sh, nets, plain, psh, F, "$paint")
     write_model("zomboid_car", [bone("body", None, g["body"] + wheel_boxes(psh, F) + [
         bone("sedan", None, g["sedan"]), bone("pickup", None, g["pickup"])])])
 
-    bsh, bnets, bplain = paint_sheet("car_burnt", ramp("3a302a"), True, layout)
-    bpsh, bF = parts_sheet("car_parts_burnt", True)
-    g = car_model(layout, bsh, bnets, bplain, bpsh, bF, "blocks:car_burnt", burnt=True)
-    wreck = g["body"] + wheel_boxes(bpsh, bF, drop=3, flat=True) + g["sedan"]
-    wreck = [w.replace('"$paint"', '"blocks:car_burnt"') for w in wreck]
-    write_model("zomboid_car_wreck", [bone(None, (32, 19.5, 48), [bone(None, None, wreck, rotate=(1.5, 0, -2.5))])])
-
+    for paint, (col, doors) in WRECKS.items():
+        mode = "burnt" if paint == "burnt" else "wreck"
+        tex = "car_wreck_" + paint
+        wsh, wnets, wplain = paint_sheet(tex, ramp(col), mode, layout, ramp(doors) if doors else None)
+        wpsh, wF = parts_sheet("car_parts_" + mode, mode)
+        g = car_model(layout, wsh, wnets, wplain, wpsh, wF, "blocks:" + tex)
+        parts = g["body"] + wheel_boxes(wpsh, wF, drop=-3, flat=True) + g["sedan"]
+        if paint == "police":
+            parts += [box((-12, 16.5, -6), (-1, 18.5, -2), "blocks:mdl_blue"), box((1, 16.5, -6), (12, 18.5, -2), "blocks:mdl_red"),
+                      box((-1, 16.5, -6), (1, 18, -2), "blocks:mdl_iron")]
+        parts = [p.replace('"$paint"', '"blocks:%s"' % tex) for p in parts]
+        write_model("zomboid_car_wreck_" + paint, [bone(None, (32, 16.3, 48), [bone(None, None, parts, rotate=(1.5, 0, -2.5))])])
 
 # ---------- items in hand / on the ground ----------
 
@@ -933,6 +963,7 @@ def materials():
     tile("gunmetal", ramp("33363e"), lambda x, y, r: 3 if y % 8 == 0 else 2)
     tile("grip", ramp("2a2a2e"), lambda x, y, r: 1 if (x + y) % 4 == 0 else 3 if (x + y) % 4 == 2 else 2)
     tile("red", PAL["plastic_red"], lambda x, y, r: 3 if (x * 3 + y) % 17 == 0 else 2)
+    tile("blue", PAL["plastic_blue"], lambda x, y, r: 3 if (x * 3 + y) % 17 == 0 else 2)
     tile("yellow", PAL["cloth_yellow"], lambda x, y, r: 2)
     tile("lens", ramp("f0e8a0"), lambda x, y, r: 4 if x + y < 20 else 3)
     tile("brass", PAL["brass"], lambda x, y, r: 3 if x % 7 == 2 else 2)

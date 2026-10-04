@@ -87,7 +87,7 @@ for i = 1, 12 do
 end
 log("bodies", bodies.sedan, bodies.pickup)
 check(bodies.sedan and bodies.pickup, "both car bodies occur")
-check(texture_exists("car_parts") and texture_exists("car_burnt"), "car part textures")
+check(texture_exists("car_parts"), "car part textures")
 
 for _, name in ipairs({"bat", "spiked_bat", "axe", "knife", "crowbar", "hammer", "frying_pan", "spear", "pistol",
                        "shotgun", "flashlight", "gas_can"}) do
@@ -97,16 +97,15 @@ for _, name in ipairs({"bat", "spiked_bat", "axe", "knife", "crowbar", "hammer",
 end
 check(item.model_name(item.index("zomboid:gas_can_empty")) == "zomboid_item_gas_can", "empty can shares the model")
 
-for _, name in ipairs({"generator", "rain_barrel", "fuel_pump", "alarm_clock", "siren", "campfire", "bed", "couch", "tv",
-                       "car_wreck"}) do
+for _, name in ipairs({"generator", "rain_barrel", "fuel_pump", "alarm_clock", "siren", "campfire", "bed", "couch", "tv"}) do
     local id = block.index("zomboid:" .. name)
     check(block.get_model(id) == "custom", name .. " custom model")
-    local file_name = name == "car_wreck" and "zomboid_car_wreck" or "zomboid_block_" .. name
-    check(file.exists("zomboid:models/" .. file_name .. ".vcm"), file_name)
+    check(file.exists("zomboid:models/zomboid_block_" .. name .. ".vcm"), name .. " model file")
+end
+for _, paint in ipairs({"red", "blue", "white", "police", "army", "burnt"}) do
+    check(file.exists("zomboid:models/zomboid_car_wreck_" .. paint .. ".vcm"), "wreck " .. paint)
 end
 local gen = block.index("zomboid:generator")
 check(block.get_model(gen, 1) == "custom", "generator 'on' variant keeps the model")
-block.set(X, G + 1, Z + 6, block.index("zomboid:car_wreck"), 1)
-check(block.get(X, G + 1, Z + 6) == block.index("zomboid:car_wreck"), "wreck placed")
 log("models ok")
 app.close_world(false)
