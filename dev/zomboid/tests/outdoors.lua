@@ -162,7 +162,7 @@ local grow = farming.GROW_HOURS.carrot
 for _ = 1, 4 do
     hold("zomboid:water_bottle")
     events.emit("zomboid:crop_carrot.interact", bx, by + 1, bz, pid)
-    clock.reset(clock.hours + grow / 4)
+    clock.reset(clock.hours + grow / 4 + 0.5)
     farming.update(bx, by + 1, bz)
 end
 log("carrot stage after watering: " .. block.get_variant(bx, by + 1, bz))
