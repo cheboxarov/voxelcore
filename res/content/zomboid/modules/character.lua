@@ -10,7 +10,7 @@ character.PROFESSIONS = {
     {id = "unemployed", title = "Безработный", points = 8,
         text = "Ничего не умеет, зато есть очки на хорошие черты", skills = {}, items = {}},
     {id = "police", title = "Полицейский", points = 0,
-        text = "Привык к дракам и к ночным патрулям", skills = {melee = 2, sneaking = 1},
+        text = "Привык к дракам и к ночным патрулям", skills = {melee = 2, sneaking = 1, aiming = 2},
         items = {{"zomboid:bat", 1}, {"zomboid:flashlight", 1}, {"zomboid:bandage", 1}}},
     {id = "carpenter", title = "Плотник", points = 0,
         text = "Быстро заколачивает окна, баррикады выходят крепче", skills = {carpentry = 3, melee = 1},

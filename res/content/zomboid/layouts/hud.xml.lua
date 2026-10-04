@@ -2,6 +2,9 @@ local survival = require "zomboid:survival"
 local clock = require "zomboid:clock"
 local zombies = require "zomboid:zombies"
 local sandbox = require "zomboid:sandbox"
+local firearms = require "zomboid:firearms"
+local combat = require "zomboid:combat"
+local inv = require "zomboid:inv"
 
 local BAR_WIDTH = 220
 
@@ -51,6 +54,26 @@ local function status_lines(state)
     return table.concat(lines, "\n"), #lines
 end
 
+local function combat_text(pid, state)
+    local lines = {}
+    local itemid, _, invid, slot = inv.held(pid)
+    local gun = firearms.gun(itemid)
+    if gun then
+        table.insert(lines, string.format("[#e8d8a0]%s: %d/%d, запас %d", item.caption(itemid),
+            firearms.loaded(invid, slot), gun.mag, inv.count(invid, gun.ammo)))
+        if firearms.is_reloading(pid) then
+            table.insert(lines, "[#ffb060]Перезарядка...")
+        end
+    end
+    if state.crouching then
+        table.insert(lines, "[#a0d0a0]Крадётесь")
+    end
+    if combat.is_grabbed(state) then
+        table.insert(lines, "[#ff7050]Вас схватили! V - оттолкнуть")
+    end
+    return table.concat(lines, "\n")
+end
+
 local function update()
     local pid = hud.get_player()
     local state = survival.get(pid)
@@ -80,6 +103,7 @@ local function update()
         end
     end
     document.messages.text = table.concat(lines, "\n")
+    document.combat.text = combat_text(pid, state)
 
     local hurt = math.max(0, 1 - (now - (state.hurt or 0)) / 0.6)
     local low = state.health < 25 and (0.25 + 0.15 * math.sin(now * 5)) or 0

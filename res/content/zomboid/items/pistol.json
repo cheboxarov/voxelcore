@@ -1,0 +1,24 @@
+{
+    "caption": "Пистолет",
+    "description": "ЛКМ - выстрел, R - перезарядка. Патроны 9 мм. Выстрел слышен на полгорода",
+    "icon-type": "sprite",
+    "icon": "items:pistol",
+    "stack-size": 1,
+    "script-name": "gun",
+    "zomboid:gun": {
+        "mag": 15,
+        "ammo": "zomboid:ammo_9mm",
+        "damage": 48,
+        "pellets": 1,
+        "spread": 0.03,
+        "range": 40,
+        "knockback": 3,
+        "noise": 90,
+        "reload": 1.6,
+        "cooldown": 0.3,
+        "sound": "player/gunshot"
+    },
+    "tags": [
+        "zomboid:gun"
+    ]
+}

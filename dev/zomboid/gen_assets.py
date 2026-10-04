@@ -673,6 +673,86 @@ def sounds():
     hit(os.path.join(SOUNDS, "player", "eat.wav"), 260, 300, 0.3, 0.95)
 
 
+def combat_assets():
+    img = Img(seed=70)
+    img.noise(hexc("d8d0c0"), 0.06)
+    img.frame(0, 0, 15, 15, hexc("8a2020"))
+    img.rect(3, 3, 12, 12, hexc("f4f0e4"))
+    img.frame(3, 3, 12, 12, hexc("303030"))
+    img.line(8, 8, 8, 4, hexc("202020"))
+    img.line(8, 8, 11, 8, hexc("202020"))
+    img.save(BLOCKS, "alarm_clock_front")
+    img = Img(seed=71)
+    img.noise(hexc("a02828"), 0.08)
+    img.save(BLOCKS, "alarm_clock_side")
+    img = Img(seed=72)
+    img.noise(hexc("a02828"), 0.08)
+    img.rect(2, 6, 5, 9, hexc("d8c040"))
+    img.rect(10, 6, 13, 9, hexc("d8c040"))
+    img.save(BLOCKS, "alarm_clock_top")
+    img = Img(seed=73)
+    img.noise(hexc("505458"), 0.08)
+    for y in range(2, 14, 3):
+        img.line(1, y, 14, y, hexc("383a3e"))
+    img.rect(6, 6, 9, 9, hexc("d0b020"))
+    img.save(BLOCKS, "siren_side")
+    img = Img(seed=74)
+    img.noise(hexc("c02020"), 0.1)
+    img.rect(5, 5, 10, 10, hexc("ff6040"))
+    img.save(BLOCKS, "siren_top")
+    img = Img(seed=75)
+    img.noise(hexc("d0a020"), 0.08)
+    img.rect(0, 5, 15, 7, hexc("1a1a1a"))
+    for _ in range(5):
+        x, y = img.r.randrange(16), img.r.randrange(16)
+        img.rect(x, y, x + 1, y + 1, hexc("5a1414"))
+    img.save(BLOCKS, "z_shirt_sport")
+
+    img = Img(seed=76)
+    img.rect(2, 5, 13, 7, hexc("2a2a2e"))
+    img.rect(3, 4, 12, 4, hexc("4a4a50"))
+    img.rect(3, 8, 6, 13, hexc("3a3028"))
+    img.rect(7, 8, 8, 9, hexc("2a2a2e"))
+    img.set(13, 5, hexc("101010"))
+    img.save(ITEMS, "pistol")
+    img = Img(seed=77)
+    img.line(1, 9, 14, 3, hexc("303034"))
+    img.line(1, 10, 14, 4, hexc("44444a"))
+    img.line(1, 11, 6, 9, hexc("6a4628"))
+    img.rect(1, 10, 4, 13, hexc("7a5230"))
+    img.rect(7, 7, 9, 9, hexc("6a4628"))
+    img.save(ITEMS, "shotgun")
+    img = Img(seed=78)
+    for x in (3, 7, 11):
+        img.rect(x, 5, x + 2, 12, hexc("c8a040"))
+        img.rect(x, 3, x + 2, 4, hexc("a8a8b0"))
+        img.set(x + 1, 2, hexc("a8a8b0"))
+    img.save(ITEMS, "ammo_9mm")
+    img = Img(seed=79)
+    for x in (2, 6, 10):
+        img.rect(x, 3, x + 3, 10, hexc("b02a20"))
+        img.rect(x, 11, x + 3, 13, hexc("c8a040"))
+    img.save(ITEMS, "shotgun_shells")
+
+    rate = 22050
+
+    def write(name, dur, fn):
+        r = random.Random(zlib.crc32(name.encode()))
+        save_wav(os.path.join(SOUNDS, name + ".wav"), [fn(i / rate, r) for i in range(int(rate * dur))], rate)
+
+    write("player/gunshot", 0.6, lambda t, r: (r.uniform(-1, 1) * 0.8 + math.sin(2 * math.pi * 90 * t) * 0.4)
+          * math.exp(-t * 11))
+    write("player/shotgun", 0.9, lambda t, r: (r.uniform(-1, 1) * 0.9 + math.sin(2 * math.pi * 60 * t) * 0.5)
+          * math.exp(-t * 6))
+    write("player/reload", 0.5, lambda t, r: r.uniform(-1, 1) * 0.7
+          * (math.exp(-t * 60) + math.exp(-max(0, t - 0.3) * 60) * (t > 0.3)))
+    write("player/dry_fire", 0.12, lambda t, r: r.uniform(-1, 1) * 0.5 * math.exp(-t * 80))
+    write("world/alarm", 0.9, lambda t, r: math.sin(2 * math.pi * 1800 * t) * 0.6
+          * (1 if (t * 16) % 2 < 1 else 0) * (1 if t < 0.8 else 0))
+    write("world/siren", 1.0, lambda t, r: math.sin(2 * math.pi * (600 * t + 250 / math.pi * math.sin(math.pi * t)))
+          * 0.8 * min(1, t * 20, (1 - t) * 20))
+
+
 if __name__ == "__main__":
     for d in (BLOCKS, ITEMS, os.path.join(SOUNDS, "zombie"), os.path.join(SOUNDS, "player"), os.path.join(SOUNDS, "world")):
         os.makedirs(d, exist_ok=True)
@@ -680,3 +760,4 @@ if __name__ == "__main__":
     item_textures()
     icon()
     sounds()
+    combat_assets()

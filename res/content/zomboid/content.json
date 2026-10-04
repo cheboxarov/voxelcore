@@ -40,7 +40,11 @@
     "book_first_aid_1",
     "book_first_aid_2",
     "book_sneaking_1",
-    "book_sneaking_2"
+    "book_sneaking_2",
+    "pistol",
+    "shotgun",
+    "ammo_9mm",
+    "shotgun_shells"
   ],
   "blocks": [
     "bed",
@@ -69,6 +73,8 @@
     "stove",
     "carpet",
     "medicine_cabinet",
-    "siding_red"
+    "siding_red",
+    "alarm_clock",
+    "siren"
   ]
 }

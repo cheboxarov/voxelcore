@@ -35,6 +35,9 @@ function weapons.attack(pid, target_pos)
         return nil
     end
     local itemid, _, invid, slot = inv.held(pid)
+    if itemid ~= 0 and item.properties[itemid]["zomboid:gun"] then
+        return nil
+    end
     local stats, is_weapon = weapons.stats(itemid)
     local ppos = {player.get_pos(pid)}
     if vec3.distance(ppos, target_pos) > stats.range + 0.6 then
@@ -61,11 +64,11 @@ function weapons.attack(pid, target_pos)
             survival.notify(pid, "Оружие сломалось!", "#ff9050")
         end
     end
-    zombies.noise(ppos, 7, pid)
+    zombies.noise(ppos, state.crouching and 3 or 7, pid)
     if vc.is_client() then
         audio.play_sound("player/hit", target_pos[1], target_pos[2], target_pos[3], 1.0, 0.85 + math.random() * 0.3)
     end
-    return damage, stats.knockback * skills.mul(pid, "knockback")
+    return damage, stats.knockback * skills.mul(pid, "knockback"), is_weapon
 end
 
 return weapons

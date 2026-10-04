@@ -1,0 +1,30 @@
+{
+    "caption": "Будильник",
+    "texture-faces": [
+        "alarm_clock_side",
+        "alarm_clock_side",
+        "alarm_clock_top",
+        "alarm_clock_top",
+        "alarm_clock_front",
+        "alarm_clock_front"
+    ],
+    "material": "base:metal",
+    "model": "aabb",
+    "hitbox": [0.3, 0, 0.3, 0.4, 0.4, 0.4],
+    "light-passing": true,
+    "grounded": true,
+    "script-name": "noisemaker",
+    "tick-interval": 20,
+    "base:durability": 1.0,
+    "fields": {
+        "ring_at": {
+            "type": "float64"
+        }
+    },
+    "tags": [
+        "zomboid:interactive"
+    ],
+    "zomboid:noise-radius": 30,
+    "zomboid:noise-delay": 20,
+    "zomboid:noise-time": 25
+}

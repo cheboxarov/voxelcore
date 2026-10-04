@@ -1,6 +1,7 @@
 local clock = require "zomboid:clock"
 local town = require "zomboid:town"
 local sandbox = require "zomboid:sandbox"
+local noise = require "zomboid:noise"
 
 local zombies = {
     registry = {},
@@ -9,7 +10,29 @@ local zombies = {
     DESPAWN_DISTANCE = 110,
     horde_day = 0,
     enabled = true,
+    KINDS = {
+        normal = {hp = {55, 95}, half = 0.9, speed = 13.0, chase = 1.0, bash = 1.0, knockback = 1.0},
+        crawler = {hp = {30, 50}, half = 0.3, speed = 7.0, chase = 1.0, bash = 0.6, knockback = 0.7, grab = true,
+            hitbox = {0.6, 0.6, 0.6}},
+        fat = {hp = {170, 230}, half = 0.97, speed = 9.0, chase = 1.0, bash = 2.5, knockback = 0.3, heavy = true,
+            size = {1.3, 1.08, 1.3}},
+        sprinter = {hp = {45, 75}, half = 0.94, speed = 13.0, chase = 2.1, bash = 1.0, knockback = 1.1,
+            size = {0.92, 1.04, 0.92}, shirt = "sport"},
+    },
 }
+
+function zombies.roll_kind()
+    local r = math.random()
+    local sprinters = clock.is_night() and 0.16 or 0.07
+    if r < sprinters then
+        return "sprinter"
+    elseif r < sprinters + 0.12 then
+        return "crawler"
+    elseif r < sprinters + 0.24 then
+        return "fat"
+    end
+    return "normal"
+end
 
 function zombies.register(uid, component)
     zombies.registry[uid] = component
@@ -41,13 +64,8 @@ function zombies.nearest_distance(pos)
     return best
 end
 
-function zombies.noise(pos, radius, pid)
-    for _, z in pairs(zombies.registry) do
-        local d = vec3.distance(z.get_pos(), pos)
-        if d <= radius then
-            z.hear(pos, pid, d)
-        end
-    end
+function zombies.noise(pos, radius, pid, duration)
+    return noise.emit(pos, radius, pid, duration)
 end
 
 local water_id
@@ -73,7 +91,9 @@ function zombies.find_ground(x, z, top)
 end
 
 function zombies.spawn(x, y, z, args)
-    return entities.spawn("zomboid:zombie", {x + 0.5, y + 0.95, z + 0.5}, {zomboid__zombie = args or {}})
+    args = args or {}
+    local half = zombies.KINDS[args.kind or "normal"].half
+    return entities.spawn("zomboid:zombie", {x + 0.5, y + half + 0.05, z + 0.5}, {zomboid__zombie = args})
 end
 
 local function pick_spot(ppos, look, min_dist, max_dist, behind)
@@ -103,6 +123,10 @@ function zombies.limit()
     return math.floor(34 * sandbox.get("zombie_density") + 0.5)
 end
 
+function zombies.cap()
+    return zombies.limit() + 12
+end
+
 function zombies.target_population()
     local base = clock.is_night() and 16 or 8
     return math.min(zombies.limit(), math.floor((base + (clock.day() - 1) * 2) * sandbox.get("zombie_density") + 0.5))
@@ -116,7 +140,7 @@ function zombies.spawn_horde(pid)
     local cz = ppos[3] + math.sin(angle) * 48
     local spawned = 0
     for _ = 1, size * 3 do
-        if spawned >= size or zombies.count() >= zombies.limit() + 12 then
+        if spawned >= size or zombies.count() >= zombies.cap() then
             break
         end
         local x = math.floor(cx + (math.random() - 0.5) * 16)
@@ -124,7 +148,7 @@ function zombies.spawn_horde(pid)
         if town.building_at(x, z) == nil then
             local y = zombies.find_ground(x, z)
             if y then
-                local e = zombies.spawn(x, y, z, {horde = true})
+                local e = zombies.spawn(x, y, z, {horde = true, kind = zombies.roll_kind()})
                 local comp = e and e:get_component("zomboid:zombie")
                 if comp then
                     comp.hear(ppos, pid, 0)
@@ -160,7 +184,7 @@ function zombies.tick(survival)
                 local look = player.get_dir(pid)
                 local x, y, z = pick_spot(ppos, look, zombies.SPAWN_MIN, zombies.SPAWN_MAX, true)
                 if x then
-                    zombies.spawn(x, y, z, {})
+                    zombies.spawn(x, y, z, {kind = zombies.roll_kind()})
                 end
             end
         end

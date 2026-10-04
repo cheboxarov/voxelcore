@@ -1,0 +1,24 @@
+{
+    "caption": "Дробовик",
+    "description": "ЛКМ - выстрел, R - перезарядка. Дробь разлетается широко. Грохот слышен на весь город",
+    "icon-type": "sprite",
+    "icon": "items:shotgun",
+    "stack-size": 1,
+    "script-name": "gun",
+    "zomboid:gun": {
+        "mag": 6,
+        "ammo": "zomboid:shotgun_shells",
+        "damage": 24,
+        "pellets": 7,
+        "spread": 0.08,
+        "range": 18,
+        "knockback": 7,
+        "noise": 120,
+        "reload": 3.0,
+        "cooldown": 0.9,
+        "sound": "player/shotgun"
+    },
+    "tags": [
+        "zomboid:gun"
+    ]
+}

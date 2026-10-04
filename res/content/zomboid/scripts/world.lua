@@ -5,6 +5,7 @@ local town = require "zomboid:town"
 local inv = require "zomboid:inv"
 local sandbox = require "zomboid:sandbox"
 local skills = require "zomboid:skills"
+local population = require "zomboid:population"
 
 local SAVE_FILE = "state.json"
 local STRICT_RULES = {
@@ -28,6 +29,7 @@ local function load_state()
     local data = json.parse(file.read(path))
     clock.reset(data.hours)
     zombies.horde_day = data.horde_day or 0
+    population.seeded = data.seeded or {}
     survival.deserialize(data.players)
     return true
 end
@@ -36,6 +38,7 @@ local function save_state()
     file.write(save_path(), json.tostring({
         hours = clock.hours,
         horde_day = zombies.horde_day,
+        seeded = population.seeded,
         players = survival.serialize(),
     }, true))
 end
@@ -124,6 +127,7 @@ function on_world_tick()
         end
     end
     zombies.tick(survival)
+    population.tick(survival)
 end
 
 local function break_multiplier(blockid, itemid)

@@ -12,6 +12,8 @@ local weapons = require "zomboid:weapons"
 local loot = require "zomboid:loot"
 local sandbox = require "zomboid:sandbox"
 local skills = require "zomboid:skills"
+local noise = require "zomboid:noise"
+local town = require "zomboid:town"
 
 local SHIRTS = {"red", "blue", "green", "gray", "white", "police"}
 local PANTS = {"jeans", "brown", "black"}
@@ -21,14 +23,31 @@ local data = SAVED_DATA
 
 if data.max_health == nil then
     local args = ARGS or {}
-    data.max_health = math.random(55, 95) + (args.horde and 15 or 0)
+    data.kind = zombies.KINDS[args.kind] and args.kind or "normal"
+    local hp = zombies.KINDS[data.kind].hp
+    data.max_health = math.random(hp[1], hp[2]) + (args.horde and 15 or 0)
     data.health = data.max_health
-    data.shirt = args.shirt or SHIRTS[math.random(#SHIRTS)]
+    data.shirt = args.shirt or zombies.KINDS[data.kind].shirt or SHIRTS[math.random(#SHIRTS)]
     data.pants = PANTS[math.random(#PANTS)]
-    data.sprinter = args.sprinter or (clock.is_night() and math.random() < 0.08)
     data.items = args.items
     data.name = args.name
+    data.resident = args.resident
+    data.anchor = args.anchor
+    data.route = args.route
 end
+if data.kind == nil then
+    data.kind = data.sprinter and "sprinter" or "normal"
+    data.sprinter = nil
+end
+local kind = zombies.KINDS[data.kind]
+local size = kind.size or {1, 1, 1}
+if kind.size then
+    tsf:set_size(kind.size)
+end
+if kind.hitbox then
+    body:set_size(kind.hitbox)
+end
+mob.set_movement_speed(kind.speed)
 
 rig:set_texture("$shirt", "blocks:z_shirt_" .. data.shirt)
 rig:set_texture("$pants", "blocks:z_pants_" .. data.pants)
@@ -54,6 +73,9 @@ local attack_ready = 0
 local bash_ready = 0
 local bash_target = nil
 local stun_until = 0
+local downed_until = 0
+local heard_at = time.uptime()
+local route_prev = nil
 local last_pos = tsf:get_pos()
 local stuck = 0
 local sidestep_until = 0
@@ -88,6 +110,10 @@ local function groan(volume)
     end
 end
 
+function get_kind()
+    return data.kind
+end
+
 function hear(pos, pid, dist)
     if dead or mode == "chase" then
         return
@@ -103,7 +129,7 @@ end
 local function speed_multiplier()
     local m = (clock.is_night() and 1.3 or 1.0) * sandbox.get("zombie_speed")
     if mode == "chase" then
-        if data.sprinter then m = m * 2.0 end
+        m = m * kind.chase
     elseif mode == "investigate" then
         m = m * 0.85
     else
@@ -129,22 +155,62 @@ local function can_see(pid, ppos, dist)
         return false
     end
     local pos = tsf:get_pos()
-    if dist > 2.5 then
+    if dist > (state.crouching and 1.2 or 2.5) then
         local facing = mob.get_dir()
         local to = vec3.normalize({ppos[1] - pos[1], 0, ppos[3] - pos[3]})
         if facing[1] * to[1] + facing[3] * to[3] < -0.25 then
             return false
         end
     end
-    local eye = {pos[1], pos[2] + 0.6, pos[3]}
+    local eye = {pos[1], pos[2] + kind.half - 0.3, pos[3]}
     local target = {ppos[1], ppos[2] + 0.6, ppos[3]}
     local dir = vec3.normalize(vec3.sub(target, eye))
     local hit = block.raycast(eye, dir, dist)
     return hit == nil or hit.length >= dist - 0.4
 end
 
+local function crossing(ix, iz)
+    return {ix * town.CELL + 2.5, town.GROUND + 1, iz * town.CELL + 2.5}
+end
+
+local function next_crossing(pos, first)
+    local R = town.RADIUS
+    local ix = math.max(-R, math.min(R, math.floor((pos[1] + 14) / town.CELL)))
+    local iz = math.max(-R, math.min(R, math.floor((pos[3] + 14) / town.CELL)))
+    if first then
+        route_prev = nil
+        return crossing(ix, iz)
+    end
+    local options = {}
+    for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+        local nx, nz = ix + d[1], iz + d[2]
+        local back = route_prev and route_prev[1] == nx and route_prev[2] == nz
+        if math.abs(nx) <= town.RADIUS and math.abs(nz) <= town.RADIUS and not back then
+            table.insert(options, {nx, nz})
+        end
+    end
+    local pick = options[math.random(#options)]
+    route_prev = {ix, iz}
+    return crossing(pick[1], pick[2])
+end
+
+local function wander_goal(pos)
+    if data.anchor then
+        local a = data.anchor
+        return {a[1] + math.random(-3, 3), a[2], a[3] + math.random(-3, 3)}
+    end
+    return {pos[1] + math.random(-8, 8), pos[2], pos[3] + math.random(-8, 8)}
+end
+
 local function think()
     local pos = tsf:get_pos()
+    if mode ~= "chase" then
+        local mark = noise.loudest(pos, heard_at)
+        if mark then
+            heard_at = mark.time
+            hear(mark.pos, mark.pid, vec3.distance(pos, mark.pos))
+        end
+    end
     local pid = player.get_nearest(pos)
     if pid then
         local ppos = {player.get_pos(pid)}
@@ -171,8 +237,15 @@ local function think()
         goal = nil
         wander_at = now + 3 + math.random() * 6
     end
-    if mode == "idle" and now > wander_at then
-        goal = {pos[1] + math.random(-8, 8), pos[2], pos[3] + math.random(-8, 8)}
+    if mode == "idle" and data.route then
+        goal = next_crossing(pos, true)
+        mode = "roam"
+        goal_until = now + 60
+    elseif mode == "roam" and (now > goal_until or horizontal_distance(pos, goal) < 2) then
+        goal = next_crossing(pos)
+        goal_until = now + 60
+    elseif mode == "idle" and now > wander_at then
+        goal = wander_goal(pos)
         mode = "wander"
         goal_until = now + 10
     elseif mode == "wander" and (now > goal_until or horizontal_distance(pos, goal) < 1.2) then
@@ -183,7 +256,7 @@ local function think()
 end
 
 local function try_attack()
-    if mode ~= "chase" or target_pid == nil or now < attack_ready then
+    if mode ~= "chase" or target_pid == nil or now < attack_ready or now < stun_until then
         return
     end
     local pos = tsf:get_pos()
@@ -195,6 +268,10 @@ local function try_attack()
         end
         local night = clock.is_night()
         survival.zombie_hit(target_pid, night)
+        if kind.grab then
+            state.grabbed_until = clock.hours + 2 / 60
+            survival.notify(target_pid, "Ползун вцепился вам в ногу!", "#ff9050")
+        end
         attack_ready = now + (night and 1.1 or 1.5)
         attack_anim = 1
     end
@@ -202,7 +279,7 @@ end
 
 local function front_cell(pos, dir, dy, reach)
     reach = reach or 0.8
-    return math.floor(pos[1] + dir[1] * reach), math.floor(pos[2] - 0.9 + dy), math.floor(pos[3] + dir[3] * reach)
+    return math.floor(pos[1] + dir[1] * reach), math.floor(pos[2] - kind.half + dy), math.floor(pos[3] + dir[3] * reach)
 end
 
 local function check_stuck(pos)
@@ -238,13 +315,13 @@ local function check_stuck(pos)
 end
 
 local function do_bash()
-    if bash_target == nil or now < bash_ready then
+    if bash_target == nil or now < bash_ready or now < stun_until then
         return
     end
     local night = clock.is_night()
     bash_ready = now + (night and 1.1 or 1.4)
     attack_anim = 1
-    if barricade.bash(bash_target[1], bash_target[2], bash_target[3], night and 7 or 5) then
+    if barricade.bash(bash_target[1], bash_target[2], bash_target[3], (night and 7 or 5) * kind.bash) then
         bash_target = nil
         stuck = 0
     end
@@ -285,6 +362,7 @@ function take_hit(damage, knockback, from, pid)
     flash = 0.2
     local pos = tsf:get_pos()
     local dir = vec3.normalize({pos[1] - from[1], 0, pos[3] - from[3]})
+    knockback = knockback * kind.knockback
     body:set_vel({dir[1] * knockback, 2.5, dir[3] * knockback})
     stun_until = now + 0.2 + knockback * 0.07
     if vc.is_client() then
@@ -305,15 +383,63 @@ function take_hit(damage, knockback, from, pid)
     end
 end
 
+function is_unaware_of(pid)
+    if mode == "chase" or now < downed_until then
+        return false
+    end
+    local pos = tsf:get_pos()
+    local ppos = {player.get_pos(pid)}
+    local to = vec3.normalize({ppos[1] - pos[1], 0, ppos[3] - pos[3]})
+    local facing = mob.get_dir()
+    return facing[1] * to[1] + facing[3] * to[3] < -0.2
+end
+
 function on_attacked(attacker, pid)
     if dead or pid == nil or pid < 0 then
         return
     end
     local pos = tsf:get_pos()
-    local damage, knockback = weapons.attack(pid, pos)
-    if damage then
-        take_hit(damage, knockback, {player.get_pos(pid)}, pid)
+    local sneak = is_unaware_of(pid)
+    local damage, knockback, armed = weapons.attack(pid, pos)
+    if not damage then
+        return
     end
+    if sneak and armed then
+        survival.notify(pid, "Тихое убийство", "#a0e0a0")
+        skills.add_xp(pid, "sneaking", 15)
+        damage = data.health + 1
+    elseif sneak then
+        damage = damage * 2
+    end
+    take_hit(damage, knockback, {player.get_pos(pid)}, pid)
+end
+
+function shove(from, pid)
+    if dead then
+        return false
+    end
+    local pos = tsf:get_pos()
+    local dir = vec3.normalize({pos[1] - from[1], 0, pos[3] - from[3]})
+    local force = kind.heavy and 2 or 6
+    body:set_vel({dir[1] * force, 2.0, dir[3] * force})
+    if kind.heavy or kind.grab then
+        stun_until = now + 0.8
+    else
+        downed_until = now + 2.2
+        stun_until = downed_until
+    end
+    attack_anim = 0
+    if pid and pid >= 0 and mode ~= "chase" then
+        mode = "chase"
+        target_pid = pid
+        last_seen = now
+        goal = {player.get_pos(pid)}
+    end
+    return true
+end
+
+function is_downed()
+    return now < downed_until
 end
 
 function on_update(tps)
@@ -336,7 +462,7 @@ function on_update(tps)
     if tick % 20 == 0 then
         check_stuck(pos)
     end
-    if tick % 100 == 0 then
+    if tick % 100 == 0 and not data.resident then
         local pid = player.get_nearest(pos)
         if pid == nil or vec3.distance(pos, {player.get_pos(pid)}) > zombies.DESPAWN_DISTANCE then
             entity:despawn()
@@ -395,15 +521,27 @@ function on_render(delta)
         flash = flash - delta
         rig:set_color(flash > 0 and {1.0, 0.45, 0.45} or {1, 1, 1})
     end
+    local lying = mat4.translate({0, -(kind.half - 0.18) / size[2], 0})
     if dead then
-        if bones.body then
-            rig:set_matrix(bones.body, mat4.mul(mat4.translate({0, -0.72, 0}), mat4.rotate({1, 0, 0}, -90)))
-        end
+        rig:set_matrix(bones.body, mat4.mul(lying, mat4.rotate({1, 0, 0}, -90)))
+        return
+    end
+    if now < downed_until then
+        rig:set_matrix(bones.body, mat4.mul(lying, mat4.rotate({1, 0, 0}, 90)))
         return
     end
     local vel = body:get_vel()
     local speed = math.sqrt(vel[1] * vel[1] + vel[3] * vel[3])
     anim_phase = anim_phase + delta * (1.5 + speed * 4)
+    if kind.grab then
+        local crawl = math.sin(anim_phase) * math.min(1, speed / 0.6) * 30
+        rig:set_matrix(bones.body, mat4.mul(lying, mat4.rotate({1, 0, 0}, -90)))
+        rig:set_matrix(bones.arm_left, mat4.rotate({1, 0, 0}, 180 + crawl))
+        rig:set_matrix(bones.arm_right, mat4.rotate({1, 0, 0}, 180 - crawl))
+        rig:set_matrix(bones.leg_left, mat4.rotate({1, 0, 0}, crawl * 0.3))
+        rig:set_matrix(bones.leg_right, mat4.rotate({1, 0, 0}, -crawl * 0.3))
+        return
+    end
     local swing = math.sin(anim_phase) * math.min(1, speed / 1.2) * 32
     rig:set_matrix(bones.leg_left, mat4.rotate({1, 0, 0}, swing))
     rig:set_matrix(bones.leg_right, mat4.rotate({1, 0, 0}, -swing))

@@ -3,13 +3,14 @@ local zombies = require "zomboid:zombies"
 local inv = require "zomboid:inv"
 
 local skills = {
-    LIST = {"melee", "carpentry", "cooking", "first_aid", "sneaking"},
+    LIST = {"melee", "carpentry", "cooking", "first_aid", "sneaking", "aiming"},
     TITLES = {
         melee = "Ближний бой",
         carpentry = "Плотницкое дело",
         cooking = "Кулинария",
         first_aid = "Первая помощь",
         sneaking = "Скрытность",
+        aiming = "Меткость",
     },
     MAX_LEVEL = 10,
     THRESHOLDS = {75, 225, 525, 1000, 1700, 2600, 3700, 5000, 6500, 8200},
@@ -23,6 +24,7 @@ local skills = {
         treat_heal = {skill = "first_aid", per_level = 0.01, title = "Лечение при перевязке"},
         noise = {skill = "sneaking", per_level = -0.06, title = "Шум шагов"},
         sight = {skill = "sneaking", per_level = -0.05, title = "Заметность вприсядку"},
+        gun_spread = {skill = "aiming", per_level = -0.07, title = "Разброс при стрельбе"},
     },
     BOOKS = {
         {min = 0, max = 4, mult = 3.0},

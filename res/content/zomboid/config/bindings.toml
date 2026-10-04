@@ -1,2 +1,4 @@
 zomboid.crafting="key:g"
 zomboid.skills="key:k"
+zomboid.reload="key:r"
+zomboid.push="key:v"

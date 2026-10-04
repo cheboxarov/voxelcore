@@ -26,6 +26,8 @@
     <container id="status_box" pos="10,154" size="236,30" color="#0000008c" interactive="false">
         <label id="status" pos="8,4" markup="md" multiline="true" size="220,200" valign="top"></label>
     </container>
+    <label id="combat" markup="md" multiline="true" size="420,72" valign="bottom" text-align="right"
+           gravity="bottom-right" margin="0,0,24,16" interactive="false"></label>
     <label id="messages" markup="md" multiline="true" size="600,140" valign="bottom" text-align="center"
            gravity="bottom-center" margin="0,0,0,90" interactive="false"></label>
 </container>

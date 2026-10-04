@@ -6,6 +6,8 @@ local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
 local inv = require "zomboid:inv"
 local skills = require "zomboid:skills"
+local combat = require "zomboid:combat"
+local firearms = require "zomboid:firearms"
 
 local BASE_SPEED = 27.0
 local tick = 0
@@ -31,7 +33,8 @@ function on_update(tps)
     local emission = itemid ~= 0 and item.emission(itemid)
     state.light = type(emission) == "table" and (emission[1] or 0) > 0
 
-    mob.set_movement_speed(BASE_SPEED * survival.speed_factor(state))
+    mob.set_movement_speed(BASE_SPEED * survival.speed_factor(state) * (combat.is_grabbed(state) and 0.3 or 1))
+    firearms.update(pid)
     mob.set_run_speed_mul(survival.can_sprint(state) and 1.5 or 1.0)
 
     tick = tick + 1

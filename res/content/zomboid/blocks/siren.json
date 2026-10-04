@@ -1,0 +1,30 @@
+{
+    "caption": "Сирена-ловушка",
+    "texture-faces": [
+        "siren_side",
+        "siren_side",
+        "siren_top",
+        "siren_top",
+        "siren_side",
+        "siren_side"
+    ],
+    "material": "base:metal",
+    "model": "aabb",
+    "hitbox": [0.2, 0, 0.2, 0.6, 0.55, 0.6],
+    "light-passing": true,
+    "grounded": true,
+    "script-name": "noisemaker",
+    "tick-interval": 20,
+    "base:durability": 2.0,
+    "fields": {
+        "ring_at": {
+            "type": "float64"
+        }
+    },
+    "tags": [
+        "zomboid:interactive"
+    ],
+    "zomboid:noise-radius": 70,
+    "zomboid:noise-delay": 15,
+    "zomboid:noise-time": 50
+}

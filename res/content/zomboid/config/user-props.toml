@@ -13,3 +13,7 @@
 "zomboid:bash-hp" = {}
 "zomboid:skill-book" = {}
 "zomboid:book-volume" = {}
+"zomboid:gun" = {}
+"zomboid:noise-radius" = {}
+"zomboid:noise-delay" = {}
+"zomboid:noise-time" = {}

@@ -1,5 +1,7 @@
 local survival = require "zomboid:survival"
 local traits = require "zomboid:traits"
+local firearms = require "zomboid:firearms"
+local combat = require "zomboid:combat"
 
 local function toggle(layout)
     if hud.is_open(layout) then
@@ -29,6 +31,15 @@ function on_hud_open(playerid)
     events.on("zomboid:character_ready", update_vision)
     events.on("zomboid:new_character", update_vision)
     update_vision()
+    input.add_callback("player.attack", function()
+        firearms.fire(hud.get_player())
+    end)
+    input.add_callback("zomboid.reload", function()
+        firearms.reload(hud.get_player())
+    end)
+    input.add_callback("zomboid.push", function()
+        combat.push(hud.get_player())
+    end)
     events.on("zomboid:player_died", function(pid)
         if pid == hud.get_player() then
             hud.close_inventory()

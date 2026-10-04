@@ -50,6 +50,12 @@ crafting.RECIPES = {
         tools = {"zomboid:hammer"},
         xp = {"carpentry", 25},
     },
+    {
+        title = "Сирена-ловушка",
+        result = {"zomboid:siren.item", 1},
+        need = {{"zomboid:alarm_clock.item", 1}, {"zomboid:flashlight", 1}, {"zomboid:nails", 2}},
+        tools = {"zomboid:hammer"},
+    },
 }
 
 local CAPTIONS = {

@@ -1,0 +1,7 @@
+{
+    "caption": "Патроны 9 мм",
+    "description": "Для пистолета",
+    "icon-type": "sprite",
+    "icon": "items:ammo_9mm",
+    "stack-size": 60
+}

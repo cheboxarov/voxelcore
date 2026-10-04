@@ -1,0 +1,7 @@
+{
+    "caption": "Патроны для дробовика",
+    "description": "Картечь 12 калибра",
+    "icon-type": "sprite",
+    "icon": "items:shotgun_shells",
+    "stack-size": 30
+}
