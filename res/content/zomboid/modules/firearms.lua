@@ -3,7 +3,6 @@ local survival = require "zomboid:survival"
 local zombies = require "zomboid:zombies"
 local barricade = require "zomboid:barricade"
 local skills = require "zomboid:skills"
-local combat = require "zomboid:combat"
 
 local firearms = {}
 
@@ -112,9 +111,6 @@ function firearms.fire(pid)
             lifetime = 0.08, spawn_interval = 0.0001, explosion = {0.5, 0.5, 0.5},
             texture = "blocks:z_shirt_police", size = {0.06, 0.06, 0.06}, lighting = false,
         })
-    end
-    if hits > 0 then
-        combat.xp(pid, "aiming", 4 * hits)
     end
     return true, hits
 end

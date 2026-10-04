@@ -13,6 +13,7 @@ local firearms = require "zomboid:firearms"
 local combat = require "zomboid:combat"
 local weapons = require "zomboid:weapons"
 local clock = require "zomboid:clock"
+local skills = require "zomboid:skills"
 local inv = require "zomboid:inv"
 local G = town.GROUND
 
@@ -261,6 +262,7 @@ check(shots == 5 and firearms.loaded(invid, slot) == 10, "rounds spent")
 check(hits >= 3 and target.SAVED_DATA.health < hp0, "bullets hit")
 check(listener.mode == "investigate" or listener.mode == "chase", "gunshot heard 60 blocks away")
 check(weapons.attack(pid, target.get_pos()) == nil, "no melee with a gun")
+check(skills.xp(pid, "aiming") > 0, "hits train aiming")
 hold("zomboid:shotgun")
 inventory.set_data(invid, slot, "ammo", 2)
 target.SAVED_DATA.health = 1000
@@ -281,8 +283,10 @@ local facing = e:get_component("core:mob").get_dir()
 player.set_pos(pid, vp[1] - facing[1] * 1.4, vp[2] + 0.1, vp[3] - facing[3] * 1.4)
 entities.get(player.get_entity(pid)).rigidbody:set_crouching(true)
 check(victim.is_unaware_of(pid), "zombie does not notice the sneaking player")
+local sneak_xp = skills.xp(pid, "sneaking")
 victim.on_attacked(player.get_entity(pid), pid)
 check(victim.is_dead(), "silent kill from behind")
+check(skills.xp(pid, "sneaking") > sneak_xp, "silent kill trains sneaking")
 app.sleep(1)
 local _, aware = spawn_at(ROAD_X, -30.5)
 aware.hear({player.get_pos(pid)}, pid, 1)
