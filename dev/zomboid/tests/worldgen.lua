@@ -20,7 +20,10 @@ local function check(cond, msg)
     end
 end
 
-local function name_at(x, y, z) return block.name(block.get(x, y, z)) end
+local function name_at(x, y, z)
+    app.sleep_until(function() return block.get(x, y, z) ~= -1 end, nil, 30)
+    return block.name(block.get(x, y, z))
+end
 
 local function visit(x, z)
     player.set_pos(pid, x + 0.5, G + 3, z + 0.5)
