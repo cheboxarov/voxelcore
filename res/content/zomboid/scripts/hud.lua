@@ -2,7 +2,6 @@ local survival = require "zomboid:survival"
 local traits = require "zomboid:traits"
 local firearms = require "zomboid:firearms"
 local combat = require "zomboid:combat"
-    end)
 local mapping = require "zomboid:mapping"
 local cars = require "zomboid:cars"
 
