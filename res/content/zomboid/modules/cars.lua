@@ -153,7 +153,7 @@ function cars.status(pid)
     if car == nil then
         return nil
     end
-    return string.format("Машина: %d км/ч, бензин %.1f л", math.floor(math.abs(car.speed) * 3.6), car.data.fuel)
+    return string.format("Машина %d км/ч, бак %.1f л", math.floor(math.abs(car.speed) * 3.6), car.data.fuel)
 end
 
 return cars
