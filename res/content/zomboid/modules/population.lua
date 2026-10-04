@@ -20,7 +20,7 @@ local function ground(x, z)
     if town.building_at(x, z) then
         return nil
     end
-    return zombies.find_ground(x, z, town.in_town(x, z) and town.GROUND + 3 or nil)
+    return zombies.find_ground(x, z)
 end
 
 local function spawn_group(key, n, args_fn)
@@ -76,7 +76,7 @@ local function seed_near(ppos)
             local center = {cx * CELL + 18, ppos[2], cz * CELL + 18}
             local d = vec3.distance(center, ppos)
             if population.seeded[key] ~= clock.day() and d >= population.SEED_NEAR and d <= population.SEED_FAR
-                and zombies.find_ground(center[1], center[3]) ~= nil then
+                and block.get(center[1], town.GROUND, center[3]) ~= -1 then
                 if zombies.count_near(center, 20) >= 2 then
                     population.seeded[key] = clock.day()
                 else

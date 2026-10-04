@@ -72,7 +72,7 @@ local water_id
 
 function zombies.find_ground(x, z, top)
     water_id = water_id or block.index("base:water")
-    for y = top or 80, 8, -1 do
+    for y = top or (town.in_town(x, z) and town.GROUND + 3 or 80), 8, -1 do
         local id = block.get(x, y, z)
         if id == -1 then
             return nil
@@ -104,12 +104,9 @@ local function pick_spot(ppos, look, min_dist, max_dist, behind)
             local dist = min_dist + math.random() * (max_dist - min_dist)
             local x = math.floor(ppos[1] + dir[1] * dist)
             local z = math.floor(ppos[3] + dir[2] * dist)
-            local kind = town.building_at(x, z)
             local y
-            if kind == nil then
+            if town.building_at(x, z) == nil or math.random() < 0.35 then
                 y = zombies.find_ground(x, z)
-            elseif math.random() < 0.35 then
-                y = zombies.find_ground(x, z, town.GROUND + 3)
             end
             if y then
                 return x, y, z
