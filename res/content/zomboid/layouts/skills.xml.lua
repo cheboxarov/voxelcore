@@ -58,7 +58,12 @@ local function refresh()
         table.concat(world_lines, "\n")))
 end
 
+local ticking = false
+
 function on_open()
     refresh()
-    document.root:setInterval(1000, refresh)
+    if not ticking then
+        ticking = true
+        document.root:setInterval(1000, refresh)
+    end
 end
