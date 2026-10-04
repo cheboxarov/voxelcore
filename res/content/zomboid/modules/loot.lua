@@ -52,49 +52,6 @@ local TABLES = {
     },
 }
 
-local BUILDING = {
-    hardware = {
-        crate = {
-            {"zomboid:plank", 5, 4, 12}, {"zomboid:nails", 5, 10, 40}, {"zomboid:hammer", 4, 1, 1},
-            {"zomboid:axe", 2, 1, 1}, {"zomboid:crowbar", 2, 1, 1}, {"zomboid:flashlight", 2, 1, 1},
-            {"zomboid:matches", 2, 1, 1}, {"zomboid:book_carpentry_1", 2, 1, 1}, {"zomboid:book_carpentry_2", 1, 1, 1},
-            {"zomboid:shotgun_shells", 1, 2, 6}, {"zomboid:alarm_clock.item", 1, 1, 1},
-            {"zomboid:stick", 2, 2, 4}, {"zomboid:raincoat", 1, 1, 1}, {"zomboid:boots", 2, 1, 1},
-            {"zomboid:shovel", 3, 1, 1}, {"zomboid:gas_can_empty", 3, 1, 1}, {"zomboid:gas_can", 1, 1, 1}, {"zomboid:generator.item", 1, 1, 1}, {"zomboid:seeds_carrot", 2, 1, 3}, {"zomboid:seeds_potato", 2, 1, 3},
-        },
-    },
-    police = {
-        crate = {
-            {"zomboid:bat", 3, 1, 1}, {"zomboid:crowbar", 3, 1, 1}, {"zomboid:axe", 1, 1, 1},
-            {"zomboid:knife", 3, 1, 1}, {"zomboid:flashlight", 4, 1, 1}, {"zomboid:bandage", 3, 1, 2},
-            {"zomboid:spiked_bat", 1, 1, 1}, {"zomboid:book_melee_2", 1, 1, 1}, {"zomboid:book_sneaking_2", 1, 1, 1},
-            {"zomboid:pistol", 1, 1, 1}, {"zomboid:shotgun", 0.5, 1, 1},
-            {"zomboid:ammo_9mm", 2, 4, 12}, {"zomboid:shotgun_shells", 1.5, 2, 6}, {"zomboid:siren.item", 0.5, 1, 1},
-            {"zomboid:hiking_bag", 1, 1, 1},
-            {"zomboid:radio", 2, 1, 1}, {"zomboid:map", 2, 1, 1},
-        },
-        wardrobe = {
-            {"zomboid:flashlight", 3, 1, 1}, {"zomboid:bandage", 3, 1, 2}, {"zomboid:bat", 2, 1, 1},
-            {"zomboid:ammo_9mm", 1, 3, 8},
-            {"zomboid:leather_jacket", 3, 1, 1}, {"zomboid:boots", 2, 1, 1},
-        },
-    },
-    pharmacy = {
-        medicine_cabinet = {
-            {"zomboid:bandage", 5, 2, 5}, {"zomboid:disinfectant", 4, 1, 1}, {"zomboid:painkillers", 4, 1, 1},
-            {"zomboid:antibiotics", 3, 1, 1}, {"zomboid:book_first_aid_1", 1, 1, 1}, {"zomboid:book_first_aid_2", 1, 1, 1},
-            {"zomboid:splint", 2, 1, 1},
-        },
-    },
-    gas_station = {
-        shelf = {
-            {"zomboid:chips", 4, 1, 3}, {"zomboid:soda", 4, 1, 3}, {"zomboid:chocolate", 3, 1, 2},
-            {"zomboid:water_bottle", 2, 1, 2}, {"zomboid:map", 3, 1, 1}, {"zomboid:gas_can_empty", 3, 1, 1},
-            {"zomboid:gas_can", 2, 1, 1}, {"zomboid:matches", 2, 1, 1},
-        },
-    },
-}
-
 local ROLLS = {
     fridge = {1, 4}, kitchen_cabinet = {1, 3}, stove = {0, 1}, wardrobe = {1, 4}, medicine_cabinet = {1, 3},
     crate = {1, 4}, shelf = {2, 5},
@@ -114,8 +71,8 @@ local function choose(entries)
 end
 
 function loot.table_for(container, x, z)
-    local kind = town.building_at(x, z)
-    local special = kind and BUILDING[kind] and BUILDING[kind][container]
+    local _, p = town.building_at(x, z)
+    local special = p and p.def.loot and p.def.loot[container]
     return special or TABLES[container]
 end
 

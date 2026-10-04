@@ -48,7 +48,7 @@ function population.seed_cell(cx, cz)
     local day = clock.day()
     local ax, az
     if p then
-        ax, az = ox + p.x0 + p.door, oz + p.z0 - 4
+        ax, az = town.to_world(p, p.door, -4)
     else
         ax, az = ox + 18, oz + 18
     end

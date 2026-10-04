@@ -6,7 +6,7 @@ town.CELL = 32
 town.RADIUS = 3
 town.ROAD = 5
 town.LOT_MIN = 7
-town.LOT_MAX = 29
+town.LOT_SIZE = 23
 town.FLAT_EXTENT = town.CELL * town.RADIUS + 28
 
 local CELL = town.CELL
@@ -22,8 +22,67 @@ local function hash(a, b, c)
 end
 town.hash = hash
 
+local function load_dir(dir)
+    local names = {}
+    local path = "zomboid:modules/" .. dir
+    if file.isdir(path) then
+        for _, f in ipairs(file.list(path)) do
+            local name = f:match("([^/:]+)%.lua$")
+            if name and name:sub(1, 1) ~= "_" then
+                table.insert(names, name)
+            end
+        end
+    end
+    table.sort(names)
+    local list = {}
+    for _, name in ipairs(names) do
+        table.insert(list, require("zomboid:" .. dir .. "/" .. name))
+    end
+    return list
+end
+
+local registry
+
+local function reg()
+    if registry then
+        return registry
+    end
+    registry = {list = load_dir("buildings"), by_kind = {}, pick = {}, decor = {}}
+    for _, def in ipairs(registry.list) do
+        registry.by_kind[def.kind] = def
+        for _, zone in ipairs(def.zones or {}) do
+            local key = zone .. ":" .. (def.cells or 1)
+            registry.pick[key] = registry.pick[key] or {}
+            table.insert(registry.pick[key], {def.kind, def.weight or 1})
+        end
+    end
+    for _, d in ipairs(load_dir("decor")) do
+        for _, zone in ipairs(d.zones or {}) do
+            registry.decor[zone] = registry.decor[zone] or {}
+            table.insert(registry.decor[zone], d)
+        end
+    end
+    return registry
+end
+
+function town.building_defs()
+    return reg().list
+end
+
+function town.building_def(kind)
+    return reg().by_kind[kind]
+end
+
+local PARK_WEIGHT = {downtown = 12, suburb = 12}
+
 local function cell_of(w)
     return math.floor(w / CELL), w % CELL
+end
+
+function town.cell_at(wx, wz)
+    local cx, lx = cell_of(wx)
+    local cz, lz = cell_of(wz)
+    return cx, cz, lx, lz
 end
 
 function town.in_town(wx, wz)
@@ -31,29 +90,62 @@ function town.in_town(wx, wz)
     return wx >= -CELL * R and wx < limit and wz >= -CELL * R and wz < limit
 end
 
-local SIDINGS = {"siding_white", "siding_blue", "siding_yellow", "siding_green", "siding_red"}
-
-function town.lot_kind(cx, cz)
+function town.zone(cx, cz)
     if cx < -R or cz < -R or cx >= R or cz >= R then
         return nil
     end
-    if cx == 0 and cz == 0 then
-        return "house"
+    if cx >= -1 and cx <= 0 and cz >= -1 and cz <= 0 then
+        return "downtown"
     end
-    if cx == -1 and cz == 0 then
-        return "grocery"
+    return "suburb"
+end
+
+local FORCED = {["0:0"] = "house", ["-1:0"] = "grocery", ["1:2"] = "gas_station"}
+
+function town.lot_kind(cx, cz)
+    local zone = town.zone(cx, cz)
+    if zone == nil then
+        return nil
     end
-    if cx == 1 and cz == 2 then
-        return "gas_station"
+    local forced = FORCED[cx .. ":" .. cz]
+    if forced then
+        return forced
     end
-    local r = hash(cx, cz, 17)
-    if r < 0.08 then return "grocery"
-    elseif r < 0.15 then return "hardware"
-    elseif r < 0.21 then return "pharmacy"
-    elseif r < 0.26 then return "police"
-    elseif r < 0.38 then return "park"
+    local options = reg().pick[zone .. ":1"] or {}
+    local total = PARK_WEIGHT[zone] or 0
+    for _, o in ipairs(options) do total = total + o[2] end
+    local r = hash(cx, cz, 17) * total
+    for _, o in ipairs(options) do
+        r = r - o[2]
+        if r < 0 then
+            return o[1]
+        end
     end
-    return "house"
+    return "park"
+end
+
+function town.to_world(p, hx, hz)
+    local rot = p.rot
+    if rot == 0 then
+        return p.x0 + hx, p.z0 + hz
+    elseif rot == 1 then
+        return p.x0 + hz, p.z1 - hx
+    elseif rot == 2 then
+        return p.x1 - hx, p.z1 - hz
+    end
+    return p.x1 - hz, p.z0 + hx
+end
+
+function town.to_local(p, wx, wz)
+    local rot = p.rot
+    if rot == 0 then
+        return wx - p.x0, wz - p.z0
+    elseif rot == 1 then
+        return p.z1 - wz, wx - p.x0
+    elseif rot == 2 then
+        return p.x1 - wx, p.z1 - wz
+    end
+    return wz - p.z0, p.x1 - wx
 end
 
 local plans = {}
@@ -69,281 +161,129 @@ function town.plan(cx, cz)
         plans[key] = false
         return nil
     end
-    local w, d, wall
-    if kind == "house" then
-        w = 9 + 2 * math.floor(hash(cx, cz, 1) * 3)
-        d = 9 + 2 * math.floor(hash(cx, cz, 2) * 3)
-        wall = SIDINGS[1 + math.floor(hash(cx, cz, 3) * #SIDINGS)]
-    elseif kind == "gas_station" then
-        w, d, wall = 11, 7, "base:brick"
-    else
-        w, d, wall = 17, 13, kind == "police" and "base:stone" or "base:brick"
-    end
+    local def = reg().by_kind[kind]
     plan = {
-        kind = kind,
-        w = w, d = d,
-        x0 = town.LOT_MIN + math.floor((23 - w) / 2),
-        z0 = town.LOT_MIN + (kind == "gas_station" and 15 or 3),
-        wall = wall,
-        mid = math.floor(w / 2),
-        split = math.floor(d / 2),
+        kind = kind, def = def, cx = cx, cz = cz, zone = town.zone(cx, cz), rot = 0,
+        lot_w = town.LOT_SIZE, lot_d = town.LOT_SIZE,
     }
-    plan.door = plan.mid
-    plan.car = kind == "gas_station" or (kind == "house" and hash(cx, cz, 23) < 0.4)
+    def.plan(plan, function(n) return hash(cx, cz, n) end)
+    plan.ox = plan.ox or math.floor((plan.lot_w - plan.w) / 2)
+    plan.oz = plan.oz or 3
+    plan.door = plan.door or math.floor(plan.w / 2)
+    plan.x0 = cx * CELL + town.LOT_MIN + plan.ox
+    plan.z0 = cz * CELL + town.LOT_MIN + plan.oz
+    plan.x1 = plan.x0 + plan.w - 1
+    plan.z1 = plan.z0 + plan.d - 1
     plans[key] = plan
     return plan
 end
 
-local function house_column(p, hx, hz, out)
-    local w, d = p.w, p.d
-    local wall = p.wall
-    if wall:find(":") == nil then
-        wall = "zomboid:" .. wall
-    end
-    local edge_x = hx == 0 or hx == w - 1
-    local edge_z = hz == 0 or hz == d - 1
-    local perimeter = edge_x or edge_z
-    local corner = edge_x and edge_z
-    local back_door = 1
-
-    local floor = "base:planks"
-    if not perimeter then
-        if hz > p.split and hx < p.mid then
-            floor = "zomboid:tiles"
-        elseif hz > p.split and hx > p.mid then
-            floor = "zomboid:carpet"
+function town.find(kind)
+    local best, best_d
+    for cx = -R, R - 1 do
+        for cz = -R, R - 1 do
+            local p = town.plan(cx, cz)
+            local d = math.abs(cx + 0.5) + math.abs(cz + 0.5)
+            if p and p.kind == kind and (best == nil or d < best_d) then
+                best, best_d = p, d
+            end
         end
     end
-    table.insert(out, {0, floor, 0})
-    table.insert(out, {4, "zomboid:roof", 0})
-    if perimeter then
-        table.insert(out, {5, "zomboid:trim", 0})
-    end
-
-    if corner then
-        for dy = 1, 3 do table.insert(out, {dy, "zomboid:trim", 0}) end
-        return
-    end
-    if perimeter then
-        if hz == 0 and hx == p.door then
-            table.insert(out, {1, "base:wooden_door", 0})
-            table.insert(out, {3, wall, 0})
-            return
-        end
-        if hz == d - 1 and hx == back_door then
-            table.insert(out, {1, "base:wooden_door", 0})
-            table.insert(out, {3, wall, 0})
-            return
-        end
-        local along = edge_z and hx or hz
-        local near_door = edge_z and (math.abs(hx - p.door) <= 1 and hz == 0 or math.abs(hx - back_door) <= 1 and hz == d - 1)
-        if along % 3 == 1 and not near_door then
-            table.insert(out, {1, "zomboid:window", 0})
-            table.insert(out, {2, "zomboid:window", 0})
-        else
-            table.insert(out, {1, wall, 0})
-            table.insert(out, {2, wall, 0})
-        end
-        table.insert(out, {3, wall, 0})
-        return
-    end
-    if hz == p.split then
-        if hx == 2 or hx == w - 3 then
-            table.insert(out, {1, "core:struct_air", 0})
-            table.insert(out, {2, "core:struct_air", 0})
-        else
-            table.insert(out, {1, "zomboid:siding_white", 0})
-            table.insert(out, {2, "zomboid:siding_white", 0})
-        end
-        table.insert(out, {3, "zomboid:siding_white", 0})
-        return
-    end
-    if hx == p.mid and hz > p.split then
-        for dy = 1, 3 do table.insert(out, {dy, "zomboid:siding_white", 0}) end
-        return
-    end
-    local furniture
-    local rot = 0
-    if hz == d - 2 and hx < p.mid and hx >= 2 then
-        if hx == p.mid - 1 then furniture = "zomboid:fridge"
-        elseif hx == 2 then furniture = "zomboid:sink"
-        elseif hx == 3 then furniture = "zomboid:stove"
-        else furniture = "zomboid:kitchen_cabinet" end
-        rot = 2
-    elseif hz == d - 2 and (hx == w - 2 or hx == w - 3) then
-        furniture, rot = "zomboid:bed", 2
-    elseif hz == d - 2 and hx == p.mid + 1 then
-        furniture, rot = "zomboid:wardrobe", 2
-    elseif hx == w - 2 and hz == p.split + 1 then
-        furniture, rot = "zomboid:medicine_cabinet", 3
-    elseif hx == w - 2 and (hz == 2 or hz == 3) then
-        furniture, rot = "zomboid:couch", 3
-    elseif hx == 1 and hz == 2 then
-        furniture, rot = "zomboid:crate", 1
-    elseif hx == 1 and hz == p.split - 1 then
-        furniture, rot = "zomboid:wardrobe", 1
-    elseif hx == 1 and hz == 1 then
-        furniture, rot = "zomboid:tv", 1
-    end
-    if furniture then
-        table.insert(out, {1, furniture, rot})
-        if furniture ~= "zomboid:fridge" and furniture ~= "zomboid:wardrobe" then
-            table.insert(out, {2, "core:struct_air", 0})
-        end
-    else
-        table.insert(out, {1, "core:struct_air", 0})
-        table.insert(out, {2, "core:struct_air", 0})
-    end
-    local back_z = math.floor((p.split + d - 1) / 2)
-    local lamp = (hx == p.mid and hz == math.floor(p.split / 2))
-        or (hz == back_z and (hx == math.floor(p.mid / 2) or hx == p.mid + math.floor((w - 1 - p.mid) / 2)))
-    table.insert(out, {3, lamp and "zomboid:lamp" or "core:struct_air", 0})
+    return best
 end
 
-local STORE_CONTAINER = {
-    grocery = "zomboid:shelf",
-    hardware = "zomboid:crate",
-    pharmacy = "zomboid:medicine_cabinet",
-    police = "zomboid:crate",
-    gas_station = "zomboid:shelf",
-}
-
-local function store_column(p, hx, hz, out)
-    local w, d = p.w, p.d
-    local edge_x = hx == 0 or hx == w - 1
-    local edge_z = hz == 0 or hz == d - 1
-    table.insert(out, {0, "zomboid:tiles", 0})
-    table.insert(out, {4, "zomboid:roof", 0})
-    if edge_x or edge_z then
-        table.insert(out, {5, p.wall, 0})
-    end
-    if edge_x and edge_z then
-        for dy = 1, 3 do table.insert(out, {dy, p.wall, 0}) end
-        return
-    end
-    if edge_x or edge_z then
-        if hz == 0 and hx == p.door then
-            table.insert(out, {1, "base:wooden_door", 0})
-            table.insert(out, {3, p.wall, 0})
-            return
-        end
-        if hz == d - 1 and hx == 2 then
-            table.insert(out, {1, "base:wooden_door", 0})
-            table.insert(out, {3, p.wall, 0})
-            return
-        end
-        local glass = (hz == 0 and math.abs(hx - p.door) > 1 and hx > 1 and hx < w - 2)
-            or (edge_x and hz % 4 == 2)
-        local mat = glass and "zomboid:window" or p.wall
-        table.insert(out, {1, mat, 0})
-        table.insert(out, {2, mat, 0})
-        table.insert(out, {3, p.wall, 0})
-        return
-    end
-    local container = STORE_CONTAINER[p.kind]
-    local furniture, rot
-    if (hz == 4 or hz == 7 or hz == 10) and hx >= 3 and hx <= w - 4 and hx ~= p.door then
-        furniture, rot = container, (hz % 2 == 0) and 2 or 0
-        if p.kind == "police" and hz == 10 then
-            furniture = "zomboid:wardrobe"
-        end
-    elseif hz == 2 and hx >= 2 and hx <= 4 then
-        furniture, rot = "zomboid:kitchen_cabinet", 0
-    elseif hx == w - 2 and hz == d - 2 and p.kind ~= "police" then
-        furniture, rot = "zomboid:fridge", 3
-    end
-    if furniture then
-        table.insert(out, {1, furniture, rot})
-        if furniture == "zomboid:crate" or furniture == "zomboid:medicine_cabinet" or furniture == "zomboid:kitchen_cabinet" then
-            table.insert(out, {2, "core:struct_air", 0})
-        end
-    else
-        table.insert(out, {1, "core:struct_air", 0})
-        table.insert(out, {2, "core:struct_air", 0})
-    end
-    table.insert(out, {3, (hx % 4 == 2 and hz % 4 == 2) and "zomboid:lamp" or "core:struct_air", 0})
-end
-
-function town.car_spot(cx, cz)
-    local p = town.plan(cx, cz)
-    if p == nil or not p.car then
+function town.car_spot(p)
+    if p == nil or p.car == nil then
         return nil
     end
-    if p.kind == "gas_station" then
-        return cx * CELL + p.x0 + p.mid, cz * CELL + p.z0 - 8
-    end
-    return cx * CELL + p.x0 - 3, cz * CELL + p.z0 - 2
+    return town.to_world(p, p.car[1], p.car[2])
 end
 
-local function forecourt(p, hx, hz, out)
-    table.insert(out, {0, "zomboid:asphalt", 0})
-    if hz == -4 and (hx == 2 or hx == p.w - 3) then
-        table.insert(out, {1, "zomboid:fuel_pump", 2})
+local ctx = {}
+
+local function decorate(kind, zone, cx, cz, lx, lz, p, wx, wz, out)
+    local list = reg().decor[zone]
+    if list == nil then
+        return
     end
+    ctx.kind, ctx.zone, ctx.cx, ctx.cz, ctx.lx, ctx.lz, ctx.plan = kind, zone, cx, cz, lx, lz, p
+    for _, d in ipairs(list) do
+        if d.column(ctx, wx, wz, out) then
+            return
+        end
+    end
+end
+
+local function surface(out, name, rot)
+    table.insert(out, {0, name, rot or 0})
+    table.insert(out, {1, "core:struct_air", 0})
 end
 
 function town.column(wx, wz, out)
     if not town.in_town(wx, wz) then
+        if out then
+            decorate("wild", "wild", nil, nil, nil, nil, nil, wx, wz, out)
+        end
         return nil
     end
-    local cx, lx = cell_of(wx)
-    local cz, lz = cell_of(wz)
+    local cx, cz, lx, lz = town.cell_at(wx, wz)
+    local zone = town.zone(math.min(cx, R - 1), math.min(cz, R - 1))
     local road_x = lx < town.ROAD and cz >= -R and cz <= R and (cz < R or lz < town.ROAD)
     local road_z = lz < town.ROAD and cx >= -R and cx <= R and (cx < R or lx < town.ROAD)
     if road_x or road_z then
         if out then
             if road_x and not road_z and lx == 2 and wz % 6 < 3 then
-                table.insert(out, {0, "zomboid:road_line", 0})
+                surface(out, "zomboid:road_line", 0)
             elseif road_z and not road_x and lz == 2 and wx % 6 < 3 then
-                table.insert(out, {0, "zomboid:road_line", 1})
+                surface(out, "zomboid:road_line", 1)
             else
-                table.insert(out, {0, "zomboid:asphalt", 0})
+                surface(out, "zomboid:asphalt")
             end
-            table.insert(out, {1, "core:struct_air", 0})
+            decorate("road", zone, cx, cz, lx, lz, nil, wx, wz, out)
         end
         return "road"
     end
     if cx >= R or cz >= R then
         return nil
     end
-    if lx <= 6 or lz <= 6 or lx >= 30 or lz >= 30 then
+    if lx < town.LOT_MIN or lz < town.LOT_MIN or lx >= town.LOT_MIN + town.LOT_SIZE or lz >= town.LOT_MIN + town.LOT_SIZE then
         if out then
-            table.insert(out, {0, "zomboid:sidewalk", 0})
-            table.insert(out, {1, "core:struct_air", 0})
+            surface(out, "zomboid:sidewalk")
+            decorate("sidewalk", zone, cx, cz, lx, lz, nil, wx, wz, out)
         end
         return "sidewalk"
     end
     local p = town.plan(cx, cz)
     if p == nil then
+        if out then
+            decorate("park", zone, cx, cz, lx, lz, nil, wx, wz, out)
+        end
         return "park"
     end
-    local hx, hz = lx - p.x0, lz - p.z0
+    local hx, hz = town.to_local(p, wx, wz)
     if hx >= 0 and hx < p.w and hz >= 0 and hz < p.d then
         if out then
-            if p.kind == "house" then
-                house_column(p, hx, hz, out)
-            else
-                store_column(p, hx, hz, out)
-            end
+            p.def.column(p, hx, hz, out)
         end
         return "building"
     end
-    local sx, sz = town.car_spot(cx, cz)
-    if out and wx == sx and wz == sz then
+    if out and p.car and hx == p.car[1] and hz == p.car[2] then
         table.insert(out, {1, "zomboid:car_spawner", 0})
     end
-    if p.kind == "gas_station" and hz < 0 and hx >= -1 and hx <= p.w then
-        if out then
-            forecourt(p, hx, hz, out)
+    if p.def.lot then
+        local kind = p.def.lot(p, hx, hz, out)
+        if kind then
+            return kind
         end
-        return "path"
     end
     if hx == p.door and hz < 0 then
         if out then
-            table.insert(out, {0, "zomboid:sidewalk", 0})
-            table.insert(out, {1, "core:struct_air", 0})
+            surface(out, "zomboid:sidewalk")
         end
         return "path"
+    end
+    if out then
+        decorate("lawn", zone, cx, cz, lx, lz, p, wx, wz, out)
     end
     return "lawn"
 end
@@ -352,15 +292,13 @@ function town.building_at(wx, wz)
     if not town.in_town(wx, wz) then
         return nil
     end
-    local cx, lx = cell_of(wx)
-    local cz, lz = cell_of(wz)
-    local p = town.plan(cx, cz)
+    local p = town.plan(town.cell_at(wx, wz))
     if p == nil then
         return nil
     end
-    local hx, hz = lx - p.x0, lz - p.z0
+    local hx, hz = town.to_local(p, wx, wz)
     if hx >= 0 and hx < p.w and hz >= 0 and hz < p.d then
-        return p.kind
+        return p.kind, p, hx, hz
     end
     return nil
 end
@@ -375,14 +313,13 @@ function town.tree_at(wx, wz, seed)
             return math.floor(hash(wz, wx, 5) * 3)
         end
     elseif kind == "park" or kind == "lawn" then
-        local cx, lx = cell_of(wx)
-        local cz, lz = cell_of(wz)
+        local cx, cz, lx, lz = town.cell_at(wx, wz)
         if lx < 9 or lz < 9 or lx > 27 or lz > 27 then
             return nil
         end
         local p = town.plan(cx, cz)
         if p then
-            local hx, hz = lx - p.x0, lz - p.z0
+            local hx, hz = town.to_local(p, wx, wz)
             if hx > -4 and hx < p.w + 3 and hz > -6 and hz < p.d + 3 then
                 return nil
             end
@@ -400,12 +337,8 @@ function town.house_interiors()
         for cz = -R, R - 1 do
             local p = town.plan(cx, cz)
             if p and p.kind == "house" then
-                table.insert(points, {
-                    cx * CELL + p.x0 + p.mid,
-                    GROUND + 1,
-                    cz * CELL + p.z0 + 2,
-                    dist = math.abs(cx + 0.5) + math.abs(cz + 0.5)
-                })
+                local x, z = town.to_world(p, p.mid, 2)
+                table.insert(points, {x, GROUND + 1, z, dist = math.abs(cx + 0.5) + math.abs(cz + 0.5)})
             end
         end
     end

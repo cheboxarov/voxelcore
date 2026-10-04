@@ -23,7 +23,8 @@ function cars.add_key(invid, container, x, z)
     if not KEY_CONTAINERS[container] or math.random() > cars.KEY_CHANCE then
         return false
     end
-    local sx, sz = town.car_spot(math.floor(x / town.CELL), math.floor(z / town.CELL))
+    local _, p = town.building_at(x, z)
+    local sx, sz = town.car_spot(p)
     local slot = sx and inventory.find_by_item(invid, 0, 0, inventory.size(invid) - 1, 0)
     if slot == nil then
         return false

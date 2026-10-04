@@ -32,9 +32,9 @@ local state = survival.get(pid)
 state.health = 100
 
 local px, _, pz = player.get_pos(pid)
-local cx, cz = math.floor(px / 32), math.floor(pz / 32)
+local cx, cz = town.cell_at(math.floor(px), math.floor(pz))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 check(block.name(block.get(ox + p.door, G + 1, oz)) == "base:wooden_door", "front door closed")
 
 local z = zombies.spawn(ox + p.door, G + 1, oz - 5, {})

@@ -48,9 +48,9 @@ local function held_name()
     return item.name((inventory.get(invid, slot)))
 end
 
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 -- an open lawn spot in front of the house and a spot under its roof
 local ax, az = ox + p.w + 1, oz - 1
 local ix, iz = ox + p.mid, oz + 2

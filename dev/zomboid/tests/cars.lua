@@ -23,8 +23,8 @@ end
 
 zombies.enabled = false
 local pid = player.create("survivor")
-local gp = town.plan(1, 2)
-local sx, sz = town.car_spot(1, 2)
+local gp = town.find("gas_station")
+local sx, sz = town.car_spot(gp)
 check(sx, "gas station has a car spot")
 survival.get(pid).fresh = nil
 player.set_pos(pid, sx + 0.5, G + 2, sz + 4.5)
@@ -55,12 +55,12 @@ check(not cars.enter(pid, uid), "locked")
 local box = inventory.create(12)
 local found
 for _ = 1, 60 do
-    if cars.add_key(box, "shelf", 32 + gp.x0 + 3, 64 + gp.z0 + 4) then found = true break end
+    if cars.add_key(box, "shelf", gp.x0 + 3, gp.z0 + 4) then found = true break end
 end
 check(found, "key generated")
 local kslot = inventory.find_by_item(box, item.index("zomboid:car_key"))
 check(inventory.get_data(box, kslot, "car") == car.data.id, "key matches the car")
-check(not cars.add_key(box, "medicine_cabinet", 32 + gp.x0 + 3, 64 + gp.z0 + 4), "no keys in medicine cabinets")
+check(not cars.add_key(box, "medicine_cabinet", gp.x0 + 3, gp.z0 + 4), "no keys in medicine cabinets")
 local pslot = inventory.size(invid) - 1
 inventory.set(invid, pslot, item.index("zomboid:car_key"), 1)
 inventory.set_data(invid, pslot, "car", inventory.get_data(box, kslot, "car"))

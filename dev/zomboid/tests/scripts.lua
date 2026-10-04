@@ -87,9 +87,9 @@ check(inventory.get_uses(invid, slot) == item.uses(item.index("zomboid:disinfect
 state.wounds, state.infection, state.health = {}, nil, 100
 
 -- containers: loot once, crafted crates stay empty
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 local fx, fy, fz = ox + p.mid - 1, G + 1, oz + p.d - 2
 check(block.name(block.get(fx, fy, fz)) == "zomboid:fridge", "fridge at " .. fx .. "," .. fz)
 hold("zomboid:bat")

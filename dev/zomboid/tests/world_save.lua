@@ -36,9 +36,9 @@ local function wait_loaded()
 end
 wait_loaded()
 
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 local lx, ly, lz = ox + p.mid, G + 3, oz + math.floor(p.split / 2)
 local gx, gy, gz = ox + p.mid, G + 1, oz + 2
 local bx, by, bz = ox + p.w + 1, G + 1, oz - 1

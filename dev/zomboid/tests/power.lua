@@ -42,9 +42,9 @@ local function hold(name, count, uses)
     end
 end
 
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 local lx, ly, lz = ox + p.mid, G + 3, oz + math.floor(p.split / 2)
 
 -- day 1: the living room lamp is lit
@@ -116,9 +116,9 @@ check(not power.is_running(gx, gy, gz), "generator stops when empty")
 check(block.name(block.get(lx, ly, lz)) == "zomboid:lamp_off", "lamp off again")
 
 -- the gas station pump works only with power
-local gp = town.plan(1, 2)
+local gp = town.find("gas_station")
 check(gp and gp.kind == "gas_station", "gas station cell")
-local px, py, pz = 32 + gp.x0 + 2, G + 1, 64 + gp.z0 - 4
+local px, py, pz = gp.x0 + 2, G + 1, gp.z0 - 4
 player.set_pos(pid, px + 0.5, G + 2, pz - 2)
 app.sleep_until(function() return block.get(px, py, pz) ~= -1 end, 6000)
 app.sleep(1)

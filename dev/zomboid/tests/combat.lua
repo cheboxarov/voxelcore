@@ -97,7 +97,7 @@ clear_zombies()
 
 -- a fat zombie breaks into a house faster than a normal one
 local hp_ = town.plan(0, -1)
-local ox, oz = hp_.x0, -32 + hp_.z0
+local ox, oz = hp_.x0, hp_.z0
 local dx, dy = ox + hp_.door, G + 1
 local door_id, door_state = block.get(dx, dy, oz), block.get_states(dx, dy, oz)
 check(block.name(door_id) == "base:wooden_door", "front door")

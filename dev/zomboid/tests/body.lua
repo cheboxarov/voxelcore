@@ -207,9 +207,9 @@ local sweater_dirt = gear.dirt(ginv, 1)
 inventory.set(invid, hslot, 0, 0)
 inventory.move(ginv, 1, invid, hslot)
 check(held_name() == "zomboid:sweater", "sweater in hand")
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local hp_ = town.plan(cx, cz)
-local hx, hz = cx * 32 + hp_.x0, cz * 32 + hp_.z0
+local hx, hz = hp_.x0, hp_.z0
 local sx, sy, sz = hx + 2, G + 1, hz + hp_.d - 2
 check(block.name(block.get(sx, sy, sz)) == "zomboid:sink", "sink")
 clock.reset(clock.START_HOUR)

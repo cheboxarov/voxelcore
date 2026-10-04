@@ -134,9 +134,9 @@ local function gained(skill, fn)
     return skills.xp(pid, skill) - xp
 end
 
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 local wx
 for x = ox + 1, ox + p.w - 2 do
     if block.name(block.get(x, G + 1, oz)) == "zomboid:window" then wx = x break end

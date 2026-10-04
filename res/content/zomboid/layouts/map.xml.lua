@@ -1,9 +1,5 @@
 local mapping = require "zomboid:mapping"
-
-local LEGEND = {
-    {"house", "дома"}, {"grocery", "продукты"}, {"hardware", "хозтовары"}, {"pharmacy", "аптека"},
-    {"police", "полиция"}, {"gas_station", "заправка"},
-}
+local town = require "zomboid:town"
 
 local function hex(c)
     return string.format("#%02x%02x%02x", c[1], c[2], c[3])
@@ -12,8 +8,8 @@ end
 function on_open()
     mapping.draw(document.map.data, hud.get_player(), 2)
     local parts = {}
-    for _, e in ipairs(LEGEND) do
-        table.insert(parts, "[" .. hex(mapping.COLORS[e[1]]) .. "]" .. e[2])
+    for _, def in ipairs(town.building_defs()) do
+        table.insert(parts, "[" .. hex(def.color) .. "]" .. def.title)
     end
     document.legend.text = table.concat(parts, "  ")
 end

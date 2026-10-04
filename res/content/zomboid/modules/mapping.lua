@@ -16,12 +16,6 @@ local COLORS = {
     lawn = {92, 140, 70},
     park = {70, 125, 60},
     wild = {48, 88, 46},
-    house = {170, 120, 80},
-    grocery = {210, 190, 70},
-    hardware = {200, 120, 50},
-    pharmacy = {90, 180, 90},
-    police = {70, 100, 190},
-    gas_station = {200, 60, 50},
 }
 mapping.COLORS = COLORS
 
@@ -59,7 +53,8 @@ end
 function mapping.color(wx, wz)
     local kind = town.column(wx, wz)
     if kind == "building" then
-        return COLORS[town.building_at(wx, wz)] or COLORS.house
+        local _, p = town.building_at(wx, wz)
+        return p.def.color
     end
     return COLORS[kind or "wild"]
 end

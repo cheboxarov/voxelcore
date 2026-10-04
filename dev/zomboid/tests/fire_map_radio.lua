@@ -46,9 +46,9 @@ local function hold(name, count, uses)
     end
 end
 
-local cx, cz = math.floor(spawn[1] / 32), math.floor(spawn[3] / 32)
+local cx, cz = town.cell_at(math.floor(spawn[1]), math.floor(spawn[3]))
 local p = town.plan(cx, cz)
-local ox, oz = cx * 32 + p.x0, cz * 32 + p.z0
+local ox, oz = p.x0, p.z0
 
 -- an unattended campfire next to planks starts a fire
 local fx, fy, fz = ox + p.w + 2, G + 1, oz - 1
@@ -124,9 +124,9 @@ check(not mapping.is_explored(pid, spawn[1] + 120, spawn[3] + 120), "far corner 
 check(not mapping.has_map(pid), "no map yet")
 inv.give(pid, "zomboid:map", 1)
 check(mapping.has_map(pid), "has a map")
-local gp = town.plan(1, 2)
-local c = mapping.color(32 + gp.x0 + 1, 64 + gp.z0 + 1)
-check(c == mapping.COLORS.gas_station, "gas station on the map")
+local gp = town.find("gas_station")
+local c = mapping.color(gp.x0 + 1, gp.z0 + 1)
+check(c == gp.def.color, "gas station on the map")
 check(mapping.color(2, 20) == mapping.COLORS.road, "road on the map")
 local saved = survival.serialize()[tostring(pid)]
 check(saved.explored and saved.explored[math.floor(spawn[1] / 8) .. ":" .. math.floor(spawn[3] / 8)], "exploration is saved")
