@@ -427,6 +427,9 @@ local STARTER_KIT = {
 }
 
 function survival.new_character(pid, pos)
+    if survival.states[pid] then
+        gear.take_all(survival.states[pid])
+    end
     local state = new_state()
     state.setup = true
     survival.states[pid] = state
@@ -468,6 +471,9 @@ function survival.deserialize(players)
         state.messages = {}
         state.hurt = 0
         state.wounds = state.wounds or {}
+        if state.temp == nil and not state.dead then
+            gear.dress(state)
+        end
         vitals.defaults(state)
         survival.states[tonumber(key)] = state
     end

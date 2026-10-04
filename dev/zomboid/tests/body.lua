@@ -240,6 +240,17 @@ check(contents and #contents == 1 and contents[1][2] == 10, "contents stored in 
 inventory.remove(view)
 view = gear.open_pack(state)
 check(inv.count(view, "zomboid:plank") == 10, "backpack reopens with contents")
+-- with no room in the inventory a bag put into the pack is dropped, never stored inside
+for slot = 0, inventory.size(invid) - 1 do
+    inventory.set(invid, slot, item.index("zomboid:hiking_bag"), 1)
+end
+inventory.set(view, 1, item.index("zomboid:hiking_bag"), 1)
+gear.sync_pack(state, view, pid)
+for _, e in ipairs(inventory.get_data(ginv, 5, "contents")) do
+    check(not item.properties[item.index(e[1])]["zomboid:slots"], "no bag inside a bag with a full inventory")
+end
+check(inventory.get(view, 1) == 0, "bag left the pack view")
+inv.clear(invid)
 inventory.remove(view)
 local load = gear.load(pid, state)
 log(string.format("load with 10 planks in the bag: %.1f kg", load))
@@ -267,7 +278,12 @@ local names = {}
 for _, e in ipairs(dropped or {}) do names[e[1]] = e end
 check(names["zomboid:jeans"] and names["zomboid:school_bag"], "clothes dropped on death")
 check(names["zomboid:school_bag"][3].contents[1][2] == 10, "bag keeps contents")
+local old_gear = state.gear_inv
 state = survival.new_character(pid, spawn)
+check(old_gear == nil or not pcall(inventory.size, old_gear), "previous gear inventory freed")
+old_gear = gear.inventory(state)
+state = survival.new_character(pid, spawn)
+check(not pcall(inventory.size, old_gear), "gear inventory of a replaced character freed")
 app.sleep(1)
 check(state.indoors, "indoors at the spawn")
 ginv = gear.inventory(state)
@@ -410,6 +426,17 @@ events.emit("zomboid:stew.use", pid)
 check(state.hunger > 95 and state.sickness == sickness, "stew eaten")
 
 -- 9. clothes and the bag survive save and load
+-- a naked character stays naked after a reload, a character from a save before clothing gets dressed
+gear.take_all(state)
+gear.inventory(state)
+survival.deserialize(json.parse(json.tostring(survival.serialize())))
+state = survival.get(pid)
+check(gear.warmth(state) == 0, "naked stays naked after reload")
+local legacy = survival.serialize()
+legacy[tostring(pid)].temp, legacy[tostring(pid)].gear = nil, nil
+survival.deserialize(json.parse(json.tostring(legacy)))
+state = survival.get(pid)
+check(gear.warmth(state) == 4, "old save gets starter clothes")
 reset()
 inv.clear(invid)
 gear.take_all(state)

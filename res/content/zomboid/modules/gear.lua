@@ -1,4 +1,5 @@
 local traits = require "zomboid:traits"
+local inv = require "zomboid:inv"
 
 local gear = {
     SLOTS = {"head", "torso", "jacket", "legs", "feet", "back"},
@@ -280,6 +281,11 @@ function gear.sync_pack(state, view, pid)
         if itemid ~= 0 and prop(itemid, "zomboid:slots") then
             inventory.move(view, s, playerinv)
             itemid, count = inventory.get(view, s)
+            if itemid ~= 0 then
+                inv.drop(pid, itemid, count, inventory.get_all_data(view, s))
+                inventory.set(view, s, 0, 0)
+                itemid = 0
+            end
         end
         if itemid ~= 0 then
             table.insert(contents, {item.name(itemid), count, inventory.get_all_data(view, s)})

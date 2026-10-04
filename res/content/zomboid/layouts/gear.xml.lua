@@ -4,6 +4,7 @@ local spoilage = require "zomboid:spoilage"
 local inv = require "zomboid:inv"
 
 local pack
+local ticking = false
 
 local function current()
     local pid = hud.get_player()
@@ -86,7 +87,10 @@ function on_open()
     document.gear.inventory = gear.inventory(current())
     open_pack()
     refresh()
-    document.root:setInterval(500, refresh)
+    if not ticking then
+        ticking = true
+        document.root:setInterval(500, refresh)
+    end
 end
 
 function on_close()
