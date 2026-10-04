@@ -8,7 +8,7 @@ local noise = require "zomboid:noise"
 local zombies = require "zomboid:zombies"
 local survival = require "zomboid:survival"
 
-local COLORS = {"red", "blue", "white", "green"}
+local COLORS = {"red", "blue", "white", "green", "black", "silver", "yellow"}
 local MAX_SPEED = 15
 local REVERSE_SPEED = 4
 local ACCEL = 6
@@ -27,7 +27,12 @@ if data.id == nil then
     data.heading = math.floor(town.hash(x, z, 32) * 4) * 90
     data.color = COLORS[1 + math.floor(town.hash(x, z, 33) * #COLORS)]
 end
+if data.body == nil then
+    local pos = tsf:get_pos()
+    data.body = town.hash(math.floor(pos[1]), math.floor(pos[3]), 34) < 0.3 and "pickup" or "sedan"
+end
 rig:set_texture("$paint", "blocks:car_" .. data.color)
+rig:set_visible(rig:index(data.body == "pickup" and "sedan" or "pickup"), false)
 
 driver = nil
 speed = 0

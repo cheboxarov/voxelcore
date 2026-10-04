@@ -52,14 +52,20 @@ class Sheet:
         self.r = self.c.r
         self.cx = self.cy = self.row = 0
 
-    def net(self, w, h, d):
-        nw, nh = 2 * (w + d), d + h
-        if self.cx + nw > self.c.w:
+    def alloc(self, w, h):
+        if self.cx + w > self.c.w:
             self.cx, self.cy, self.row = 0, self.cy + self.row, 0
         x0, y0 = self.cx, self.cy
-        self.cx += nw
-        self.row = max(self.row, nh)
-        assert y0 + nh <= self.c.h, (self.name, w, h, d)
+        self.cx += w
+        self.row = max(self.row, h)
+        assert y0 + h <= self.c.h, (self.name, w, h)
+        return x0, y0
+
+    def face(self, w, h):
+        return Face(self.c, *self.alloc(w, h), w, h)
+
+    def net(self, w, h, d):
+        x0, y0 = self.alloc(2 * (w + d), d + h)
         c = self.c
         return {
             "top": Face(c, x0, y0, w, d), "bottom": Face(c, x0 + w + d, y0, w, d),
@@ -80,7 +86,7 @@ def box(frm, to, tex, net=None, sheet=None, extra=""):
     head = "@box from %s to %s texture \"%s\"%s" % (vec(frm), vec(to), tex, extra)
     if net is None:
         return head
-    parts = ["    @part tags (%s) region %s" % (s, sheet.region(net[s])) for s in SIDES]
+    parts = ["    @part tags (%s) region %s" % (s, sheet.region(net[s])) for s in SIDES if s in net]
     return head + " {\n" + "\n".join(parts) + "\n}"
 
 
@@ -546,6 +552,368 @@ def zombie():
     save_tex("z_gore", gore)
 
 
+# ---------- car ----------
+
+CAR_COLORS = {"red": "a83228", "blue": "30589a", "white": "d8d8d0", "green": "3a6a3a", "black": "2e3036",
+              "silver": "9aa0a8", "yellow": "d8a828"}
+WHEELS = ((16, 8, 0.4), (14, 12, 0.3), (12, 14, 0.2), (8, 16, 0.1))
+WHEEL_Z = 32
+ARCH = 9.5
+
+
+def world(f, side, b, i, j):
+    x0, y0, z0, x1, y1, z1 = b
+    u, v = (i + 0.5) / f.w, (j + 0.5) / f.h
+    y = y1 - v * (y1 - y0)
+    if side == "west":
+        return x0, y, z0 + u * (z1 - z0)
+    if side == "east":
+        return x1, y, z1 - u * (z1 - z0)
+    if side == "south":
+        return x0 + u * (x1 - x0), y, z1
+    if side == "north":
+        return x1 - u * (x1 - x0), y, z0
+    if side == "top":
+        return x0 + u * (x1 - x0), y1, z0 + v * (z1 - z0)
+    return x0 + u * (x1 - x0), y0, z1 - v * (z1 - z0)
+
+
+class CarBody:
+    """Paint boxes of all car variants; layout is shared by every paint sheet."""
+
+    def __init__(self):
+        self.boxes = []
+
+    def add(self, group, frm, to, hidden=(), dark=()):
+        self.boxes.append((group, frm, to, set(hidden), set(dark)))
+
+
+def car_layout():
+    body = CarBody()
+    body.add("body", (-27, -8, 12), (27, 3, 48), hidden=("north",), dark=("bottom",))
+    body.add("body", (-27, -14, 41), (27, -8, 48), hidden=("top",), dark=("bottom", "north"))
+    body.add("body", (-27, -14, -23), (27, -8, 23), hidden=("top",), dark=("bottom", "north", "south"))
+    body.add("body", (-27, -14, -48), (27, -8, -41), hidden=("top",), dark=("bottom", "south"))
+    body.add("body", (-30, 3, 8), (-27, 6, 11))
+    body.add("body", (27, 3, 8), (30, 6, 11))
+    body.add("sedan", (-27, -8, -22), (27, 3, 12), hidden=("top", "north", "south"), dark=("bottom",))
+    body.add("sedan", (-27, -8, -48), (27, 3, -22), hidden=("south",), dark=("bottom",))
+    body.add("sedan", (-24.5, 15, -21), (24.5, 16.5, 11))
+    body.add("sedan", (-24.4, 3, -5), (24.4, 15, -3), hidden=("top", "bottom", "north", "south"))
+    body.add("pickup", (-27, -8, -8), (27, 3, 12), hidden=("top", "south"), dark=("bottom",))
+    body.add("pickup", (-24.5, 15, -7), (24.5, 16.5, 11))
+    body.add("pickup", (-24.6, 3, -7), (-22, 15, -5), hidden=("top", "bottom"))
+    body.add("pickup", (22, 3, -7), (24.6, 15, -5), hidden=("top", "bottom"))
+    body.add("pickup", (-27, -8, -48), (-25, 4, -8), dark=("bottom",))
+    body.add("pickup", (25, -8, -48), (27, 4, -8), dark=("bottom",))
+    body.add("pickup", (-25, -8, -48), (25, 4, -46), dark=("bottom",))
+    return body
+
+
+def paint_pixel(tones, burnt, r, side, x, y, z, group):
+    if side == "bottom":
+        return hexc("1e1e22")
+    c = tones[3] if side == "top" else tones[2]
+    if side in ("west", "east"):
+        if -3.5 <= y < -2.5:
+            c = tones[1]
+        elif -2.5 <= y < -1.5:
+            c = tones[3]
+        for zc in (WHEEL_Z, -WHEEL_Z):
+            d = ((z - zc) ** 2 + (y + 14.5) ** 2) ** 0.5
+            if d < ARCH:
+                c = hexc("16161a")
+            elif d < ARCH + 1:
+                c = tones[0]
+        doors = (21, -5, -22) if group == "sedan" else (21, -7) if group == "pickup" else (21,)
+        if group != "pickup" or abs(z) < 40:
+            for dz in doors:
+                if abs(z - dz) < 0.5 and y > -8:
+                    c = tones[0]
+        handles = ((16, 19), (-10, -7)) if group == "sedan" else ((15, 18),)
+        for a, bz in handles:
+            if a <= z < bz and 0 <= y < 1.2:
+                c = tones[4] if not burnt else tones[1]
+        if group == "pickup" and z < -8 and y > 3:
+            c = tones[3]
+        if not burnt and abs((z * 0.6 - y) % 31 - 15) < 0.5 and y > -6:
+            c = mix(c, tones[4], 0.5)
+    if side == "top":
+        if z > 12 and (abs(z - 12.8) < 0.5 or abs(abs(x) - 25.5) < 0.5):
+            c = tones[2]
+        if z > 13 and abs(x) < 0.5:
+            c = tones[4]
+        if z < -22 and (abs(z + 22.8) < 0.5 or abs(abs(x) - 25.5) < 0.5) and group == "sedan":
+            c = tones[2]
+    if side == "north" and z < -45:
+        if group == "sedan" and (abs(y + 4) < 0.5 and abs(x) < 22 or abs(abs(x) - 22) < 0.5 and y > -4):
+            c = tones[0]
+        if group == "pickup" and abs(y - 1) < 0.6 and abs(x) < 3:
+            c = tones[0]
+    if side == "south" and z > 47:
+        if y > 2:
+            c = tones[3]
+        if abs(x) < 1.5 and -1 < y < 1.5:
+            c = hexc("c8c8c8") if not burnt else tones[1]
+    if y < -10 and side != "top":
+        c = mix(c, hexc("5a4a38"), 0.25)
+    if burnt:
+        n = zlib.crc32(b"%d,%d,%d" % (x // 5, y // 4, z // 6)) % 100
+        if n < 30:
+            c = mix(c, hexc("8a4a24"), 0.45 + n / 100)
+        elif n > 88:
+            c = tones[0]
+        elif y < -9 and n < 50:
+            c = mix(c, hexc("6a2a20"), 0.5)
+    return c
+
+
+def paint_sheet(name, tones, burnt, layout):
+    sh = Sheet(name, 192, 120, seed=zlib.crc32(name.encode()))
+    nets, todo = [], []
+    for k, (group, frm, to, hidden, dark) in enumerate(layout.boxes):
+        size = {"top": (to[0] - frm[0], to[2] - frm[2]), "north": (to[0] - frm[0], to[1] - frm[1]),
+                "south": (to[0] - frm[0], to[1] - frm[1]), "west": (to[2] - frm[2], to[1] - frm[1]),
+                "east": (to[2] - frm[2], to[1] - frm[1])}
+        nets.append({s: None for s in SIDES})
+        todo += [(k, side) + tuple(max(1, round(v)) for v in size[side]) for side in size
+                 if side not in hidden and side not in dark]
+    for k, side, w, h in sorted(todo, key=lambda t: (-t[3], -t[2])):
+        group, frm, to = layout.boxes[k][:3]
+        f = nets[k][side] = sh.face(w, h)
+        for i, j in f.cells():
+            f.set(i, j, paint_pixel(tones, burnt, sh.r, side, *world(f, side, frm + to, i, j), group))
+        for i in range(f.w):
+            f.set(i, 0, mix(f.get(i, 0), tones[4], 0.35))
+            f.set(i, f.h - 1, mix(f.get(i, f.h - 1), tones[0], 0.35))
+    plain = sh.face(2, 2)
+    bevel(plain, tones)
+    dark = sh.face(2, 2)
+    dark.rect(0, 0, 1, 1, hexc("1e1e22"))
+    for net, (group, frm, to, hidden, darks) in zip(nets, layout.boxes):
+        for side in SIDES:
+            if net[side] is None:
+                net[side] = dark if (side in darks or side == "bottom") else plain
+    sh.save()
+    return sh, nets, plain
+
+
+def parts_sheet(name, burnt):
+    sh = Sheet(name, 128, 96, seed=zlib.crc32(name.encode()))
+    r = sh.r
+    F = {}
+    glass = ramp("4a6478") if not burnt else ramp("1c1a1a")
+    chrome = PAL["steel"] if not burnt else ramp("4a4038")
+    rubber = PAL["rubber"]
+
+    def window(f, seats=0, dash=False):
+        for i, j in f.cells():
+            f.set(i, j, glass[1] if j > f.h * 0.55 else glass[2])
+        if burnt:
+            for i, j in f.cells():
+                if r.random() < 0.15:
+                    f.set(i, j, hexc("3a3430"))
+            for i in range(f.w):
+                f.set(i, f.h - 1 - r.randint(0, 1), hexc("8a8a86") if r.random() < 0.3 else glass[0])
+            return
+        for k in range(seats):
+            cx = int(f.w * (k + 0.5) / max(1, seats))
+            f.rect(cx - 2, f.h // 2 - 1, cx + 1, f.h - 1, glass[0])
+            f.rect(cx - 1, f.h // 2 - 3, cx, f.h // 2 - 2, glass[0])
+        if dash:
+            f.rect(0, f.h - 3, f.w - 1, f.h - 1, glass[0])
+        for i, j in f.cells():
+            if (i + j * 2) % 23 in (0, 1):
+                f.set(i, j, mix(f.get(i, j), glass[4], 0.55))
+        for i in range(f.w):
+            f.set(i, 0, glass[3])
+
+    F["side_sedan"] = sh.face(30, 12)
+    window(F["side_sedan"], seats=2)
+    F["side_pickup"] = sh.face(16, 13)
+    window(F["side_pickup"], seats=1)
+    F["wind"] = sh.face(48, 15)
+    window(F["wind"], dash=True)
+    F["rear"] = sh.face(48, 15)
+    window(F["rear"], seats=2)
+    F["back_pickup"] = sh.face(48, 13)
+    window(F["back_pickup"], seats=2)
+    F["glass"] = sh.face(8, 8)
+    window(F["glass"])
+    F["head"] = sh.face(10, 5)
+    f = F["head"]
+    bevel(f, chrome)
+    if burnt:
+        f.rect(1, 1, 8, 3, hexc("141212"))
+    else:
+        f.rect(1, 1, 8, 3, hexc("f0ecd0"))
+        f.rect(2, 1, 4, 2, hexc("fffff4"))
+        f.rect(6, 2, 8, 3, hexc("d8d0a0"))
+    F["tail"] = sh.face(9, 4)
+    f = F["tail"]
+    f.rect(0, 0, 8, 3, hexc("8a1a14") if not burnt else hexc("1a1414"))
+    if not burnt:
+        f.rect(1, 1, 5, 2, hexc("d83a28"))
+        f.rect(6, 1, 7, 2, hexc("e8a040"))
+        f.set(1, 1, hexc("ff8a70"))
+    F["grille"] = sh.face(24, 7)
+    f = F["grille"]
+    for i, j in f.cells():
+        f.set(i, j, hexc("1c1c20") if j % 2 else chrome[1])
+    f.rect(0, 0, 23, 0, chrome[3])
+    F["bumper"] = sh.face(55, 4)
+    f = F["bumper"]
+    bevel(f, ramp("3a3a40") if not burnt else ramp("2a2420"))
+    F["bumper_top"] = sh.face(55, 3)
+    bevel(F["bumper_top"], ramp("4a4a52") if not burnt else ramp("2a2420"))
+    F["plate"] = sh.face(10, 4)
+    f = F["plate"]
+    f.rect(0, 0, 9, 3, hexc("e0dccc") if not burnt else hexc("4a4038"))
+    f.rect(0, 0, 9, 0, hexc("3a5a9a") if not burnt else hexc("2a2420"))
+    for i in (1, 2, 4, 5, 7, 8):
+        f.set(i, 2, hexc("2a2a30"))
+    F["wheel"] = sh.face(16, 16)
+    f = F["wheel"]
+    for i, j in f.cells():
+        d = ((i - 7.5) ** 2 + (j - 7.5) ** 2) ** 0.5
+        if burnt:
+            col = ramp("5a4a40")[1 if d > 6 else 2] if d < 7.5 else hexc("2a2622")
+        else:
+            col = rubber[2] if d > 5.5 else chrome[3] if d > 4.5 else chrome[2] if d > 1.5 else chrome[1]
+            if d > 7:
+                col = rubber[1]
+            if 5.5 < d < 6.5 and i + j < 15:
+                col = rubber[3]
+        f.set(i, j, col)
+    if not burnt:
+        for i, j in ((7, 4), (4, 7), (11, 8), (8, 11)):
+            f.set(i, j, chrome[0])
+    F["tread"] = sh.face(16, 8)
+    f = F["tread"]
+    for i, j in f.cells():
+        f.set(i, j, (rubber[1] if (i + j) % 4 < 2 else rubber[2]) if not burnt else ramp("5a4a40")[1 + (i % 2)])
+    F["bed"] = sh.face(25, 20)
+    f = F["bed"]
+    for i, j in f.cells():
+        f.set(i, j, ramp("3a3a40")[1 if i % 4 == 0 else 2 if i % 4 != 1 else 3])
+    F["dark"] = sh.face(2, 2)
+    F["dark"].rect(0, 0, 1, 1, hexc("16161a"))
+    sh.save()
+    return sh, F
+
+
+def car_parts_vcm(psh, F, burnt):
+    out = []
+    lamp = {s: F["dark"] for s in SIDES}
+
+    def part(frm, to, front_key, front_side, other="dark"):
+        net = {s: F[other] for s in SIDES}
+        net[front_side] = F[front_key]
+        out.append(box(frm, to, "blocks:" + psh.name, net, psh))
+
+    for sx in (-1, 1):
+        part((min(sx * 14, sx * 24), -5, 48), (max(sx * 14, sx * 24), 0, 48.8), "head", "south")
+        part((min(sx * 16, sx * 25), -5, -48.8), (max(sx * 16, sx * 25), -1, -48), "tail", "north")
+    part((-12, -6, 48), (12, 1, 48.5), "grille", "south")
+    for z0, z1, s in ((48, 50.5, "south"), (-50.5, -48, "north")):
+        net = {k: F["bumper"] for k in SIDES}
+        net["top"] = F["bumper_top"]
+        out.append(box((-27.5, -13, z0), (27.5, -9, z1), "blocks:" + psh.name, net, psh))
+    part((-5, -12.6, 50.5), (5, -9.4, 50.8), "plate", "south")
+    part((-5, -7, -48.4), (5, -3, -48), "plate", "north")
+    del lamp
+    return out
+
+
+def wheel_boxes(psh, F, drop=0.0, flat=False):
+    out = []
+    for sx in (-1, 1):
+        for zc in (WHEEL_Z, -WHEEL_Z):
+            for h, w, off in (WHEELS[:2] if flat else WHEELS):
+                yc = -14.5 - drop
+                outer = sx * (27 + off)
+                x0, x1 = sorted((outer, sx * 20))
+                wf = F["wheel"]
+                sub = Face(wf.c, wf.x + (16 - w) // 2, wf.y + (16 - h) // 2, w, h)
+                net = {s: F["tread"] for s in SIDES}
+                net["west" if sx < 0 else "east"] = sub
+                hh = h / 2 * (0.6 if flat else 1)
+                out.append(box((x0, yc - hh, zc - w / 2), (x1, yc + hh, zc + w / 2), "blocks:" + psh.name, net, psh))
+    return out
+
+
+def cabin_glass(psh, F, group):
+    g = "blocks:" + psh.name
+    out = []
+    tri = psh.region(F["glass"])
+    if group == "sedan":
+        net = {s: F["glass"] for s in SIDES}
+        net["west"] = net["east"] = F["side_sedan"]
+        out.append(box((-24, 3, -20), (24, 15, 10), g, net, psh))
+        for z0, rot, key in ((18, -35, "wind"), (-28, 35, "rear")):
+            net = {s: F["glass"] for s in SIDES}
+            net["south" if z0 > 0 else "north"] = F[key]
+            extra = " origin %s rotate (%g,0,0)" % (vec((0, 3, z0)), rot)
+            out.append(box((-24, 3, z0 - 0.5), (24, 17.5, z0 + 0.5), g, net, psh, extra))
+        for zc, ze in ((10, 18), (-20, -28)):
+            for x in (-24, 24):
+                out.append("@tri a %s b %s c %s texture \"%s\" region %s cull-face off" % (
+                    vec((x, 3, zc)), vec((x, 3, ze)), vec((x, 15, zc)), g, tri))
+    else:
+        net = {s: F["glass"] for s in SIDES}
+        net["west"] = net["east"] = F["side_pickup"]
+        net["north"] = F["back_pickup"]
+        out.append(box((-24, 3, -6), (24, 15, 10), g, net, psh))
+        net = {s: F["glass"] for s in SIDES}
+        net["south"] = F["wind"]
+        out.append(box((-24, 3, 17.5), (24, 17.5, 18.5), g, net, psh, " origin %s rotate (-35,0,0)" % vec((0, 3, 18))))
+        for x in (-24, 24):
+            out.append("@tri a %s b %s c %s texture \"%s\" region %s cull-face off" % (
+                vec((x, 3, 10)), vec((x, 3, 18)), vec((x, 15, 10)), g, tri))
+        net = {s: F["bed"] for s in SIDES}
+        out.append(box((-25, -8, -46), (25, -6, -8), g, net, psh))
+    return out
+
+
+def pillars(sh, plain, group):
+    out = []
+    net = {s: plain for s in SIDES}
+    tex = "$paint"
+    for x0, x1 in ((-24.6, -22.5), (22.5, 24.6)):
+        out.append(box((x0, 3, 17.3), (x1, 17.5, 18.7), tex, net, sh, " origin %s rotate (-35,0,0)" % vec((0, 3, 18))))
+        if group == "sedan":
+            out.append(box((x0, 3, -28.7), (x1, 17.5, -27.3), tex, net, sh, " origin %s rotate (35,0,0)" % vec((0, 3, -28))))
+    return out
+
+
+def car_model(layout, sh, nets, plain, psh, F, tex, burnt=False):
+    groups = {"body": [], "sedan": [], "pickup": []}
+    for net, (group, frm, to, hidden, dark) in zip(nets, layout.boxes):
+        groups[group].append(box(frm, to, tex, net, sh))
+    for group in ("sedan", "pickup"):
+        groups[group] += cabin_glass(psh, F, group) + pillars(sh, plain, group)
+    groups["body"] += car_parts_vcm(psh, F, burnt)
+    return groups
+
+
+def car():
+    layout = car_layout()
+    psh, F = parts_sheet("car_parts", False)
+    sheets = [paint_sheet("car_" + name, ramp(col), False, layout) for name, col in CAR_COLORS.items()]
+    sh, nets, plain = sheets[0]
+    g = car_model(layout, sh, nets, plain, psh, F, "$paint")
+    write_model("zomboid_car", [bone("body", None, g["body"] + wheel_boxes(psh, F) + [
+        bone("sedan", None, g["sedan"]), bone("pickup", None, g["pickup"])])])
+
+    bsh, bnets, bplain = paint_sheet("car_burnt", ramp("3a302a"), True, layout)
+    bpsh, bF = parts_sheet("car_parts_burnt", True)
+    g = car_model(layout, bsh, bnets, bplain, bpsh, bF, "blocks:car_burnt", burnt=True)
+    wreck = g["body"] + wheel_boxes(bpsh, bF, drop=3, flat=True) + g["sedan"]
+    wreck = [w.replace('"$paint"', '"blocks:car_burnt"') for w in wreck]
+    write_model("zomboid_car_wreck", [bone(None, (32, 19.5, 48), [bone(None, None, wreck, rotate=(1.5, 0, -2.5))])])
+
+
 if __name__ == "__main__":
     os.makedirs(BLOCKS, exist_ok=True)
     zombie()
+    car()
