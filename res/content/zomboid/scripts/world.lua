@@ -6,6 +6,7 @@ local inv = require "zomboid:inv"
 local sandbox = require "zomboid:sandbox"
 local skills = require "zomboid:skills"
 local population = require "zomboid:population"
+local spoilage = require "zomboid:spoilage"
 
 local SAVE_FILE = "state.json"
 local STRICT_RULES = {
@@ -48,34 +49,6 @@ local function enforce_survival_mode(pid)
     player.set_instant_destruction(pid, false)
     player.set_flight(pid, false)
     player.set_noclip(pid, false)
-end
-
-local function check_spoilage(pid)
-    local invid = player.get_inventory(pid)
-    local rotten = item.index("zomboid:rotten_food")
-    for slot = 0, inventory.size(invid) - 1 do
-        local itemid = inventory.get(invid, slot)
-        local props = itemid ~= 0 and item.properties[itemid]
-        local days = props and props["zomboid:spoil-days"]
-        if days then
-            local born = inventory.get_data(invid, slot, "born")
-            if born == nil then
-                inventory.set_data(invid, slot, "born", clock.hours)
-                born = clock.hours
-            end
-            local ratio = (clock.hours - born) / 24 / days
-            if ratio > 1.5 then
-                local _, count = inventory.get(invid, slot)
-                inventory.set(invid, slot, rotten, count)
-            elseif ratio > 1.0 then
-                inventory.set_description(invid, slot, "Несвежее. Может вызвать отравление")
-            elseif ratio > 0.6 then
-                inventory.set_description(invid, slot, "Скоро испортится")
-            else
-                inventory.set_description(invid, slot, "Свежее")
-            end
-        end
-    end
 end
 
 function on_world_open()
@@ -123,7 +96,7 @@ function on_world_tick()
     if clock.hours >= spoil_check_at then
         spoil_check_at = clock.hours + 0.25
         for _, pid in ipairs(players) do
-            check_spoilage(pid)
+            spoilage.check(player.get_inventory(pid))
         end
     end
     zombies.tick(survival)

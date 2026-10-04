@@ -17,7 +17,8 @@
     "base:loot": [],
     "tags": [
         "zomboid:interactive",
-        "zomboid:container"
+        "zomboid:container",
+        "zomboid:cold"
     ],
     "zomboid:loot": "fridge",
     "size": [

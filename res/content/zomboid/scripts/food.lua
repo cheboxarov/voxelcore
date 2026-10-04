@@ -1,7 +1,7 @@
 local survival = require "zomboid:survival"
 local inv = require "zomboid:inv"
-local clock = require "zomboid:clock"
 local skills = require "zomboid:skills"
+local spoilage = require "zomboid:spoilage"
 
 local function eat(pid)
     local itemid, _, invid, slot = inv.held(pid)
@@ -10,18 +10,18 @@ local function eat(pid)
     local hunger = (props["zomboid:hunger"] or 0) * skills.mul(pid, "food_value")
     local thirst = props["zomboid:thirst"] or 0
     local sickness = props["zomboid:sickness"] or 0
+    local mood = props["zomboid:mood"] or 0
     if hunger > thirst and state.hunger >= 97 then
         survival.notify(pid, "Вы не голодны")
         return true
     end
-    local days = props["zomboid:spoil-days"]
-    local born = inventory.get_data(invid, slot, "born")
-    if days and born and (clock.hours - born) / 24 > days then
+    if spoilage.ratio(invid, slot) > 1 then
         hunger = hunger * 0.6
         sickness = sickness + 25 * skills.mul(pid, "food_poison")
+        mood = math.min(mood, 0) - 10
         survival.notify(pid, "На вкус так себе...", "#c0d060")
     end
-    survival.eat(pid, hunger, thirst, sickness)
+    survival.eat(pid, hunger, thirst, sickness, mood)
     inventory.decrement(invid, slot, 1)
     if sickness > 0 then
         survival.notify(pid, "Вас мутит", "#c0d060")
