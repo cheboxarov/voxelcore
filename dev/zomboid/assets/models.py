@@ -935,6 +935,10 @@ def materials():
     tile("red", PAL["plastic_red"], lambda x, y, r: 3 if (x * 3 + y) % 17 == 0 else 2)
     tile("yellow", PAL["cloth_yellow"], lambda x, y, r: 2)
     tile("lens", ramp("f0e8a0"), lambda x, y, r: 4 if x + y < 20 else 3)
+    tile("brass", PAL["brass"], lambda x, y, r: 3 if x % 7 == 2 else 2)
+    tile("cloth", PAL["cloth_white"], lambda x, y, r: 1 if (x * 7 + y * 3) % 23 == 0 else 2)
+    tile("stone", PAL["stone"], lambda x, y, r: 1 if (x // 4 + y // 4) % 3 == 0 and r.random() < 0.3 else 2)
+    tile("bark", ramp("5a3e26"), lambda x, y, r: 1 if x % 4 == 0 else 3 if x % 7 == 3 else 2)
 
 
 ITEM_MODELS = {
@@ -1000,8 +1004,80 @@ def items():
                                                   scale=scale if scale != 1 else None)])
 
 
+# ---------- blocks with custom geometry (faces without a material use the block's own textures) ----------
+
+def B(frm, to, mat=None, extra=""):
+    return box(frm, to, "blocks:mdl_" + mat if mat else None, extra=extra) if mat else \
+        "@box from %s to %s%s" % (vec(frm), vec(to), extra)
+
+
+def octo(x0, y0, z0, x1, y1, z1, cut, mat=None):
+    """Octagonal prism from three overlapping boxes; tops differ slightly to avoid z-fighting."""
+    return [B((x0 + cut, y0, z0), (x1 - cut, y1, z1), mat), B((x0, y0, z0 + cut), (x1, y1 - 0.05, z1 - cut), mat),
+            B((x0 + cut / 2, y0, z0 + cut / 2), (x1 - cut / 2, y1 - 0.1, z1 - cut / 2), mat)]
+
+
+def block_models():
+    rot = lambda a: " rotate (0,%g,0)" % a
+    m = {}
+    m["generator"] = [
+        B((4, 3, 6), (28, 20, 26)),
+        B((6, 20, 9), (26, 25, 23), "red"), B((20, 25, 13), (23, 26.5, 16), "iron"),
+        B((26, 13, 8), (30.5, 15, 10), "iron"), B((29, 13, 8), (30.5, 18, 10), "iron"),
+        B((2, 0, 4), (30, 1.5, 6), "iron"), B((2, 0, 26), (30, 1.5, 28), "iron"),
+    ] + [B((x, 0, z), (x + 1.5, 26, z + 1.5), "iron") for x in (2, 28.5) for z in (4, 26.5)] + [
+        B((2, 25, 4), (30, 26.5, 5.5), "iron"), B((2, 25, 26.5), (30, 26.5, 28), "iron")]
+    m["rain_barrel"] = octo(4, 0, 4, 28, 30, 28, 7) + [
+        B((4.5, y, 6.5), (27.5, y + 1.2, 25.5), "iron") for y in (5, 23)] + [
+        B((6.5, y, 4.5), (25.5, y + 1.2, 27.5), "iron") for y in (5, 23)]
+    m["fuel_pump"] = [
+        B((2, 0, 5), (30, 3, 27), "stone"), B((4, 3, 8), (28, 52, 24)),
+        B((3, 52, 6), (29, 59, 26), "red"), B((5, 59, 9), (27, 60, 23), "iron"),
+        B((28, 30, 13), (31, 38, 19), "iron"), B((28.5, 36, 14.5), (30.5, 41, 17.5), "grip"),
+        B((29, 9, 15), (30.5, 30, 16.5), "grip"), B((26, 8, 15), (29, 9.5, 16.5), "grip"),
+    ]
+    m["alarm_clock"] = [
+        B((11, 1.5, 13), (21, 11.5, 19)),
+        B((10, 11, 14.5), (14, 14, 17.5), "brass"), B((18, 11, 14.5), (22, 14, 17.5), "brass"),
+        B((15.5, 11.5, 15.5), (16.5, 14.5, 16.5), "iron"), B((13, 14, 15.7), (19, 14.6, 16.3), "iron"),
+        B((11.5, 0, 14.5), (13, 1.5, 17.5), "iron"), B((19, 0, 14.5), (20.5, 1.5, 17.5), "iron"),
+    ]
+    m["siren"] = [
+        B((8, 0, 8), (24, 8, 24)), B((13, 8, 13), (19, 11, 19), "iron"),
+        B((10, 11, 10), (22, 16, 22)), B((12, 16, 12), (20, 18, 20), "red"), B((14, 18, 14), (18, 19, 18), "red"),
+        B((22, 12, 14), (26, 15, 18), "iron"), B((25, 11.5, 13.5), (26.5, 15.5, 18.5), "iron"),
+    ]
+    m["campfire"] = [B((10, 0, 10), (22, 1, 22))] + [
+        B((4, 0.5, 14.5), (28, 3.5, 17.5), "bark", " origin (0.5,0.0625,0.5)" + rot(a)) for a in (0, 60, 120)] + [
+        B((6, 2.5, 15), (26, 5, 17), "bark", " origin (0.5,0.1172,0.5)" + rot(a)) for a in (30, 90, 150)] + [
+        B((15 + 11 * c - 1.5, 0, 15 + 11 * s_ - 1.5), (15 + 11 * c + 1.5, 2.5, 15 + 11 * s_ + 1.5), "stone")
+        for c, s_ in ((1, 0), (0.7, 0.7), (0, 1), (-0.7, 0.7), (-1, 0), (-0.7, -0.7), (0, -1), (0.7, -0.7))]
+    m["bed"] = [
+        B((1, 0, 1), (3, 5, 3), "wood_dark"), B((29, 0, 1), (31, 5, 3), "wood_dark"),
+        B((1, 4, 1), (31, 8, 31), "wood"), B((2, 8, 2), (30, 15, 29)),
+        B((5, 15, 23), (27, 18, 28.5), "cloth"), B((0, 0, 29), (32, 24, 32), "wood_dark"),
+        B((0, 22, 28.5), (32, 25, 32), "wood"), B((0, 0, 0), (32, 11, 1.5), "wood_dark"),
+    ]
+    m["couch"] = [
+        B((1, 0, 2), (3, 3, 4), "wood_dark"), B((29, 0, 2), (31, 3, 4), "wood_dark"),
+        B((1, 0, 27), (3, 3, 29), "wood_dark"), B((29, 0, 27), (31, 3, 29), "wood_dark"),
+        B((4, 3, 1), (28, 10, 24)), B((1, 3, 23), (31, 20, 31)), B((0, 3, 1), (4.5, 14, 31)), B((27.5, 3, 1), (32, 14, 31)),
+        B((5, 10, 2), (16, 11.5, 23)), B((16, 10, 2), (27, 11.5, 23)),
+    ]
+    m["tv"] = [
+        B((2, 4, 5), (30, 24, 20)), B((6, 7, 20), (26, 22, 27), "gunmetal"), B((9, 9, 27), (23, 20, 29), "gunmetal"),
+        B((4, 0, 8), (28, 4, 24), "wood_dark"),
+        B((15, 24, 12), (17, 25, 14), "iron"),
+        B((15.6, 24, 12.6), (16.4, 36, 13.4), "steel", " origin (0.5,0.75,0.4062) rotate (0,0,30)"),
+        B((15.6, 24, 12.6), (16.4, 36, 13.4), "steel", " origin (0.5,0.75,0.4062) rotate (0,0,-30)"),
+    ]
+    for name, parts in m.items():
+        write_model("zomboid_block_" + name, parts)
+
+
 if __name__ == "__main__":
     os.makedirs(BLOCKS, exist_ok=True)
     zombie()
     car()
     items()
+    block_models()

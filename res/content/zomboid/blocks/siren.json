@@ -9,7 +9,8 @@
         "siren_side"
     ],
     "material": "base:metal",
-    "model": "aabb",
+    "model": "custom",
+    "model-name": "zomboid_block_siren",
     "hitbox": [0.2, 0, 0.2, 0.6, 0.55, 0.6],
     "light-passing": true,
     "grounded": true,

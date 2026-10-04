@@ -1,0 +1,7 @@
+@box from (0.34375,0.046875,0.40625) to (0.65625,0.359375,0.59375)
+@box from (0.3125,0.34375,0.453125) to (0.4375,0.4375,0.546875) texture "blocks:mdl_brass"
+@box from (0.5625,0.34375,0.453125) to (0.6875,0.4375,0.546875) texture "blocks:mdl_brass"
+@box from (0.484375,0.359375,0.484375) to (0.515625,0.453125,0.515625) texture "blocks:mdl_iron"
+@box from (0.40625,0.4375,0.490625) to (0.59375,0.45625,0.509375) texture "blocks:mdl_iron"
+@box from (0.359375,0,0.453125) to (0.40625,0.046875,0.546875) texture "blocks:mdl_iron"
+@box from (0.59375,0,0.453125) to (0.640625,0.046875,0.546875) texture "blocks:mdl_iron"

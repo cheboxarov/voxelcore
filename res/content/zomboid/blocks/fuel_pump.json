@@ -8,6 +8,8 @@
         "fuel_pump_front",
         "fuel_pump_front"
     ],
+    "model": "custom",
+    "model-name": "zomboid_block_fuel_pump",
     "material": "base:metal",
     "rotation": "pane",
     "size": [

@@ -10,7 +10,8 @@
     ],
     "material": "base:metal",
     "rotation": "pane",
-    "model": "aabb",
+    "model": "custom",
+    "model-name": "zomboid_block_generator",
     "hitbox": [
         0.05,
         0,

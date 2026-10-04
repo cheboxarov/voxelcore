@@ -10,7 +10,8 @@
     ],
     "material": "base:carpet",
     "rotation": "pane",
-    "model": "aabb",
+    "model": "custom",
+    "model-name": "zomboid_block_bed",
     "hitbox": [
         0,
         0,

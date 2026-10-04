@@ -1,0 +1,15 @@
+@box from (0.3125,0,0.3125) to (0.6875,0.03125,0.6875)
+@box from (0.125,0.015625,0.453125) to (0.875,0.109375,0.546875) texture "blocks:mdl_bark" origin (0.5,0.0625,0.5) rotate (0,0,0)
+@box from (0.125,0.015625,0.453125) to (0.875,0.109375,0.546875) texture "blocks:mdl_bark" origin (0.5,0.0625,0.5) rotate (0,60,0)
+@box from (0.125,0.015625,0.453125) to (0.875,0.109375,0.546875) texture "blocks:mdl_bark" origin (0.5,0.0625,0.5) rotate (0,120,0)
+@box from (0.1875,0.078125,0.46875) to (0.8125,0.15625,0.53125) texture "blocks:mdl_bark" origin (0.5,0.1172,0.5) rotate (0,30,0)
+@box from (0.1875,0.078125,0.46875) to (0.8125,0.15625,0.53125) texture "blocks:mdl_bark" origin (0.5,0.1172,0.5) rotate (0,90,0)
+@box from (0.1875,0.078125,0.46875) to (0.8125,0.15625,0.53125) texture "blocks:mdl_bark" origin (0.5,0.1172,0.5) rotate (0,150,0)
+@box from (0.765625,0,0.421875) to (0.859375,0.078125,0.515625) texture "blocks:mdl_stone"
+@box from (0.6625,0,0.6625) to (0.75625,0.078125,0.75625) texture "blocks:mdl_stone"
+@box from (0.421875,0,0.765625) to (0.515625,0.078125,0.859375) texture "blocks:mdl_stone"
+@box from (0.18125,0,0.6625) to (0.275,0.078125,0.75625) texture "blocks:mdl_stone"
+@box from (0.078125,0,0.421875) to (0.171875,0.078125,0.515625) texture "blocks:mdl_stone"
+@box from (0.18125,0,0.18125) to (0.275,0.078125,0.275) texture "blocks:mdl_stone"
+@box from (0.421875,0,0.078125) to (0.515625,0.078125,0.171875) texture "blocks:mdl_stone"
+@box from (0.6625,0,0.18125) to (0.75625,0.078125,0.275) texture "blocks:mdl_stone"

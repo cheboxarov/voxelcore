@@ -9,7 +9,8 @@
         "alarm_clock_front"
     ],
     "material": "base:metal",
-    "model": "aabb",
+    "model": "custom",
+    "model-name": "zomboid_block_alarm_clock",
     "hitbox": [0.3, 0, 0.3, 0.4, 0.4, 0.4],
     "light-passing": true,
     "grounded": true,

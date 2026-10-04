@@ -3,7 +3,8 @@
     "texture": "couch",
     "material": "base:carpet",
     "rotation": "pane",
-    "model": "aabb",
+    "model": "custom",
+    "model-name": "zomboid_block_couch",
     "hitbox": [
         0,
         0,

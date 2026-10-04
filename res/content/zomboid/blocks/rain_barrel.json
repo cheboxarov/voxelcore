@@ -9,7 +9,8 @@
         "rain_barrel_side"
     ],
     "material": "base:wood",
-    "model": "aabb",
+    "model": "custom",
+    "model-name": "zomboid_block_rain_barrel",
     "hitbox": [
         0.1,
         0,
