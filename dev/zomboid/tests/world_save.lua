@@ -56,11 +56,16 @@ block.set_field(bx + 2, by, bz, "water", 60)
 block.set_field(bx + 2, by, bz, "last", clock.hours)
 local car = require("zomboid:cars").spawn(bx + 4, G + 1, bz - 3)
 car:get_component("zomboid:car").data.fuel = 7.5
+local invid = player.get_inventory(pid)
+inventory.set(invid, 0, item.index("zomboid:car_key"), 1)
+inventory.set_data(invid, 0, "car", car:get_component("zomboid:car").data.id)
 weather.set_raining(true)
 local next_change = weather.next_change
 app.sleep(3)
 check(block.name(block.get(lx, ly, lz)) == "zomboid:lamp", "lamp lit by the generator")
 check(mapping.is_explored(pid, spawn[1], spawn[3]), "explored before save")
+check(require("zomboid:cars").enter(pid, car:get_uid()), "driving while saving")
+app.sleep(0.5)
 
 app.save_world()
 app.close_world(true)
@@ -88,6 +93,8 @@ for _, uid in ipairs(entities.get_all_in_radius({bx + 4.5, G + 1, bz - 2.5}, 4))
     if c then found = c end
 end
 check(found and math.abs(found.data.fuel - 7.5) < 0.01 and found.data.id == (bx + 4) .. ":" .. (bz - 3), "car kept")
+local body = entities.get(player.get_entity(pid)).rigidbody
+check(body:is_enabled(), "saved at the wheel: body enabled after reload")
 log("world systems restored after reload")
 
 app.close_world(false)

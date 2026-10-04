@@ -48,6 +48,11 @@ local uid, car = car_near(sx, sz)
 check(uid, "car parked at the gas station")
 check(block.name(block.get(sx, G + 1, sz)) == "core:air", "spawner removed")
 check(car.data.id == cars.id_at(sx, sz), "car id " .. tostring(car.data.id))
+-- a spawner replaced before its present event spawns nothing
+block.set(sx + 6, G + 1, sz, block.index("zomboid:car_spawner"), 0)
+block.set(sx + 6, G + 1, sz, 0, 0)
+app.sleep(0.5)
+check(car_near(sx + 6, sz) == nil, "car from a removed spawner")
 log(string.format("car %s: %.1f l, color %s", car.data.id, car.data.fuel, car.data.color))
 
 -- locked without a key; keys come from containers of the same building
@@ -130,8 +135,17 @@ car.control.throttle = 0
 local p2 = car.get_pos()
 check(math.sqrt((p2[1] - p1[1]) ^ 2 + (p2[3] - p1[3]) ^ 2) < 1.5, "empty tank stops the car")
 
--- exit puts the player next to the car with physics back on
+-- exit puts the player next to the car with physics back on, on the side free of walls
+local cp = car.get_pos()
+local feet = math.floor(cp[2] - 0.5)
+local wx, wz = math.floor(cp[1]), math.floor(cp[3] - 1.8)
+block.set(wx, feet, wz, block.index("base:stone"), 0)
+block.set(wx, feet + 1, wz, block.index("base:stone"), 0)
 check(cars.toggle(pid), "exited with F")
+local ex, _, ez = player.get_pos(pid)
+check(ez > cp[3] - 1, "stepped out away from the wall: " .. (ez - cp[3]))
+check(block.is_replaceable_at(math.floor(ex), feet, math.floor(ez))
+    and block.is_replaceable_at(math.floor(ex), feet + 1, math.floor(ez)), "not inside a wall")
 check(car.driver == nil and cars.driving[pid] == nil, "no driver")
 local e = entities.get(player.get_entity(pid))
 check(e.rigidbody:is_enabled(), "player body enabled")

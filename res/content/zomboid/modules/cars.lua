@@ -95,7 +95,18 @@ function cars.exit(pid)
     car.speed = 0
     local pos = car.get_pos()
     local h = math.rad(car.data.heading)
-    player.set_pos(pid, pos[1] + math.cos(h) * 1.8, pos[2] + 0.4, pos[3] - math.sin(h) * 1.8)
+    local s, c = math.sin(h), math.cos(h)
+    local feet = math.floor(pos[2] - 0.5)
+    local x, y, z = pos[1], pos[2] + 1.6, pos[3]
+    for _, d in ipairs({{c, -s, 1.8}, {-c, s, 1.8}, {-s, -c, 2.2}, {s, c, 2.2}}) do
+        local dx, dz = pos[1] + d[1] * d[3], pos[3] + d[2] * d[3]
+        if block.is_replaceable_at(math.floor(dx), feet, math.floor(dz))
+            and block.is_replaceable_at(math.floor(dx), feet + 1, math.floor(dz)) then
+            x, y, z = dx, pos[2] + 0.4, dz
+            break
+        end
+    end
+    player.set_pos(pid, x, y, z)
     player.set_vel(pid, 0, 0, 0)
     survival.notify(pid, "Вы вышли из машины")
     return true
