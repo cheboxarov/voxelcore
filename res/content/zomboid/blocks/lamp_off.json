@@ -1,6 +1,13 @@
 {
     "caption": "Лампа (нет тока)",
-    "texture": "lamp_off",
+    "texture-faces": [
+        "lamp_off_side",
+        "lamp_off_side",
+        "lamp_off",
+        "lamp_top",
+        "lamp_off_side",
+        "lamp_off_side"
+    ],
     "hidden": true,
     "picking-item": "zomboid:lamp.item",
     "model": "aabb",

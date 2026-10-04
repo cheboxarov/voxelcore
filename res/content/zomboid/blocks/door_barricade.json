@@ -1,8 +1,8 @@
 {
     "caption": "Заколоченная дверь",
     "texture-faces": [
-        "door_barricade_1",
-        "door_barricade_1",
+        "trim",
+        "trim",
         "trim",
         "trim",
         "door_barricade_1",
@@ -37,8 +37,8 @@
         "variants": [
             {
                 "texture-faces": [
-                    "door_barricade_2",
-                    "door_barricade_2",
+                    "trim",
+                    "trim",
                     "trim",
                     "trim",
                     "door_barricade_2",
@@ -47,8 +47,8 @@
             },
             {
                 "texture-faces": [
-                    "door_barricade_3",
-                    "door_barricade_3",
+                    "trim",
+                    "trim",
                     "trim",
                     "trim",
                     "door_barricade_3",
@@ -57,8 +57,8 @@
             },
             {
                 "texture-faces": [
-                    "door_barricade_4",
-                    "door_barricade_4",
+                    "trim",
+                    "trim",
                     "trim",
                     "trim",
                     "door_barricade_4",

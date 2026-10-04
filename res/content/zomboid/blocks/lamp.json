@@ -1,6 +1,13 @@
 {
     "caption": "Лампа",
-    "texture": "lamp_on",
+    "texture-faces": [
+        "lamp_on_side",
+        "lamp_on_side",
+        "lamp_on",
+        "lamp_top",
+        "lamp_on_side",
+        "lamp_on_side"
+    ],
     "emission": [
         14,
         13,
