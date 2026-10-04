@@ -7,12 +7,12 @@
     <container pos="202,92" size="48,48" color="#2a2a2acc"/>
     <container pos="202,148" size="48,48" color="#2a2a2acc"/>
     <inventory id="gear" pos="12,36" color="#00000000">
-        <slot index="0" pos="0,0" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
-        <slot index="1" pos="0,56" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
-        <slot index="2" pos="0,112" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
-        <slot index="3" pos="190,0" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
-        <slot index="4" pos="190,56" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
-        <slot index="5" pos="190,112" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slots-grid start-index="0" count="1" rows="1" padding="0" pos="0,0" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slots-grid start-index="1" count="1" rows="1" padding="0" pos="0,56" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slots-grid start-index="2" count="1" rows="1" padding="0" pos="0,112" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slots-grid start-index="3" count="1" rows="1" padding="0" pos="190,0" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slots-grid start-index="4" count="1" rows="1" padding="0" pos="190,56" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
+        <slots-grid start-index="5" count="1" rows="1" padding="0" pos="190,112" updatefunc="gear_update" onrightclick="unequip" sharefunc="unequip"/>
     </inventory>
     <label id="slot_0" pos="68,40" size="134,40" multiline="true" color="#d0d0d0"></label>
     <label id="slot_1" pos="68,96" size="134,40" multiline="true" color="#d0d0d0"></label>

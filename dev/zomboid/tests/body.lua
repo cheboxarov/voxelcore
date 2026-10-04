@@ -73,6 +73,15 @@ local function find_outdoors()
     end
 end
 
+-- a <slot> also registers on* attributes as UI actions compiled as statements, so slot callbacks belong on slots-grid
+for _, path in ipairs(file.list("zomboid:layouts")) do
+    if path:sub(-4) == ".xml" then
+        for tag in file.read(path):gmatch("<slot%s[^>]*>") do
+            check(not tag:find("%son%a+="), path .. ": " .. tag)
+        end
+    end
+end
+
 -- starter clothes are worn
 local ginv = gear.inventory(state)
 check(item.name(inventory.get(ginv, 1)) == "zomboid:tshirt", "starter t-shirt")
