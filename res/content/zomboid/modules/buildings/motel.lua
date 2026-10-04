@@ -1,0 +1,61 @@
+local kit = require "zomboid:buildings/_kit"
+
+return kit.building {
+    kind = "motel",
+    title = "мотель",
+    color = {90, 170, 190},
+    zones = {"highway"},
+    weight = 5,
+    cells = 1,
+    materials = {
+        wall = {"zomboid:siding_yellow", "zomboid:siding_blue", "zomboid:bld_plaster"},
+        inner = "zomboid:siding_white",
+        floor = "zomboid:carpet",
+        floor2 = "zomboid:tiles",
+    },
+    legend = {
+        ["~"] = {g = "base:water", out = true},
+    },
+    floors = {{
+        "=======================",
+        "===============V=======",
+        "=======================",
+        "=======================",
+        "_______________________",
+        "#WWDWWW#WDWW#WDWW#WDWW#",
+        "#u..L.t#L..t#L..t#L..t#",
+        "#......#bb..#bb..#bb..#",
+        "#kkk...#....#....#....#",
+        "#...w..#w..u#w..u#w..u#",
+        "#%%%D%%#%D%%#%D%%#%D%%#",
+        "#cc.cc.#:nm:#:nm:#:nm:#",
+        "#c...;.#;:::#;:::#;:::#",
+        "##W#W####WW###WW###WW##",
+        '"""||||||||||||||||||||',
+        '|"""""___________"""""|',
+        '|"""""_~~~~~~~~~_"""""|',
+        '|"""""_~~~~~~~~~_"""""|',
+        '|"""""_~~~~~~~~~_"""""|',
+        '|"""""_~~~~~~~~~_"""""|',
+        '|"""""_~~~~~~~~~_"""""|',
+        '|"""""___________"""""|',
+        "|||||||||||||||||||||||",
+    }},
+    loot = {
+        wardrobe = {
+            {"zomboid:rag", 4, 1, 3}, {"zomboid:tshirt", 3, 1, 1}, {"zomboid:jeans", 2, 1, 1},
+            {"zomboid:sweater", 2, 1, 1}, {"zomboid:raincoat", 1, 1, 1}, {"zomboid:hiking_bag", 1, 1, 1},
+            {"zomboid:cigarettes", 2, 1, 1}, {"zomboid:magazine", 2, 1, 1}, {"zomboid:map", 2, 1, 1},
+            {"zomboid:flashlight", 1, 1, 1}, {"zomboid:pistol", 0.2, 1, 1}, {"zomboid:ammo_9mm", 0.4, 2, 6},
+        },
+        kitchen_cabinet = {
+            {"zomboid:map", 4, 1, 1}, {"zomboid:cigarettes", 3, 1, 2}, {"zomboid:matches", 3, 1, 2},
+            {"zomboid:chocolate", 2, 1, 2}, {"zomboid:soda", 2, 1, 2}, {"zomboid:radio", 1, 1, 1},
+        },
+        crate = {
+            {"zomboid:rag", 5, 2, 5}, {"zomboid:water_bottle", 3, 1, 3}, {"zomboid:chips", 2, 1, 3},
+            {"zomboid:matches", 2, 1, 2}, {"zomboid:flashlight", 1, 1, 1}, {"zomboid:gas_can_empty", 1, 1, 1},
+        },
+    },
+    zombies = {count = {3, 5}, yard = {1, 3}},
+}

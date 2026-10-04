@@ -1,0 +1,62 @@
+local kit = require "zomboid:buildings/_kit"
+
+return kit.building {
+    kind = "workshop",
+    title = "автомастерская",
+    color = {170, 140, 90},
+    zones = {"industrial", "highway", "outskirts"},
+    weight = {industrial = 6, highway = 2, outskirts = 1},
+    cells = 1,
+    materials = {
+        wall = {"zomboid:bld_corrugated", "base:brick", "zomboid:bld_concrete"},
+        inner = "zomboid:bld_concrete",
+        floor = "zomboid:bld_concrete",
+        floor2 = "zomboid:tiles",
+        roof = "zomboid:bld_corrugated",
+    },
+    floors = {{
+        "=====================",
+        "=====================",
+        "=====================",
+        "=====================",
+        "=====================",
+        "#GGGG##GGGG#WWDWWWWW#",
+        "#..........#.......u#",
+        "#.L......L.#d.d..L..W",
+        "#..v.......#........#",
+        "#..........#d.d.....W",
+        "#..........#%%%%D%%%#",
+        "#....L.....D........#",
+        "#..........#kkon..f.W",
+        "#cc......cc#........#",
+        "#..........#%%D%%%D%#",
+        "#llll..cccc#:::%cc.cW",
+        "#..........#;n:%....#",
+        "#kkkk..ssss#::m%cc.c#",
+        "#..........#:::%....#",
+        "#WW#WDW#WW##WWW##W###",
+    }},
+    loot = {
+        crate = {
+            rolls = {1, 4},
+            {"zomboid:gas_can_empty", 4, 1, 1}, {"zomboid:gas_can", 2, 1, 1}, {"zomboid:nails", 3, 5, 20},
+            {"zomboid:rag", 4, 2, 4}, {"zomboid:crowbar", 2, 1, 1}, {"zomboid:hammer", 2, 1, 1},
+            {"zomboid:empty_bottle", 2, 1, 2},
+        },
+        locker = {
+            {"zomboid:boots", 3, 1, 1}, {"zomboid:jeans", 3, 1, 1}, {"zomboid:leather_jacket", 1, 1, 1},
+            {"zomboid:flashlight", 3, 1, 1}, {"zomboid:crowbar", 2, 1, 1}, {"zomboid:cigarettes", 2, 1, 1},
+            {"zomboid:map", 2, 1, 1},
+        },
+        kitchen_cabinet = {
+            {"zomboid:hammer", 3, 1, 1}, {"zomboid:nails", 3, 5, 15}, {"zomboid:matches", 2, 1, 1},
+            {"zomboid:chips", 3, 1, 2}, {"zomboid:soda", 3, 1, 2}, {"zomboid:canned_beans", 2, 1, 2},
+            {"zomboid:radio", 1, 1, 1},
+        },
+        shelf = {
+            {"zomboid:gas_can_empty", 3, 1, 1}, {"zomboid:nails", 3, 5, 20}, {"zomboid:plank", 3, 2, 5},
+            {"zomboid:shovel", 1, 1, 1}, {"zomboid:flashlight", 2, 1, 1}, {"zomboid:axe", 0.5, 1, 1},
+        },
+    },
+    zombies = {count = {1, 3}, yard = {0, 2}, shirts = {"gray", "blue", "gray"}},
+}
