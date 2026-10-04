@@ -11,7 +11,6 @@ local population = {
     PULL_COOLDOWN = 20,
 }
 
-local CELL = town.CELL
 local tick_counter = 0
 local pull_checked = 0
 local pull_ready = 0
@@ -43,14 +42,13 @@ end
 
 function population.seed_cell(cx, cz)
     local key = cx .. ":" .. cz
-    local ox, oz = cx * CELL, cz * CELL
     local p = town.plan(cx, cz)
     local day = clock.day()
     local ax, az
     if p then
         ax, az = town.to_world(p, p.door, -4)
     else
-        ax, az = ox + 18, oz + 18
+        ax, az = town.cell_center(cx, cz)
     end
     local crowd = math.floor((math.random(2, 3) + math.min(3, day - 1)) * sandbox.get("zombie_density") + 0.5)
     if p == nil and math.random() < 0.5 then
@@ -61,8 +59,9 @@ function population.seed_cell(cx, cz)
         return ax + math.random(-3, 3), az + math.random(-2, 2), {anchor = {ax + 0.5, ay, az + 0.5}}
     end)
     if math.random() < 0.7 then
+        local node = town.crossing_near(ax, az)
         n = n + spawn_group(key, math.random(1, 2), function()
-            return ox + math.random(1, 3), oz + math.random(8, 28), {route = true}
+            return node.x + math.random(-2, 2), node.z + math.random(-2, 2), {route = true}
         end)
     end
     population.seeded[key] = day
@@ -70,20 +69,19 @@ function population.seed_cell(cx, cz)
 end
 
 local function seed_near(ppos)
-    for cx = -town.RADIUS, town.RADIUS - 1 do
-        for cz = -town.RADIUS, town.RADIUS - 1 do
-            local key = cx .. ":" .. cz
-            local center = {cx * CELL + 18, ppos[2], cz * CELL + 18}
-            local d = vec3.distance(center, ppos)
-            if population.seeded[key] ~= clock.day() and d >= population.SEED_NEAR and d <= population.SEED_FAR
-                and block.get(center[1], town.GROUND, center[3]) ~= -1 then
-                if zombies.count_near(center, 20) >= 2 then
-                    population.seeded[key] = clock.day()
-                else
-                    population.seed_cell(cx, cz)
-                end
-                return
+    for _, c in ipairs(town.cells()) do
+        local key = c.cx .. ":" .. c.cz
+        local x, z = town.cell_center(c.cx, c.cz)
+        local center = {x, ppos[2], z}
+        local d = vec3.distance(center, ppos)
+        if population.seeded[key] ~= clock.day() and d >= population.SEED_NEAR and d <= population.SEED_FAR
+            and block.get(x, town.GROUND, z) ~= -1 then
+            if zombies.count_near(center, 20) >= 2 then
+                population.seeded[key] = clock.day()
+            else
+                population.seed_cell(c.cx, c.cz)
             end
+            return
         end
     end
 end

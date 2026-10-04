@@ -3,7 +3,7 @@ return require("zomboid:buildings/_store")({
     title = "аптека",
     color = {90, 180, 90},
     zones = {"downtown", "suburb"},
-    weight = 6,
+    weight = {downtown = 3, suburb = 1},
     container = "zomboid:medicine_cabinet",
     loot = {
         medicine_cabinet = {

@@ -77,7 +77,7 @@ check(clock.hours - hours > 4, "time skipped: " .. (clock.hours - hours))
 check(state.energy > 80, "rested")
 
 -- block breaking takes several hits and drops loot
-local p = town.plan(0, 0)
+local p = town.plan(town.cell_at(math.floor(spawn[1]), math.floor(spawn[3])))
 local cx, cy, cz = p.x0 + 1, G + 1, p.z0 + 2
 local crate_name = block.name(block.get(cx, cy, cz))
 check(crate_name == "zomboid:crate", "crate " .. crate_name)

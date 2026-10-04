@@ -91,12 +91,12 @@ player.set_pos(pid, cpos[1], cpos[2] + 0.3, cpos[3] + 2.6)
 app.tick()
 check(cars.toggle(pid), "entered with F")
 check(car.driver == pid and cars.car_of(pid) ~= nil, "driver set")
--- move the car onto the straight road along z = 66 and point it east
-local road_z = 66
-for x = 30, 95 do
+-- move the car onto the straight main street along z = 2 and point it east
+local road_z = 2
+for x = 105, 170 do
     check(town.column(x, road_z) == "road", "road at " .. x)
 end
-entities.get(uid).transform:set_pos({32.5, G + 1.75, road_z + 0.5})
+entities.get(uid).transform:set_pos({105.5, G + 1.75, road_z + 0.5})
 car.data.heading = 90
 app.sleep(0.5)
 local start = car.get_pos()
@@ -163,11 +163,9 @@ check(entities.get(player.get_entity(pid)).rigidbody:is_enabled(), "body enabled
 
 -- house car spots exist and get keys from their own house
 local houses = 0
-for cx = -3, 2 do
-    for cz = -3, 2 do
-        local p = town.plan(cx, cz)
-        if p and p.kind == "house" and p.car then houses = houses + 1 end
-    end
+for _, c in ipairs(town.cells()) do
+    local p = town.plan(c.cx, c.cz)
+    if p and p.kind == "house" and p.car then houses = houses + 1 end
 end
 log("houses with a car: " .. houses)
 check(houses > 3, "several houses have cars")

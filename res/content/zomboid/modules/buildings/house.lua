@@ -4,8 +4,8 @@ local house = {
     kind = "house",
     title = "дома",
     color = {170, 120, 80},
-    zones = {"downtown", "suburb"},
-    weight = 62,
+    zones = {"downtown", "suburb", "outskirts", "highway", "village"},
+    weight = {downtown = 6, suburb = 62, outskirts = 40, highway = 1, village = 10},
     cells = 1,
 }
 

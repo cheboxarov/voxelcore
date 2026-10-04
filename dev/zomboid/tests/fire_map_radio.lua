@@ -163,7 +163,7 @@ check(mapping.has_map(pid), "has a map")
 local gp = town.find("gas_station")
 local c = mapping.color(gp.x0 + 1, gp.z0 + 1)
 check(c == gp.def.color, "gas station on the map")
-check(mapping.color(2, 20) == mapping.COLORS.road, "road on the map")
+check(mapping.color(-60, 2) == mapping.COLORS.road, "road on the map")
 local saved = survival.serialize()[tostring(pid)]
 check(saved.explored and saved.explored[math.floor(spawn[1] / 8) .. ":" .. math.floor(spawn[3] / 8)], "exploration is saved")
 

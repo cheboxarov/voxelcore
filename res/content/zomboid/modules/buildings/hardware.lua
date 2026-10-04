@@ -2,8 +2,8 @@ return require("zomboid:buildings/_store")({
     kind = "hardware",
     title = "хозтовары",
     color = {200, 120, 50},
-    zones = {"downtown", "suburb"},
-    weight = 7,
+    zones = {"downtown", "suburb", "industrial"},
+    weight = {downtown = 5, suburb = 2, industrial = 6},
     container = "zomboid:crate",
     loot = {
         crate = {

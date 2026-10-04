@@ -1,0 +1,15 @@
+{
+    "caption": "Перила",
+    "texture-faces": [
+        "layout_railing",
+        "layout_railing",
+        "layout_railing_top",
+        "layout_railing_top",
+        "layout_railing",
+        "layout_railing"
+    ],
+    "material": "base:metal",
+    "draw-group": 1,
+    "light-passing": true,
+    "base:durability": 40.0
+}

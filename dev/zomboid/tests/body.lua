@@ -90,7 +90,7 @@ check(gear.warmth(state) == 4, "starter warmth " .. gear.warmth(state))
 
 -- 1. fridge: food keeps much longer while the power is on, then spoils as usual
 clock.reset(clock.START_HOUR)
-local p = town.plan(0, 0)
+local p = town.plan(town.cell_at(math.floor(spawn[1]), math.floor(spawn[3])))
 local fx, fy, fz = p.x0 + p.mid - 1, G + 1, p.z0 + p.d - 2
 check(block.name(block.get(fx, fy, fz)) == "zomboid:fridge", "fridge")
 check(block.has_tag(block.get(fx, fy, fz), "zomboid:cold"), "fridge is cold")

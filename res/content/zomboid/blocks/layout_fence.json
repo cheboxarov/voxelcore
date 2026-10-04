@@ -1,0 +1,27 @@
+{
+    "caption": "Забор",
+    "texture-faces": [
+        "layout_fence",
+        "layout_fence",
+        "layout_fence_top",
+        "layout_fence_top",
+        "layout_fence",
+        "layout_fence"
+    ],
+    "material": "base:wood",
+    "draw-group": 1,
+    "light-passing": true,
+    "base:durability": 10.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "zomboid:bash-hp": 40,
+    "tags": [
+        "zomboid:bashable",
+        "zomboid:flammable"
+    ]
+}

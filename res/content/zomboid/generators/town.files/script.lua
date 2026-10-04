@@ -16,8 +16,7 @@ end
 function generate_heightmap(x, y, w, h, bpd)
     local cx = (x + w * 0.5) * bpd
     local cz = (y + h * 0.5) * bpd
-    local dist = math.max(math.abs(cx), math.abs(cz))
-    local amp = math.min(1.0, math.max(0.0, (dist - town.FLAT_EXTENT) / 112.0))
+    local amp = math.min(1.0, math.max(0.0, (town.flat_dist(cx, cz) - 28) / 112.0))
 
     local map = Heightmap(w, h)
     if amp > 0.0 then

@@ -53,7 +53,7 @@ log(string.format("after 5h: hunger %.1f thirst %.1f energy %.1f", state.hunger,
 check(clock.day() == 1, "first day")
 
 -- loot in the spawn house fridge
-local p = town.plan(0, 0)
+local p = town.plan(town.cell_at(math.floor(spawn[1]), math.floor(spawn[3])))
 local fx, fy, fz = p.x0 + p.mid - 1, G + 1, p.z0 + p.d - 2
 check(block.name(block.get(fx, fy, fz)) == "zomboid:fridge", "fridge")
 local finv = inventory.get_block(fx, fy, fz)

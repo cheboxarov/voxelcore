@@ -29,11 +29,12 @@ end
 
 zombies.enabled = false
 local pid = player.create("survivor")
-local ROAD_X = 2.5
+survival.get(pid).fresh = nil
+local ROAD_X = -104.5
 local home = {ROAD_X, G + 1.95, -20.5}
 player.set_pos(pid, home[1], home[2], home[3])
 app.sleep_until(function()
-    return block.get(2, G, -76) ~= -1 and block.get(2, G, 30) ~= -1 and block.get(60, G, -20) ~= -1
+    return block.get(-105, G, -76) ~= -1 and block.get(-105, G, 30) ~= -1 and block.get(-130, G, -5) ~= -1
 end, 10000)
 app.sleep(1)
 local state = survival.get(pid)
@@ -96,7 +97,14 @@ check(cpos[2] - (G + 1) < 0.5, "crawler lies on the ground: " .. cpos[2])
 clear_zombies()
 
 -- a fat zombie breaks into a house faster than a normal one
-local hp_ = town.plan(0, -1)
+local hp_, best = nil, nil
+for _, c in ipairs(town.cells()) do
+    local p = town.plan(c.cx, c.cz)
+    if p and p.kind == "house" and p.rot == 0 then
+        local d = math.abs(p.x0 - home[1]) + math.abs(p.z0 - home[3])
+        if best == nil or d < best then hp_, best = p, d end
+    end
+end
 local ox, oz = hp_.x0, hp_.z0
 local dx, dy = ox + hp_.door, G + 1
 local door_id, door_state = block.get(dx, dy, oz), block.get_states(dx, dy, oz)
@@ -164,7 +172,7 @@ check(pulled >= 3 and heading == pulled, "district pull")
 clear_zombies()
 
 -- world population: a crowd stands at a house, roamers walk the streets
-local cx, cz = 1, -1
+local cx, cz = hp_.cx, hp_.cz
 check(town.plan(cx, cz), "house lot for a crowd")
 local n = population.seed_cell(cx, cz)
 app.tick()
@@ -177,7 +185,7 @@ for _, z in pairs(zombies.registry) do
 end
 log(string.format("seeded %d: crowd %d, roamers %d", n, #crowd, #roamers))
 check(#crowd >= 2, "crowd at the house")
-local _, roamer = spawn_at(34.5, -12.5, {route = true, cell = "1:-1"})
+local _, roamer = spawn_at(ROAD_X, -12.5, {route = true, cell = cx .. ":" .. cz})
 app.tick()
 local roam_start = roamer.get_pos()
 app.sleep(12)
@@ -202,7 +210,7 @@ clear_zombies()
 
 -- residents never spawn on top of a tree canopy or roof over the lawn
 local cp = town.plan(cx, cz)
-local cax, caz = cx * town.CELL + cp.x0 + cp.door, cz * town.CELL + cp.z0 - 4
+local cax, caz = town.to_world(cp, cp.door, -4)
 local stone = block.index("base:stone")
 for x = cax - 4, cax + 4 do
     for z = caz - 3, caz + 3 do
@@ -221,10 +229,8 @@ end
 clear_zombies()
 
 -- residents leave room under the cap for the night horde
-for scx = -town.RADIUS, town.RADIUS - 1 do
-    for scz = -town.RADIUS, town.RADIUS - 1 do
-        population.seed_cell(scx, scz)
-    end
+for _, c in ipairs(town.cells()) do
+    population.seed_cell(c.cx, c.cz)
 end
 local residents = zombies.count()
 local horde = zombies.spawn_horde(pid)
@@ -246,7 +252,7 @@ check(population.seeded[cx .. ":" .. cz] == nil, "cell is free to be seeded agai
 
 -- noise devices: an alarm clock distracts zombies, then falls silent
 reset_player()
-local ax, ay, az = 2, G + 1, -40
+local ax, ay, az = math.floor(ROAD_X), G + 1, -40
 block.set(ax, ay, az, block.index("zomboid:alarm_clock"), 0)
 events.emit("zomboid:alarm_clock.placed", ax, ay, az, pid)
 local ring_at = block.get_field(ax, ay, az, "ring_at")

@@ -170,29 +170,21 @@ local function can_see(pid, ppos, dist)
     return hit == nil or hit.length >= dist - 0.4
 end
 
-local function crossing(ix, iz)
-    return {ix * town.CELL + 2.5, town.GROUND + 1, iz * town.CELL + 2.5}
-end
-
 local function next_crossing(pos, first)
-    local R = town.RADIUS
-    local ix = math.max(-R, math.min(R, math.floor((pos[1] + 14) / town.CELL)))
-    local iz = math.max(-R, math.min(R, math.floor((pos[3] + 14) / town.CELL)))
+    local node = town.crossing_near(pos[1], pos[3])
     if first then
         route_prev = nil
-        return crossing(ix, iz)
+        return {node.x + 0.5, town.GROUND + 1, node.z + 0.5}
     end
     local options = {}
-    for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
-        local nx, nz = ix + d[1], iz + d[2]
-        local back = route_prev and route_prev[1] == nx and route_prev[2] == nz
-        if math.abs(nx) <= town.RADIUS and math.abs(nz) <= town.RADIUS and not back then
-            table.insert(options, {nx, nz})
+    for _, other in ipairs(node.links) do
+        if other ~= route_prev then
+            table.insert(options, other)
         end
     end
-    local pick = options[math.random(#options)]
-    route_prev = {ix, iz}
-    return crossing(pick[1], pick[2])
+    local pick = #options > 0 and options[math.random(#options)] or node.links[1] or node
+    route_prev = node
+    return {pick.x + 0.5, town.GROUND + 1, pick.z + 0.5}
 end
 
 local function wander_goal(pos)

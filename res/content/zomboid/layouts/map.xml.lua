@@ -6,7 +6,7 @@ local function hex(c)
 end
 
 function on_open()
-    mapping.draw(document.map.data, hud.get_player(), 2)
+    mapping.draw(document.map.data, hud.get_player())
     local parts = {}
     for _, def in ipairs(town.building_defs()) do
         table.insert(parts, "[" .. hex(def.color) .. "]" .. def.title)

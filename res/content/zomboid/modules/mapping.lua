@@ -5,9 +5,12 @@ local inv = require "zomboid:inv"
 local mapping = {
     TILE = 8,
     RADIUS = 28,
-    ORIGIN = -128,
-    SIZE = 256,
+    SIZE = 1024,
+    STEP = 2,
 }
+local B = town.BOUNDS
+mapping.ORIGIN_X = math.floor(((B[1] + B[3]) / 2 - mapping.SIZE / 2) / mapping.TILE) * mapping.TILE
+mapping.ORIGIN_Z = math.floor(((B[2] + B[4]) / 2 - mapping.SIZE / 2) / mapping.TILE) * mapping.TILE
 
 local COLORS = {
     road = {58, 58, 62},
@@ -16,6 +19,16 @@ local COLORS = {
     lawn = {92, 140, 70},
     park = {70, 125, 60},
     wild = {48, 88, 46},
+    plaza = {190, 180, 160},
+    river = {50, 100, 190},
+    bridge = {120, 100, 80},
+}
+
+local ZONE_LAWN = {
+    industrial = {125, 120, 100},
+    downtown = {120, 140, 100},
+    village = {120, 160, 80},
+    outskirts = {80, 125, 60},
 }
 mapping.COLORS = COLORS
 
@@ -56,6 +69,13 @@ function mapping.color(wx, wz)
         local _, p = town.building_at(wx, wz)
         return p.def.color
     end
+    if kind == "lawn" or kind == "park" then
+        local cx, cz = town.cell_at(wx, wz)
+        local tint = cx and ZONE_LAWN[town.zone(cx, cz)]
+        if tint then
+            return tint
+        end
+    end
     return COLORS[kind or "wild"]
 end
 
@@ -71,25 +91,26 @@ function mapping.tick()
     end
 end
 
-function mapping.draw(canvas, pid, scale)
+function mapping.draw(canvas, pid)
     canvas:clear(20, 18, 14, 255)
-    local t = mapping.TILE
+    local t, step = mapping.TILE, mapping.STEP
+    local px_tile = t / step
     for tx = 0, mapping.SIZE / t - 1 do
         for tz = 0, mapping.SIZE / t - 1 do
-            local wx0, wz0 = mapping.ORIGIN + tx * t, mapping.ORIGIN + tz * t
+            local wx0, wz0 = mapping.ORIGIN_X + tx * t, mapping.ORIGIN_Z + tz * t
             if mapping.is_explored(pid, wx0, wz0) then
-                for dx = 0, t - 1 do
-                    for dz = 0, t - 1 do
-                        local c = mapping.color(wx0 + dx, wz0 + dz)
-                        canvas:rect((tx * t + dx) * scale, (tz * t + dz) * scale, scale, scale, c[1], c[2], c[3], 255)
+                for dx = 0, px_tile - 1 do
+                    for dz = 0, px_tile - 1 do
+                        local c = mapping.color(wx0 + dx * step, wz0 + dz * step)
+                        canvas:set(tx * px_tile + dx, tz * px_tile + dz, c[1], c[2], c[3], 255)
                     end
                 end
             end
         end
     end
     local x, _, z = player.get_pos(pid)
-    local px, pz = (x - mapping.ORIGIN) * scale, (z - mapping.ORIGIN) * scale
-    canvas:rect(math.floor(px) - 3, math.floor(pz) - 3, 7, 7, 255, 40, 40, 255)
+    local px, pz = (x - mapping.ORIGIN_X) / step, (z - mapping.ORIGIN_Z) / step
+    canvas:rect(math.floor(px) - 2, math.floor(pz) - 2, 5, 5, 255, 40, 40, 255)
     canvas:update()
 end
 
