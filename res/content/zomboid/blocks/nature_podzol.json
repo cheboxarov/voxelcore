@@ -1,0 +1,18 @@
+{
+    "caption": "Лесная подстилка",
+    "texture-faces": [
+        "nature_podzol_side",
+        "nature_podzol_side",
+        "dirt",
+        "nature_podzol",
+        "nature_podzol_side",
+        "nature_podzol_side"
+    ],
+    "material": "base:ground",
+    "base:durability": 1.6,
+    "base:loot": [
+        {
+            "item": "base:dirt.item"
+        }
+    ]
+}

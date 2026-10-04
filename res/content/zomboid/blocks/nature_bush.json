@@ -1,0 +1,12 @@
+{
+    "caption": "Куст",
+    "texture": "nature_bush",
+    "material": "base:grass",
+    "draw-group": 5,
+    "culling": "optional",
+    "base:durability": 0.7,
+    "base:loot": [],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

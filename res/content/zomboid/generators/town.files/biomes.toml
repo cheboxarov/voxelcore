@@ -1,5 +1,10 @@
-[countryside]
-parameters = []
+# parameters: open, wet, rock; must match nature.BIOMES in modules/nature.lua
+[town]
+parameters = [
+    {weight=1, value=3},
+    {weight=10, value=0},
+    {weight=10, value=0}
+]
 layers = [
     {below-sea-level=false, height=1, block="base:grass_block"},
     {below-sea-level=false, height=4, block="base:dirt"},
@@ -9,8 +14,140 @@ layers = [
 sea-layers = [
     {height=-1, block="base:water"}
 ]
-plant-chance = 0.3
+plant-chance = 0.08
+plants = [
+    {weight=1, block="base:grass"}
+]
+
+[river]
+parameters = [
+    {weight=5, value=0},
+    {weight=1, value=3},
+    {weight=10, value=0}
+]
+layers = [
+    {below-sea-level=true, height=2, block="base:sand"},
+    {below-sea-level=true, height=3, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.15
+plants = [
+    {weight=1, block="zomboid:nature_reeds"},
+    {weight=1, block="base:grass"}
+]
+
+[meadow]
+parameters = [
+    {weight=1, value=0.55},
+    {weight=2, value=-0.1},
+    {weight=2, value=-0.3}
+]
+layers = [
+    {below-sea-level=false, height=1, block="base:grass_block"},
+    {below-sea-level=false, height=4, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.6
 plants = [
     {weight=1, block="base:grass"},
-    {weight=0.02, block="base:flower"}
+    {weight=0.6, block="zomboid:nature_tall_grass"},
+    {weight=0.05, block="base:flower"},
+    {weight=0.05, block="zomboid:nature_flower_blue"},
+    {weight=0.06, block="zomboid:nature_flower_yellow"},
+    {weight=0.05, block="zomboid:nature_flower_white"}
+]
+
+[forest]
+parameters = [
+    {weight=1, value=-0.3},
+    {weight=1.2, value=-0.3},
+    {weight=2, value=0}
+]
+layers = [
+    {below-sea-level=false, height=1, block="zomboid:nature_podzol"},
+    {below-sea-level=false, height=4, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.3
+plants = [
+    {weight=0.6, block="zomboid:nature_fern"},
+    {weight=0.3, block="base:grass"},
+    {weight=0.04, block="zomboid:nature_mushroom"}
+]
+
+[birch]
+parameters = [
+    {weight=1, value=-0.25},
+    {weight=1, value=0.3},
+    {weight=2, value=-0.2}
+]
+layers = [
+    {below-sea-level=false, height=1, block="base:grass_block"},
+    {below-sea-level=false, height=4, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.45
+plants = [
+    {weight=1, block="base:grass"},
+    {weight=0.25, block="zomboid:nature_fern"},
+    {weight=0.05, block="zomboid:nature_flower_white"},
+    {weight=0.04, block="base:flower"}
+]
+
+[swamp]
+parameters = [
+    {weight=2, value=-0.1},
+    {weight=0.6, value=0.75},
+    {weight=1, value=-0.5}
+]
+layers = [
+    {below-sea-level=true, height=2, block="zomboid:nature_mud"},
+    {below-sea-level=true, height=3, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.45
+plants = [
+    {weight=0.7, block="zomboid:nature_reeds"},
+    {weight=0.4, block="base:grass"}
+]
+
+[hills]
+parameters = [
+    {weight=2, value=0},
+    {weight=2, value=0},
+    {weight=0.5, value=0.65}
+]
+layers = [
+    {below-sea-level=false, height=1, block="base:grass_block"},
+    {below-sea-level=false, height=2, block="base:dirt"},
+    {height=-1, block="base:stone"},
+    {height=1, block="base:bazalt"}
+]
+sea-layers = [
+    {height=-1, block="base:water"}
+]
+plant-chance = 0.2
+plants = [
+    {weight=1, block="base:grass"},
+    {weight=0.1, block="zomboid:nature_fern"}
 ]

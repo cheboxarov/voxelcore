@@ -1,0 +1,18 @@
+{
+    "caption": "Грунтовка",
+    "texture-faces": [
+        "nature_dirt_path_side",
+        "nature_dirt_path_side",
+        "dirt",
+        "nature_dirt_path",
+        "nature_dirt_path_side",
+        "nature_dirt_path_side"
+    ],
+    "material": "base:ground",
+    "base:durability": 1.6,
+    "base:loot": [
+        {
+            "item": "base:dirt.item"
+        }
+    ]
+}

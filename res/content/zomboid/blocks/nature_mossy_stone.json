@@ -1,0 +1,6 @@
+{
+    "caption": "Замшелый камень",
+    "texture": "nature_mossy_stone",
+    "material": "base:stone",
+    "base:durability": 12.0
+}

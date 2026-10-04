@@ -1,7 +1,8 @@
 caption = "Zomboid: городок"
-biome-parameters = 0
+biome-parameters = 3
 sea-level = 38
-heights-bpd = 4
+heights-bpd = 2
+biomes-bpd = 4
 player-spawn-radius = 4
 player-min-spawn-height = 39
 player-max-spawn-height = 60

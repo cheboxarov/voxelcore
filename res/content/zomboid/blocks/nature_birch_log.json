@@ -1,0 +1,23 @@
+{
+    "caption": "Берёза",
+    "texture-faces": [
+        "nature_birch_bark",
+        "nature_birch_bark",
+        "nature_birch_top",
+        "nature_birch_top",
+        "nature_birch_bark",
+        "nature_birch_bark"
+    ],
+    "material": "base:wood",
+    "base:durability": 6.0,
+    "base:loot": [
+        {
+            "item": "base:wood.item",
+            "min": 1,
+            "max": 1
+        }
+    ],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

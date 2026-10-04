@@ -1,0 +1,24 @@
+{
+    "caption": "Упавшее бревно",
+    "texture-faces": [
+        "nature_spruce_top",
+        "nature_spruce_top",
+        "nature_spruce_bark",
+        "nature_spruce_bark",
+        "nature_spruce_bark",
+        "nature_spruce_bark"
+    ],
+    "material": "base:wood",
+    "base:durability": 6.0,
+    "rotation": "pane",
+    "base:loot": [
+        {
+            "item": "base:wood.item",
+            "min": 1,
+            "max": 1
+        }
+    ],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

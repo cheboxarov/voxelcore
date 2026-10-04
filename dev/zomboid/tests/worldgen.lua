@@ -286,7 +286,7 @@ app.sleep_until(function() return block.get(wx - 8, 50, wz - 8) ~= -1 and block.
 for x = wx - 8, wx + 8 do
     for z = wz - 8, wz + 8 do
         for y = 30, 70 do
-            if block.name(block.get(x, y, z)) == "base:wood" then wood = wood + 1 end
+            if block.material(block.get(x, y, z)) == "base:wood" then wood = wood + 1 end
         end
     end
 end

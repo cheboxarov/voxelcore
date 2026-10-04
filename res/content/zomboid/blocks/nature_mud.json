@@ -1,0 +1,11 @@
+{
+    "caption": "Грязь",
+    "texture": "nature_mud",
+    "material": "base:ground",
+    "base:durability": 1.4,
+    "base:loot": [
+        {
+            "item": "base:dirt.item"
+        }
+    ]
+}
