@@ -240,6 +240,9 @@ state.load = gear.load(pid, state)
 check(state.load > gear.capacity(state) * 1.5, "overloaded: " .. state.load)
 check(survival.speed_factor(state) < 0.6, "overload slows")
 check(not survival.can_sprint(state), "no sprinting overloaded")
+state.traits = {"strong"}
+check(gear.capacity(state) == gear.CAPACITY * 1.25, "strong characters carry more")
+state.traits = nil
 state.moving = true
 state.stamina = 100
 survival.update(pid, 0.001, 1.0)
@@ -318,6 +321,7 @@ player.set_selected_slot(pid, splint_slot)
 hslot = splint_slot
 events.emit("zomboid:splint.use", pid)
 check(state.fracture.splinted, "splint applied")
+check(require("zomboid:skills").xp(pid, "first_aid") > 0, "splinting gives first aid xp")
 check(inv.count(invid, "zomboid:splint") == 0, "splint used")
 check(survival.speed_factor(state) > 0.7, "walks better with a splint")
 for _ = 1, 40 do
@@ -383,6 +387,7 @@ check(crafting.craft(pid, recipe("Овощной суп")), "soup")
 check(crafting.craft(pid, recipe("Рагу с мясом")), "stew")
 check(inv.count(invid, "zomboid:cooked_meat") == 1 and inv.count(invid, "zomboid:soup") == 1
     and inv.count(invid, "zomboid:stew") == 1, "dishes cooked")
+check(require("zomboid:skills").xp(pid, "cooking") > 0, "cooking gives cooking xp")
 local P = function(name, key) return item.properties[item.index(name)][key] end
 check(P("zomboid:stew", "zomboid:hunger") > P("zomboid:raw_meat", "zomboid:hunger") + P("zomboid:potato", "zomboid:hunger")
     + P("zomboid:carrot", "zomboid:hunger"), "stew is more filling than its ingredients")
