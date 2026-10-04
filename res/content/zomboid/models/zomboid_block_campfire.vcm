@@ -1,4 +1,11 @@
-@box from (0.3125,0,0.3125) to (0.6875,0.03125,0.6875)
+@box from (0.3125,0,0.3125) to (0.6875,0.03125,0.6875) {
+    @part tags (west) region (0.26562,0,0.73438,0.08929)
+    @part tags (east) region (0.26562,0,0.73438,0.08929)
+    @part tags (north) region (0.26562,0,0.73438,0.08929)
+    @part tags (south) region (0.26562,0,0.73438,0.08929)
+    @part tags (top) region (0.26562,0.26562,0.73438,0.73438)
+    @part tags (bottom) region (0.26562,0.26562,0.73438,0.73438)
+}
 @box from (0.125,0.015625,0.453125) to (0.875,0.109375,0.546875) texture "blocks:mdl_bark" origin (0.5,0.0625,0.5) rotate (0,0,0)
 @box from (0.125,0.015625,0.453125) to (0.875,0.109375,0.546875) texture "blocks:mdl_bark" origin (0.5,0.0625,0.5) rotate (0,60,0)
 @box from (0.125,0.015625,0.453125) to (0.875,0.109375,0.546875) texture "blocks:mdl_bark" origin (0.5,0.0625,0.5) rotate (0,120,0)

@@ -32,7 +32,6 @@ for x = X - 8, X + 8 do for z = Z - 8, Z + 8 do
     for y = G + 1, G + 4 do block.set(x, y, z, 0) end
 end end
 
--- skeletons are not loaded headless, so skins are checked against the sources the component reads
 local src = file.read("zomboid:scripts/components/zombie.lua")
 for _, list in ipairs({{"SHIRTS", "shirt"}, {"PANTS", "pants"}, {"HEADS", "head"}}) do
     local body = src:match("local " .. list[1] .. " = (%b{})")

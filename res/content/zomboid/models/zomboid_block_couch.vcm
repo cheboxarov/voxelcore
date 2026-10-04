@@ -2,9 +2,51 @@
 @box from (0.90625,0,0.0625) to (0.96875,0.09375,0.125) texture "blocks:mdl_wood_dark"
 @box from (0.03125,0,0.84375) to (0.09375,0.09375,0.90625) texture "blocks:mdl_wood_dark"
 @box from (0.90625,0,0.84375) to (0.96875,0.09375,0.90625) texture "blocks:mdl_wood_dark"
-@box from (0.125,0.09375,0.03125) to (0.875,0.3125,0.75)
-@box from (0.03125,0.09375,0.71875) to (0.96875,0.625,0.96875)
-@box from (0,0.09375,0.03125) to (0.140625,0.4375,0.96875)
-@box from (0.859375,0.09375,0.03125) to (1,0.4375,0.96875)
-@box from (0.15625,0.3125,0.0625) to (0.5,0.359375,0.71875)
-@box from (0.5,0.3125,0.0625) to (0.84375,0.359375,0.71875)
+@box from (0.125,0.09375,0.03125) to (0.875,0.3125,0.75) {
+    @part tags (west) region (0.03125,0.1875,0.75,0.625)
+    @part tags (east) region (0.25,0.1875,0.96875,0.625)
+    @part tags (north) region (0.125,0.1875,0.875,0.625)
+    @part tags (south) region (0.125,0.1875,0.875,0.625)
+    @part tags (top) region (0.125,0.25,0.875,0.96875)
+    @part tags (bottom) region (0.125,0.03125,0.875,0.75)
+}
+@box from (0.03125,0.09375,0.71875) to (0.96875,0.625,0.96875) {
+    @part tags (west) region (0.71875,0.1875,0.96875,1)
+    @part tags (east) region (0.03125,0.1875,0.28125,1)
+    @part tags (north) region (0.03125,0.1875,0.96875,1)
+    @part tags (south) region (0.03125,0.1875,0.96875,1)
+    @part tags (top) region (0.03125,0.03125,0.96875,0.28125)
+    @part tags (bottom) region (0.03125,0.71875,0.96875,0.96875)
+}
+@box from (0,0.09375,0.03125) to (0.140625,0.4375,0.96875) {
+    @part tags (west) region (0.03125,0.1875,0.96875,0.875)
+    @part tags (east) region (0.03125,0.1875,0.96875,0.875)
+    @part tags (north) region (0.85938,0.1875,1,0.875)
+    @part tags (south) region (0,0.1875,0.14062,0.875)
+    @part tags (top) region (0,0.03125,0.14062,0.96875)
+    @part tags (bottom) region (0,0.03125,0.14062,0.96875)
+}
+@box from (0.859375,0.09375,0.03125) to (1,0.4375,0.96875) {
+    @part tags (west) region (0.03125,0.1875,0.96875,0.875)
+    @part tags (east) region (0.03125,0.1875,0.96875,0.875)
+    @part tags (north) region (0,0.1875,0.14062,0.875)
+    @part tags (south) region (0.85938,0.1875,1,0.875)
+    @part tags (top) region (0.85938,0.03125,1,0.96875)
+    @part tags (bottom) region (0.85938,0.03125,1,0.96875)
+}
+@box from (0.15625,0.3125,0.0625) to (0.5,0.359375,0.71875) {
+    @part tags (west) region (0.0625,0.625,0.71875,0.71875)
+    @part tags (east) region (0.28125,0.625,0.9375,0.71875)
+    @part tags (north) region (0.5,0.625,0.84375,0.71875)
+    @part tags (south) region (0.15625,0.625,0.5,0.71875)
+    @part tags (top) region (0.15625,0.28125,0.5,0.9375)
+    @part tags (bottom) region (0.15625,0.0625,0.5,0.71875)
+}
+@box from (0.5,0.3125,0.0625) to (0.84375,0.359375,0.71875) {
+    @part tags (west) region (0.0625,0.625,0.71875,0.71875)
+    @part tags (east) region (0.28125,0.625,0.9375,0.71875)
+    @part tags (north) region (0.15625,0.625,0.5,0.71875)
+    @part tags (south) region (0.5,0.625,0.84375,0.71875)
+    @part tags (top) region (0.5,0.28125,0.84375,0.9375)
+    @part tags (bottom) region (0.5,0.0625,0.84375,0.71875)
+}

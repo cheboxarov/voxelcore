@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+import json
 import os
 import zlib
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import BLOCKS, MODELS, PAL, Canvas, hexc, mix, ramp, shade  # noqa: E402
+from common import BLOCKS, MODELS, PAL, ROOT, Canvas, hexc, mix, ramp  # noqa: E402
 
 PX = 32
 SIDES = ("north", "west", "south", "east", "top", "bottom")
@@ -31,10 +32,6 @@ class Face:
     def get(self, x, y):
         return self.c.get(self.x + x, self.y + y)
 
-    def blend(self, x, y, col, t):
-        if 0 <= x < self.w and 0 <= y < self.h:
-            self.c.blend(self.x + x, self.y + y, col, t)
-
     def rect(self, x0, y0, x1, y1, col):
         for y in range(y0, y1 + 1):
             for x in range(x0, x1 + 1):
@@ -45,7 +42,6 @@ class Face:
 
 
 class Sheet:
-    """Texture atlas of box nets; regions are emitted per face."""
 
     def __init__(self, name, w, h, seed=0):
         self.name, self.c = name, Canvas(w, h, seed)
@@ -109,10 +105,8 @@ def save_tex(name, c):
     c.save(os.path.join(BLOCKS, name + ".png"))
 
 
-# ---------- shared surface painters ----------
 
 def bevel(f, tones, light=True):
-    """Base fill with a soft top-left light and darker bottom-right edges."""
     for x, y in f.cells():
         t = 2
         if y == 0 or (light and x == 0 and f.w > 2):
@@ -170,7 +164,6 @@ def grime(f, r, tones, count, rows=None):
         f.set(r.randrange(f.w), y, tones[1])
 
 
-# ---------- zombie ----------
 
 ZSKIN = PAL["zskin"]
 BRUISE = ramp("6a5a70")
@@ -602,7 +595,6 @@ def zombie():
     save_tex("z_gore", gore)
 
 
-# ---------- car ----------
 
 CAR_COLORS = {"red": "a83228", "blue": "30589a", "white": "d8d8d0", "green": "3a6a3a", "black": "2e3036",
               "silver": "9aa0a8", "yellow": "d8a828"}
@@ -628,39 +620,33 @@ def world(f, side, b, i, j):
     return x0 + u * (x1 - x0), y0, z1 - v * (z1 - z0)
 
 
-class CarBody:
-    """Paint boxes of all car variants; layout is shared by every paint sheet."""
-
-    def __init__(self):
-        self.boxes = []
-
-    def add(self, group, frm, to, hidden=(), dark=()):
-        self.boxes.append((group, frm, to, set(hidden), set(dark)))
-
-
 def car_layout():
-    body = CarBody()
-    body.add("body", (-27, -8, 12), (27, 3, 48), hidden=("north",), dark=("bottom",))
-    body.add("body", (-27, -14, 41), (27, -8, 48), hidden=("top",), dark=("bottom", "north"))
-    body.add("body", (-27, -14, -23), (27, -8, 23), hidden=("top",), dark=("bottom", "north", "south"))
-    body.add("body", (-27, -14, -48), (27, -8, -41), hidden=("top",), dark=("bottom", "south"))
-    body.add("body", (-30, 3, 8), (-27, 6, 11))
-    body.add("body", (27, 3, 8), (30, 6, 11))
-    body.add("sedan", (-27, -8, -22), (27, 3, 12), hidden=("top", "north", "south"), dark=("bottom",))
-    body.add("sedan", (-27, -8, -48), (27, 3, -22), hidden=("south",), dark=("bottom",))
-    body.add("sedan", (-24.5, 15, -21), (24.5, 16.5, 11))
-    body.add("sedan", (-24.4, 3, -5), (24.4, 15, -3), hidden=("top", "bottom", "north", "south"))
-    body.add("pickup", (-27, -8, -8), (27, 3, 12), hidden=("top", "south"), dark=("bottom",))
-    body.add("pickup", (-24.5, 15, -7), (24.5, 16.5, 11))
-    body.add("pickup", (-24.6, 3, -7), (-22, 15, -5), hidden=("top", "bottom"))
-    body.add("pickup", (22, 3, -7), (24.6, 15, -5), hidden=("top", "bottom"))
-    body.add("pickup", (-27, -8, -48), (-25, 4, -8), dark=("bottom",))
-    body.add("pickup", (25, -8, -48), (27, 4, -8), dark=("bottom",))
-    body.add("pickup", (-25, -8, -48), (25, 4, -46), dark=("bottom",))
-    return body
+    boxes = []
+
+    def add(group, frm, to, hidden=(), dark=()):
+        boxes.append((group, frm, to, set(hidden), set(dark)))
+
+    add("body", (-27, -8, 12), (27, 3, 48), hidden=("north",), dark=("bottom",))
+    add("body", (-27, -14, 41), (27, -8, 48), hidden=("top",), dark=("bottom", "north"))
+    add("body", (-27, -14, -23), (27, -8, 23), hidden=("top",), dark=("bottom", "north", "south"))
+    add("body", (-27, -14, -48), (27, -8, -41), hidden=("top",), dark=("bottom", "south"))
+    add("body", (-30, 3, 8), (-27, 6, 11))
+    add("body", (27, 3, 8), (30, 6, 11))
+    add("sedan", (-27, -8, -22), (27, 3, 12), hidden=("top", "north", "south"), dark=("bottom",))
+    add("sedan", (-27, -8, -48), (27, 3, -22), hidden=("south",), dark=("bottom",))
+    add("sedan", (-24.5, 15, -21), (24.5, 16.5, 11))
+    add("sedan", (-24.4, 3, -5), (24.4, 15, -3), hidden=("top", "bottom", "north", "south"))
+    add("pickup", (-27, -8, -8), (27, 3, 12), hidden=("top", "south"), dark=("bottom",))
+    add("pickup", (-24.5, 15, -7), (24.5, 16.5, 11))
+    add("pickup", (-24.6, 3, -7), (-22, 15, -5), hidden=("top", "bottom"))
+    add("pickup", (22, 3, -7), (24.6, 15, -5), hidden=("top", "bottom"))
+    add("pickup", (-27, -8, -48), (-25, 4, -8), dark=("bottom",))
+    add("pickup", (25, -8, -48), (27, 4, -8), dark=("bottom",))
+    add("pickup", (-25, -8, -48), (25, 4, -46), dark=("bottom",))
+    return boxes
 
 
-def paint_pixel(tones, mode, r, side, x, y, z, group, doors_tones=None):
+def paint_pixel(tones, mode, side, x, y, z, group, doors_tones=None):
     burnt = mode == "burnt"
     if side == "bottom":
         return hexc("1e1e22")
@@ -732,7 +718,7 @@ def paint_pixel(tones, mode, r, side, x, y, z, group, doors_tones=None):
 def paint_sheet(name, tones, mode, layout, doors_tones=None):
     sh = Sheet(name, 192, 120, seed=zlib.crc32(name.encode()))
     nets, todo = [], []
-    for k, (group, frm, to, hidden, dark) in enumerate(layout.boxes):
+    for k, (group, frm, to, hidden, dark) in enumerate(layout):
         size = {"top": (to[0] - frm[0], to[2] - frm[2]), "north": (to[0] - frm[0], to[1] - frm[1]),
                 "south": (to[0] - frm[0], to[1] - frm[1]), "west": (to[2] - frm[2], to[1] - frm[1]),
                 "east": (to[2] - frm[2], to[1] - frm[1])}
@@ -740,10 +726,10 @@ def paint_sheet(name, tones, mode, layout, doors_tones=None):
         todo += [(k, side) + tuple(max(1, round(v)) for v in size[side]) for side in size
                  if side not in hidden and side not in dark]
     for k, side, w, h in sorted(todo, key=lambda t: (-t[3], -t[2])):
-        group, frm, to = layout.boxes[k][:3]
+        group, frm, to = layout[k][:3]
         f = nets[k][side] = sh.face(w, h)
         for i, j in f.cells():
-            f.set(i, j, paint_pixel(tones, mode, sh.r, side, *world(f, side, frm + to, i, j), group, doors_tones))
+            f.set(i, j, paint_pixel(tones, mode, side, *world(f, side, frm + to, i, j), group, doors_tones))
         for i in range(f.w):
             f.set(i, 0, mix(f.get(i, 0), tones[4], 0.35))
             f.set(i, f.h - 1, mix(f.get(i, f.h - 1), tones[0], 0.35))
@@ -751,7 +737,7 @@ def paint_sheet(name, tones, mode, layout, doors_tones=None):
     bevel(plain, tones)
     dark = sh.face(2, 2)
     dark.rect(0, 0, 1, 1, hexc("1e1e22"))
-    for net, (group, frm, to, hidden, darks) in zip(nets, layout.boxes):
+    for net, (group, frm, to, hidden, darks) in zip(nets, layout):
         for side in SIDES:
             if net[side] is None:
                 net[side] = dark if (side in darks or side == "bottom") else plain
@@ -959,7 +945,7 @@ def pillars(sh, plain, group):
 
 def car_model(layout, sh, nets, plain, psh, F, tex):
     groups = {"body": [], "sedan": [], "pickup": []}
-    for net, (group, frm, to, hidden, dark) in zip(nets, layout.boxes):
+    for net, (group, frm, to, hidden, dark) in zip(nets, layout):
         groups[group].append(box(frm, to, tex, net, sh))
     for group in ("sedan", "pickup"):
         groups[group] += cabin_glass(psh, F, group) + pillars(sh, plain, group)
@@ -993,7 +979,6 @@ def car():
         parts = [p.replace('"$paint"', '"blocks:%s"' % tex) for p in parts]
         write_model("zomboid_car_wreck_" + paint, [bone(None, (32, 16.3, 48), [bone(None, None, parts, rotate=(1.5, 0, -2.5))])])
 
-# ---------- items in hand / on the ground ----------
 
 def materials():
     def tile(name, tones, fn):
@@ -1069,7 +1054,6 @@ ITEM_MODELS = {
 ITEM_MODELS["spiked_bat"] = (-45, 1, ITEM_MODELS["bat"][2] + [
     b for y in (21, 23, 25) for b in (((-3.5, y, -0.25), (3.5, y + 0.5, 0.25), "steel"),
                                       ((-0.25, y + 1, -3.5), (0.25, y + 1.5, 3.5), "steel"))])
-ITEM_USERS = {"gas_can_empty": "gas_can"}
 
 
 def items():
@@ -1083,15 +1067,27 @@ def items():
                                                   scale=scale if scale != 1 else None)])
 
 
-# ---------- blocks with custom geometry (faces without a material use the block's own textures) ----------
 
 def B(frm, to, mat=None, extra=""):
-    return box(frm, to, "blocks:mdl_" + mat if mat else None, extra=extra) if mat else \
-        "@box from %s to %s%s" % (vec(frm), vec(to), extra)
+    return box(frm, to, "blocks:mdl_" + mat, extra=extra) if mat else (frm, to)
+
+
+def own(frm, to, hb):
+    def span(i, flip):
+        t0, t1 = ((v - hb[i]) / (hb[i + 3] - hb[i]) for v in (frm[i], to[i]))
+        t0, t1 = (1 - t1, 1 - t0) if flip else (t0, t1)
+        t0, t1 = max(0.0, t0), min(1.0, t1)
+        return (t0, t1) if t1 - t0 > 0.02 else (0.0, 1.0)
+
+    uv = {"west": (span(2, False), span(1, False)), "east": (span(2, True), span(1, False)),
+          "north": (span(0, True), span(1, False)), "south": (span(0, False), span(1, False)),
+          "top": (span(0, False), span(2, True)), "bottom": (span(0, False), span(2, False))}
+    parts = ["    @part tags (%s) region (%g,%g,%g,%g)" % (side, round(u[0], 5), round(v[0], 5), round(u[1], 5), round(v[1], 5))
+             for side, (u, v) in uv.items()]
+    return "@box from %s to %s {\n%s\n}" % (vec(frm), vec(to), "\n".join(parts))
 
 
 def octo(x0, y0, z0, x1, y1, z1, cut, mat=None):
-    """Octagonal prism from three overlapping boxes; tops differ slightly to avoid z-fighting."""
     return [B((x0 + cut, y0, z0), (x1 - cut, y1, z1), mat), B((x0, y0, z0 + cut), (x1, y1 - 0.05, z1 - cut), mat),
             B((x0 + cut / 2, y0, z0 + cut / 2), (x1 - cut / 2, y1 - 0.1, z1 - cut / 2), mat)]
 
@@ -1151,7 +1147,11 @@ def block_models():
         B((15.6, 24, 12.6), (16.4, 36, 13.4), "steel", " origin (0.5,0.75,0.4062) rotate (0,0,-30)"),
     ]
     for name, parts in m.items():
-        write_model("zomboid_block_" + name, parts)
+        with open(os.path.join(ROOT, "blocks", name + ".json")) as f:
+            spec = json.load(f)
+        hb = [v * PX for v in spec.get("hitbox") or [0, 0, 0] + spec.get("size", [1, 1, 1])]
+        hb = hb[:3] + [hb[i] + hb[i + 3] for i in range(3)]
+        write_model("zomboid_block_" + name, [p if isinstance(p, str) else own(*p, hb) for p in parts])
 
 
 if __name__ == "__main__":

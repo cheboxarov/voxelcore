@@ -1,4 +1,11 @@
-@box from (0.0625,0.125,0.15625) to (0.9375,0.75,0.625)
+@box from (0.0625,0.125,0.15625) to (0.9375,0.75,0.625) {
+    @part tags (west) region (0.00893,0.16667,0.67857,1)
+    @part tags (east) region (0.32143,0.16667,0.99107,1)
+    @part tags (north) region (0.01389,0.16667,0.98611,1)
+    @part tags (south) region (0.01389,0.16667,0.98611,1)
+    @part tags (top) region (0.01389,0.32143,0.98611,0.99107)
+    @part tags (bottom) region (0.01389,0.00893,0.98611,0.67857)
+}
 @box from (0.1875,0.21875,0.625) to (0.8125,0.6875,0.84375) texture "blocks:mdl_gunmetal"
 @box from (0.28125,0.28125,0.84375) to (0.71875,0.625,0.90625) texture "blocks:mdl_gunmetal"
 @box from (0.125,0,0.25) to (0.875,0.125,0.75) texture "blocks:mdl_wood_dark"

@@ -1,6 +1,27 @@
-@box from (0.34375,0,0.125) to (0.65625,0.9375,0.875)
-@box from (0.125,0,0.34375) to (0.875,0.935937,0.65625)
-@box from (0.234375,0,0.234375) to (0.765625,0.934375,0.765625)
+@box from (0.34375,0,0.125) to (0.65625,0.9375,0.875) {
+    @part tags (west) region (0.03125,0,0.96875,0.98684)
+    @part tags (east) region (0.03125,0,0.96875,0.98684)
+    @part tags (north) region (0.30469,0,0.69531,0.98684)
+    @part tags (south) region (0.30469,0,0.69531,0.98684)
+    @part tags (top) region (0.30469,0.03125,0.69531,0.96875)
+    @part tags (bottom) region (0.30469,0.03125,0.69531,0.96875)
+}
+@box from (0.125,0,0.34375) to (0.875,0.935937,0.65625) {
+    @part tags (west) region (0.30469,0,0.69531,0.9852)
+    @part tags (east) region (0.30469,0,0.69531,0.9852)
+    @part tags (north) region (0.03125,0,0.96875,0.9852)
+    @part tags (south) region (0.03125,0,0.96875,0.9852)
+    @part tags (top) region (0.03125,0.30469,0.96875,0.69531)
+    @part tags (bottom) region (0.03125,0.30469,0.96875,0.69531)
+}
+@box from (0.234375,0,0.234375) to (0.765625,0.934375,0.765625) {
+    @part tags (west) region (0.16797,0,0.83203,0.98355)
+    @part tags (east) region (0.16797,0,0.83203,0.98355)
+    @part tags (north) region (0.16797,0,0.83203,0.98355)
+    @part tags (south) region (0.16797,0,0.83203,0.98355)
+    @part tags (top) region (0.16797,0.16797,0.83203,0.83203)
+    @part tags (bottom) region (0.16797,0.16797,0.83203,0.83203)
+}
 @box from (0.140625,0.15625,0.203125) to (0.859375,0.19375,0.796875) texture "blocks:mdl_iron"
 @box from (0.140625,0.71875,0.203125) to (0.859375,0.75625,0.796875) texture "blocks:mdl_iron"
 @box from (0.203125,0.15625,0.140625) to (0.796875,0.19375,0.859375) texture "blocks:mdl_iron"
