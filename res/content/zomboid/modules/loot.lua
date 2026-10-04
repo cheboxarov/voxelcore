@@ -50,6 +50,14 @@ local TABLES = {
         {"zomboid:potato", 3, 1, 3}, {"zomboid:carrot", 3, 1, 3}, {"zomboid:cigarettes", 2, 1, 1},
         {"zomboid:magazine", 2, 1, 1},
     },
+    locker = {
+        {"zomboid:tshirt", 3, 1, 1}, {"zomboid:boots", 2, 1, 1}, {"zomboid:flashlight", 2, 1, 1},
+        {"zomboid:rag", 3, 1, 2}, {"zomboid:cigarettes", 2, 1, 1}, {"zomboid:magazine", 2, 1, 1},
+    },
+    ammo_crate = {
+        {"zomboid:ammo_9mm", 3, 4, 10}, {"zomboid:shotgun_shells", 2, 2, 6}, {"zomboid:canned_beans", 3, 1, 3},
+        {"zomboid:water_bottle", 2, 1, 2}, {"zomboid:bandage", 2, 1, 2},
+    },
 }
 
 local ROLLS = {
@@ -81,7 +89,7 @@ function loot.fill(invid, container, x, z, apocalypse_hour)
     if entries == nil then
         return 0
     end
-    local rolls = ROLLS[container] or {1, 3}
+    local rolls = entries.rolls or ROLLS[container] or {1, 3}
     local n = math.random(rolls[1], rolls[2])
     local added = 0
     for _ = 1, n do

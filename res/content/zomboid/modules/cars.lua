@@ -9,14 +9,16 @@ local cars = {
     driving = {},
 }
 
-local KEY_CONTAINERS = {wardrobe = true, kitchen_cabinet = true, shelf = true}
+local KEY_CONTAINERS = {wardrobe = true, kitchen_cabinet = true, shelf = true, locker = true}
 
 function cars.id_at(x, z)
     return x .. ":" .. z
 end
 
 function cars.spawn(x, y, z)
-    return entities.spawn("zomboid:car", {x + 0.5, y + 0.72, z + 0.5}, {zomboid__car = {id = cars.id_at(x, z)}})
+    local _, p = town.building_at(x, z)
+    return entities.spawn("zomboid:car", {x + 0.5, y + 0.72, z + 0.5},
+        {zomboid__car = {id = cars.id_at(x, z), color = p and p.def.car_color}})
 end
 
 function cars.add_key(invid, container, x, z)

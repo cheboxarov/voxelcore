@@ -25,7 +25,7 @@ if data.id == nil then
     data.id = (ARGS or {}).id or tostring(entity:get_uid())
     data.fuel = math.floor(town.hash(x, z, 31) * 120) / 10
     data.heading = math.floor(town.hash(x, z, 32) * 4) * 90
-    data.color = COLORS[1 + math.floor(town.hash(x, z, 33) * #COLORS)]
+    data.color = (ARGS or {}).color or COLORS[1 + math.floor(town.hash(x, z, 33) * #COLORS)]
 end
 if data.body == nil then
     local pos = tsf:get_pos()

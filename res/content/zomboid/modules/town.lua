@@ -690,7 +690,7 @@ local function lot_column(c, p, lot, wx, wz, out)
                 rotate_entries(out, from, p.rot)
             end
         end
-        return "building"
+        return p.def.kind_at and p.def.kind_at(p, hx, hz) or "building"
     end
     local car = p.car and hx == p.car[1] and hz == p.car[2]
     if out and car then

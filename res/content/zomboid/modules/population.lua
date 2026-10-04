@@ -64,7 +64,34 @@ function population.seed_cell(cx, cz)
             return node.x + math.random(-2, 2), node.z + math.random(-2, 2), {route = true}
         end)
     end
+    if p and p.cx == cx and p.cz == cz and p.def.zombies then
+        n = n + population.seed_building(p, key)
+    end
     population.seeded[key] = day
+    return n
+end
+
+function population.seed_building(p, key)
+    local spec = p.def.zombies
+    local n = 0
+    for _, place in ipairs({"count", "yard"}) do
+        local range, yard = spec[place], place == "yard"
+        local want = range and math.floor(math.random(range[1], range[2]) * sandbox.get("zombie_density") + 0.5) or 0
+        for _ = 1, want * 2 do
+            if want <= 0 or zombies.count() >= zombies.limit() then
+                break
+            end
+            local hx, f, hz = p.def.spot(p, math.random, yard)
+            local x, z = town.to_world(p, hx, hz)
+            local y = zombies.find_ground(x, z, town.GROUND + f * 4 + 3)
+            if y then
+                zombies.spawn(x, y, z, {kind = zombies.roll_kind(), cell = key, anchor = {x + 0.5, y, z + 0.5},
+                    shirt = spec.shirts and spec.shirts[math.random(#spec.shirts)]})
+                want = want - 1
+                n = n + 1
+            end
+        end
+    end
     return n
 end
 
