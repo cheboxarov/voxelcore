@@ -30,6 +30,12 @@ function on_hud_open(playerid)
     input.add_callback("zomboid.skills", function()
         toggle("zomboid:skills")
     end)
+    input.add_callback("key:escape", function()
+        if hud.is_open("zomboid:sandbox") or hud.is_open("zomboid:character") then
+            hud.pause()
+            return true
+        end
+    end)
     events.on("zomboid:character_ready", update_vision)
     events.on("zomboid:new_character", update_vision)
     update_vision()

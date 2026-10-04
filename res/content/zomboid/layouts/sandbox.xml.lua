@@ -35,13 +35,15 @@ end
 
 function confirm()
     sandbox.save(choice)
+    choice = {}
     hud.close("zomboid:sandbox")
 end
 
 function on_open()
-    choice = {}
-    for _, opt in ipairs(sandbox.OPTIONS) do
-        choice[opt.key] = sandbox.get(opt.key)
+    if next(choice) == nil then
+        for _, opt in ipairs(sandbox.OPTIONS) do
+            choice[opt.key] = sandbox.get(opt.key)
+        end
     end
     world.set_day_time_speed(0)
     refresh()

@@ -72,12 +72,12 @@ function start()
         document.points.text = "[#ff7060]" .. err
         return
     end
+    prof_id = "unemployed"
+    chosen = {}
     hud.close("zomboid:character")
 end
 
 function on_open()
-    prof_id = "unemployed"
-    chosen = {}
     world.set_day_time_speed(0)
     refresh()
 end
