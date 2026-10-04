@@ -967,10 +967,9 @@ def world_textures():
 
     def lamp(on):
         def draw(img):
-            img.p = [(0, 0, 0, 0)] * 256
-            img.rect(6, 0, 9, 3, hexc("505050"))
-            img.rect(3, 4, 12, 9, hexc("f8f0c0") if on else hexc("8a8678"))
-            img.rect(5, 5, 10, 8, hexc("fffbe0") if on else hexc("a09c8c"))
+            img.noise(hexc("f8f0c0") if on else hexc("8a8678"), 0.04)
+            img.frame(0, 0, 15, 15, hexc("d8d0a0") if on else hexc("6a6658"))
+            img.rect(4, 4, 11, 11, hexc("fffbe0") if on else hexc("a09c8c"))
         return draw
     block("lamp_on", 300, lamp(True))
     block("lamp_off", 301, lamp(False))

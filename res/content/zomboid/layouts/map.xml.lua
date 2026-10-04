@@ -13,7 +13,7 @@ function on_open()
     mapping.draw(document.map.data, hud.get_player(), 2)
     local parts = {}
     for _, e in ipairs(LEGEND) do
-        table.insert(parts, "[" .. hex(mapping.COLORS[e[1]]) .. "]■ [#d0d0d0]" .. e[2])
+        table.insert(parts, "[" .. hex(mapping.COLORS[e[1]]) .. "]" .. e[2])
     end
     document.legend.text = table.concat(parts, "  ")
 end

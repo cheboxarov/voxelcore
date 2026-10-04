@@ -4,7 +4,7 @@ local inv = require "zomboid:inv"
 
 function on_use_on_block(x, y, z, pid)
     local id = block.get(x, y, z)
-    if block.has_tag(id, "zomboid:interactive") then
+    if block.has_tag(id, "zomboid:interactive") or block.name(id) == "base:wooden_door" then
         return false
     end
     if not fire.burn(x, y, z) then

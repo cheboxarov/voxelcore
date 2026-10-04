@@ -41,6 +41,7 @@ function weather.set_raining(raining)
         return
     end
     weather.raining = raining
+    weather.started = clock.hours
     vitals.rain = raining and 1 or 0
     schedule()
     for _, pid in ipairs(player.get_all()) do
@@ -93,7 +94,8 @@ function weather.tick()
     local dh = last_hours and math.max(0, clock.hours - last_hours) or 0
     last_hours = clock.hours
     if weather.raining and dh > 0 then
-        fill_barrels(math.max(0, math.min(dh, weather.next_change - (clock.hours - dh))))
+        local from = math.max(clock.hours - dh, weather.started or clock.hours)
+        fill_barrels(math.max(0, math.min(clock.hours, weather.next_change) - from))
     end
     if clock.hours >= weather.next_change then
         weather.set_raining(not weather.raining)
@@ -101,13 +103,14 @@ function weather.tick()
 end
 
 function weather.serialize()
-    return {raining = weather.raining, next_change = weather.next_change}
+    return {raining = weather.raining, next_change = weather.next_change, started = weather.started}
 end
 
 function weather.deserialize(data)
     weather.raining = data and data.raining or false
     vitals.rain = weather.raining and 1 or 0
     weather.next_change = data and data.next_change
+    weather.started = data and data.started
     shown = nil
     last_hours = nil
 end
