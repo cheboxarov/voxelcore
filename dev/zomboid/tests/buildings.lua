@@ -114,7 +114,7 @@ for _, kind in ipairs(KINDS) do
 end
 
 log("kinds in town", present, "of", #KINDS)
-check(present >= 8, "new buildings appear in town")
+check(present == #KINDS, "every new building appears in town")
 
 -- stamp each building into open land to check it as a player would
 local AIR = block.index("core:air")

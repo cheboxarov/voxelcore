@@ -7,7 +7,7 @@ return kit.building {
     title = "завод",
     color = {150, 120, 110},
     zones = {"industrial"},
-    weight = 5,
+    weight = 5.2,
     cells = 2,
     materials = {
         wall = {"base:brick", "zomboid:bld_concrete", "zomboid:bld_corrugated"},
