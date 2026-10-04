@@ -14,6 +14,7 @@ local sandbox = require "zomboid:sandbox"
 local skills = require "zomboid:skills"
 local noise = require "zomboid:noise"
 local town = require "zomboid:town"
+local population = require "zomboid:population"
 
 local SHIRTS = {"red", "blue", "green", "gray", "white", "police"}
 local PANTS = {"jeans", "brown", "black"}
@@ -31,7 +32,7 @@ if data.max_health == nil then
     data.pants = PANTS[math.random(#PANTS)]
     data.items = args.items
     data.name = args.name
-    data.resident = args.resident
+    data.cell = args.cell
     data.anchor = args.anchor
     data.route = args.route
 end
@@ -462,9 +463,12 @@ function on_update(tps)
     if tick % 20 == 0 then
         check_stuck(pos)
     end
-    if tick % 100 == 0 and not data.resident then
+    if tick % 100 == 0 then
         local pid = player.get_nearest(pos)
         if pid == nil or vec3.distance(pos, {player.get_pos(pid)}) > zombies.DESPAWN_DISTANCE then
+            if data.cell then
+                population.seeded[data.cell] = nil
+            end
             entity:despawn()
             return
         end

@@ -20,20 +20,20 @@ local function ground(x, z)
     if town.building_at(x, z) then
         return nil
     end
-    return zombies.find_ground(x, z)
+    return zombies.find_ground(x, z, town.in_town(x, z) and town.GROUND + 3 or nil)
 end
 
-local function spawn_group(cx, cz, n, args_fn)
+local function spawn_group(key, n, args_fn)
     local spawned = 0
     for _ = 1, n * 3 do
-        if spawned >= n or zombies.count() >= zombies.cap() then
+        if spawned >= n or zombies.count() >= zombies.limit() then
             break
         end
         local x, z, args = args_fn()
         local y = ground(x, z)
         if y then
             args.kind = zombies.roll_kind()
-            args.resident = true
+            args.cell = key
             zombies.spawn(x, y, z, args)
             spawned = spawned + 1
         end
@@ -42,6 +42,7 @@ local function spawn_group(cx, cz, n, args_fn)
 end
 
 function population.seed_cell(cx, cz)
+    local key = cx .. ":" .. cz
     local ox, oz = cx * CELL, cz * CELL
     local p = town.plan(cx, cz)
     local day = clock.day()
@@ -56,15 +57,15 @@ function population.seed_cell(cx, cz)
         crowd = 0
     end
     local ay = town.GROUND + 1
-    local n = spawn_group(cx, cz, crowd, function()
+    local n = spawn_group(key, crowd, function()
         return ax + math.random(-3, 3), az + math.random(-2, 2), {anchor = {ax + 0.5, ay, az + 0.5}}
     end)
     if math.random() < 0.7 then
-        n = n + spawn_group(cx, cz, math.random(1, 2), function()
+        n = n + spawn_group(key, math.random(1, 2), function()
             return ox + math.random(1, 3), oz + math.random(8, 28), {route = true}
         end)
     end
-    population.seeded[cx .. ":" .. cz] = day
+    population.seeded[key] = day
     return n
 end
 
@@ -127,7 +128,7 @@ function population.tick(survival)
                 pull_ready = now + population.PULL_COOLDOWN
                 population.pull(loud[#loud], ppos)
             end
-            if zombies.count() < zombies.cap() then
+            if zombies.count() < zombies.limit() then
                 seed_near(ppos)
             end
         end

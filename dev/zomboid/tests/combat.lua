@@ -172,12 +172,12 @@ check(population.seeded[cx .. ":" .. cz] == clock.day(), "cell marked as seeded"
 local crowd, roamers = {}, {}
 for _, z in pairs(zombies.registry) do
     local d = z.SAVED_DATA
-    check(d.resident, "resident zombie")
+    check(d.cell == cx .. ":" .. cz, "resident zombie remembers its cell")
     table.insert(d.anchor and crowd or roamers, z)
 end
 log(string.format("seeded %d: crowd %d, roamers %d", n, #crowd, #roamers))
 check(#crowd >= 2, "crowd at the house")
-local _, roamer = spawn_at(34.5, -12.5, {route = true, resident = true})
+local _, roamer = spawn_at(34.5, -12.5, {route = true, cell = "1:-1"})
 app.tick()
 local roam_start = roamer.get_pos()
 app.sleep(12)
@@ -199,6 +199,50 @@ local seeded = table.count_pairs(population.seeded)
 log("cells seeded by the tick: " .. seeded .. ", zombies " .. zombies.count())
 check(seeded > 0 and zombies.count() > 0, "tick seeds nearby cells")
 clear_zombies()
+
+-- residents never spawn on top of a tree canopy or roof over the lawn
+local cp = town.plan(cx, cz)
+local cax, caz = cx * town.CELL + cp.x0 + cp.door, cz * town.CELL + cp.z0 - 4
+local stone = block.index("base:stone")
+for x = cax - 4, cax + 4 do
+    for z = caz - 3, caz + 3 do
+        block.set(x, G + 5, z, stone, 0)
+    end
+end
+population.seed_cell(cx, cz)
+for _, z in pairs(zombies.registry) do
+    check(z.get_pos()[2] < G + 3, "resident spawned on the ground, not on the canopy: " .. z.get_pos()[2])
+end
+for x = cax - 4, cax + 4 do
+    for z = caz - 3, caz + 3 do
+        block.set(x, G + 5, z, 0, 0)
+    end
+end
+clear_zombies()
+
+-- residents leave room under the cap for the night horde
+for scx = -town.RADIUS, town.RADIUS - 1 do
+    for scz = -town.RADIUS, town.RADIUS - 1 do
+        population.seed_cell(scx, scz)
+    end
+end
+local residents = zombies.count()
+local horde = zombies.spawn_horde(pid)
+log(string.format("whole town seeded: %d residents (limit %d), horde %d", residents, zombies.limit(), horde))
+check(residents <= zombies.limit(), "residents respect the population limit")
+check(horde > 0, "horde still comes when the town is full")
+clear_zombies()
+
+-- far residents vanish and their cell refills on the next visit
+population.seeded = {}
+population.seed_cell(cx, cz)
+local despawn_distance = zombies.DESPAWN_DISTANCE
+zombies.DESPAWN_DISTANCE = 1
+for _ = 1, 110 do app.tick() end
+zombies.DESPAWN_DISTANCE = despawn_distance
+log("far residents left: " .. zombies.count())
+check(zombies.count() == 0, "far residents despawn")
+check(population.seeded[cx .. ":" .. cz] == nil, "cell is free to be seeded again")
 
 -- noise devices: an alarm clock distracts zombies, then falls silent
 reset_player()
