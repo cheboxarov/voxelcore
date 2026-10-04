@@ -16,8 +16,9 @@ local noise = require "zomboid:noise"
 local town = require "zomboid:town"
 local population = require "zomboid:population"
 
-local SHIRTS = {"red", "blue", "green", "gray", "white", "police"}
+local SHIRTS = {"red", "blue", "green", "gray", "white", "police", "plaid", "suit"}
 local PANTS = {"jeans", "brown", "black"}
+local HEADS = {"bald", "dark", "long", "gray", "blond"}
 
 local uid = entity:get_uid()
 local data = SAVED_DATA
@@ -29,7 +30,7 @@ if data.max_health == nil then
     data.max_health = math.random(hp[1], hp[2]) + (args.horde and 15 or 0)
     data.health = data.max_health
     data.shirt = args.shirt or zombies.KINDS[data.kind].shirt or SHIRTS[math.random(#SHIRTS)]
-    data.pants = PANTS[math.random(#PANTS)]
+    data.pants = zombies.KINDS[data.kind].pants or PANTS[math.random(#PANTS)]
     data.items = args.items
     data.name = args.name
     data.cell = args.cell
@@ -52,6 +53,8 @@ mob.set_movement_speed(kind.speed)
 
 rig:set_texture("$shirt", "blocks:z_shirt_" .. data.shirt)
 rig:set_texture("$pants", "blocks:z_pants_" .. data.pants)
+data.head = data.head or HEADS[math.random(#HEADS)]
+rig:set_texture("$head", "blocks:z_head_" .. data.head)
 
 local bones = {
     body = rig:index("body"),
@@ -361,7 +364,7 @@ function take_hit(damage, knockback, from, pid)
     if vc.is_client() then
         gfx.particles.emit({pos[1], pos[2] + 0.4, pos[3]}, 14, {
             lifetime = 0.6, spawn_interval = 0.0001, explosion = {2, 2, 2},
-            texture = "blocks:z_shirt_red", size = {0.07, 0.07, 0.07},
+            texture = "blocks:z_gore", size = {0.07, 0.07, 0.07},
             spawn_shape = "ball", spawn_spread = {0.2, 0.2, 0.2}
         })
     end

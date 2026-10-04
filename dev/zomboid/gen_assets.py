@@ -7,7 +7,6 @@ import wave
 import zlib
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "res", "content", "zomboid")
-BLOCKS = os.path.join(ROOT, "textures", "blocks")
 SOUNDS = os.path.join(ROOT, "sounds")
 
 
@@ -34,83 +33,6 @@ def hexc(s, a=255):
 
 def shade(c, k):
     return tuple(max(0, min(255, int(v * k))) for v in c[:3]) + (c[3],)
-
-
-class Img:
-    def __init__(self, fill=(0, 0, 0, 0), seed=0):
-        self.p = [fill] * 256
-        self.r = random.Random(seed)
-
-    def set(self, x, y, c):
-        if 0 <= x < 16 and 0 <= y < 16:
-            self.p[y * 16 + x] = c
-
-    def get(self, x, y):
-        return self.p[y * 16 + x]
-
-    def rect(self, x0, y0, x1, y1, c):
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1):
-                self.set(x, y, c)
-
-    def frame(self, x0, y0, x1, y1, c):
-        for x in range(x0, x1 + 1):
-            self.set(x, y0, c)
-            self.set(x, y1, c)
-        for y in range(y0, y1 + 1):
-            self.set(x0, y, c)
-            self.set(x1, y, c)
-
-    def line(self, x0, y0, x1, y1, c):
-        n = max(abs(x1 - x0), abs(y1 - y0), 1)
-        for i in range(n + 1):
-            self.set(round(x0 + (x1 - x0) * i / n), round(y0 + (y1 - y0) * i / n), c)
-
-    def noise(self, base, amount=0.12, x0=0, y0=0, x1=15, y1=15):
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1):
-                self.set(x, y, shade(base, 1 + self.r.uniform(-amount, amount)))
-
-    def speckle(self, c, count):
-        for _ in range(count):
-            self.set(self.r.randrange(16), self.r.randrange(16), c)
-
-    def save(self, folder, name):
-        save_png(os.path.join(folder, name + ".png"), self.p)
-
-
-def block_textures():
-    skin = hexc("7f9a6a")
-    img = Img(seed=60)
-    img.noise(skin, 0.1)
-    img.speckle(hexc("5c7048"), 10)
-    img.speckle(hexc("6a2020"), 4)
-    img.save(BLOCKS, "z_skin")
-    img = Img(seed=61)
-    img.noise(skin, 0.08)
-    img.rect(3, 5, 5, 6, hexc("e8e070"))
-    img.rect(10, 5, 12, 6, hexc("e8e070"))
-    img.set(4, 6, hexc("801010"))
-    img.set(11, 6, hexc("801010"))
-    img.rect(4, 10, 11, 12, hexc("301818"))
-    for x in range(5, 11, 2):
-        img.set(x, 10, hexc("d8d0b0"))
-    img.speckle(hexc("6a2020"), 5)
-    img.save(BLOCKS, "z_face")
-    for name, col in [("red", "8a3030"), ("blue", "34507a"), ("green", "4a6a3a"),
-                      ("gray", "707070"), ("white", "c8c4b8"), ("police", "1e2a48")]:
-        img = Img(seed=zlib.crc32(name.encode()) & 0xFF)
-        img.noise(hexc(col), 0.1)
-        for _ in range(6):
-            x, y = img.r.randrange(16), img.r.randrange(16)
-            img.rect(x, y, x + 1, y + 1, hexc("5a1414"))
-        img.speckle(shade(hexc(col), 0.6), 8)
-        img.save(BLOCKS, "z_shirt_" + name)
-    for name, col in [("jeans", "3a4a66"), ("brown", "5a4632"), ("black", "2a2a2e")]:
-        img = Img(seed=zlib.crc32(name.encode()) & 0xFF)
-        img.noise(hexc(col), 0.1)
-        img.speckle(hexc("4a1010"), 6)
-        img.save(BLOCKS, "z_pants_" + name)
 
 
 def icon():
@@ -178,14 +100,6 @@ def sounds():
 
 
 def combat_assets():
-    img = Img(seed=75)
-    img.noise(hexc("d0a020"), 0.08)
-    img.rect(0, 5, 15, 7, hexc("1a1a1a"))
-    for _ in range(5):
-        x, y = img.r.randrange(16), img.r.randrange(16)
-        img.rect(x, y, x + 1, y + 1, hexc("5a1414"))
-    img.save(BLOCKS, "z_shirt_sport")
-
     rate = 22050
 
     def write(name, dur, fn):
@@ -203,20 +117,6 @@ def combat_assets():
           * (1 if (t * 16) % 2 < 1 else 0) * (1 if t < 0.8 else 0))
     write("world/siren", 1.0, lambda t, r: math.sin(2 * math.pi * (600 * t + 250 / math.pi * math.sin(math.pi * t)))
           * 0.8 * min(1, t * 20, (1 - t) * 20))
-def world_textures():
-    def block(name, seed, fn):
-        img = Img(seed=seed)
-        fn(img)
-        img.save(BLOCKS, name)
-
-    for name, col in (("red", "a83228"), ("blue", "30589a"), ("white", "d8d8d0"), ("green", "3a6a3a")):
-        block("car_" + name, 340 + len(name), lambda img, c=col: (img.noise(hexc(c), 0.04),
-                                                                   img.line(0, 15, 15, 15, shade(hexc(c), 0.7))))
-    block("car_glass", 350, lambda img: (img.noise(hexc("4a6a80"), 0.05), img.line(2, 3, 6, 7, hexc("9ac0d8"))))
-    block("car_wheel", 351, lambda img: (img.noise(hexc("1a1a1a"), 0.1), img.rect(5, 5, 10, 10, hexc("8a8a8a"))))
-    block("car_light", 352, lambda img: img.noise(hexc("f0f0c0"), 0.03))
-
-
 def world_sounds():
     rate = 22050
 
@@ -251,11 +151,9 @@ def world_sounds():
 
 
 if __name__ == "__main__":
-    for d in (BLOCKS, os.path.join(SOUNDS, "zombie"), os.path.join(SOUNDS, "player"), os.path.join(SOUNDS, "world")):
+    for d in (os.path.join(SOUNDS, "zombie"), os.path.join(SOUNDS, "player"), os.path.join(SOUNDS, "world")):
         os.makedirs(d, exist_ok=True)
-    block_textures()
     icon()
     sounds()
     combat_assets()
-    world_textures()
     world_sounds()

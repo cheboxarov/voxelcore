@@ -12,12 +12,12 @@ local zombies = {
     enabled = true,
     KINDS = {
         normal = {hp = {55, 95}, half = 0.9, speed = 13.0, chase = 1.0, bash = 1.0, knockback = 1.0},
-        crawler = {hp = {30, 50}, half = 0.3, speed = 7.0, chase = 1.0, bash = 0.6, knockback = 0.7, grab = true,
+        crawler = {hp = {30, 50}, half = 0.3, speed = 7.0, chase = 1.0, bash = 0.6, knockback = 0.7, grab = true, pants = "torn",
             hitbox = {0.6, 0.6, 0.6}},
-        fat = {hp = {170, 230}, half = 0.97, speed = 9.0, chase = 1.0, bash = 2.5, knockback = 0.3, heavy = true,
+        fat = {hp = {170, 230}, half = 0.97, speed = 9.0, chase = 1.0, bash = 2.5, knockback = 0.3, heavy = true, shirt = "tank",
             size = {1.3, 1.08, 1.3}},
         sprinter = {hp = {45, 75}, half = 0.94, speed = 13.0, chase = 2.1, bash = 1.0, knockback = 1.1,
-            size = {0.92, 1.04, 0.92}, shirt = "sport"},
+            size = {0.92, 1.04, 0.92}, shirt = "sport", pants = "sport"},
     },
 }
 
