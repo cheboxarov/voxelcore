@@ -784,13 +784,11 @@ def tex_palisade(c):
 
 @tex("palisade_top")
 def tex_palisade_top(c):
-    c.rect(0, 0, 31, 31, ramp("3a2a1a")[1])
     for gy in range(4):
         for gx in range(4):
             cx, cy = gx * 8 + 4, gy * 8 + 4
-            c.paint(c.ellipse_m(cx, cy, 3.8, 3.8), ramp("8a6a44"))
+            c.paint(c.ellipse_m(cx, cy, 2.6, 2.6), ramp("8a6a44"))
             c.set(cx - 1, cy - 1, ramp("c8a878")[3])
-            c.set(cx, cy, ramp("c8a878")[4])
 
 
 @tex("ladder")
