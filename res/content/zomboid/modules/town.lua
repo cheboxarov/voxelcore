@@ -1,4 +1,3 @@
--- Deterministic town plan shared by the world generator and runtime logic.
 local town = {}
 
 town.GROUND = 40
@@ -34,7 +33,6 @@ end
 
 local SIDINGS = {"siding_white", "siding_blue", "siding_yellow", "siding_green", "siding_red"}
 
--- Lot kind of the cell: house, grocery, hardware, pharmacy, police, park.
 function town.lot_kind(cx, cz)
     if cx < -R or cz < -R or cx >= R or cz >= R then
         return nil
@@ -57,7 +55,6 @@ end
 
 local plans = {}
 
--- Building plan inside the lot (lot-local x,z -> footprint).
 function town.plan(cx, cz)
     local key = cx * 4096 + cz
     local plan = plans[key]
@@ -91,7 +88,6 @@ function town.plan(cx, cz)
     return plan
 end
 
--- Column contents: list of {dy, block_name, rotation}; dy is relative to GROUND.
 local function house_column(p, hx, hz, out)
     local w, d = p.w, p.d
     local wall = p.wall
@@ -145,7 +141,6 @@ local function house_column(p, hx, hz, out)
         table.insert(out, {3, wall, 0})
         return
     end
-    -- interior partitions
     if hz == p.split then
         if hx == 2 or hx == w - 3 then
             table.insert(out, {1, "core:struct_air", 0})
@@ -161,7 +156,6 @@ local function house_column(p, hx, hz, out)
         for dy = 1, 3 do table.insert(out, {dy, "zomboid:siding_white", 0}) end
         return
     end
-    -- furniture
     local furniture
     local rot = 0
     if hz == d - 2 and hx < p.mid and hx >= 2 then
@@ -258,7 +252,6 @@ local function store_column(p, hx, hz, out)
     table.insert(out, {3, "core:struct_air", 0})
 end
 
--- Returns surface kind of a column: road, line, sidewalk, path, building, lawn, park or nil (wild).
 function town.column(wx, wz, out)
     if not town.in_town(wx, wz) then
         return nil
@@ -315,7 +308,6 @@ function town.column(wx, wz, out)
     return "lawn"
 end
 
--- Kind of building at world position or nil.
 function town.building_at(wx, wz)
     if not town.in_town(wx, wz) then
         return nil
@@ -333,7 +325,6 @@ function town.building_at(wx, wz)
     return nil
 end
 
--- Tree placement chance for a column: returns tree index (0..2) or nil.
 function town.tree_at(wx, wz, seed)
     local kind = town.column(wx, wz)
     local r = hash(wx, wz, seed or 0)
@@ -363,7 +354,6 @@ function town.tree_at(wx, wz, seed)
     return nil
 end
 
--- Interior points (world coords, feet level) of houses near the town center.
 function town.house_interiors()
     local points = {}
     for cx = -R, R - 1 do
@@ -383,7 +373,6 @@ function town.house_interiors()
     return points
 end
 
--- Player spawn position (entity center) inside the n-th closest house.
 function town.spawn_point(index)
     local points = town.house_interiors()
     local p = points[math.max(1, math.min(index or 1, #points))]

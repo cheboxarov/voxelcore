@@ -2,7 +2,6 @@ local town = require "zomboid:town"
 
 local loot = {}
 
--- {item, weight, min, max}
 local TABLES = {
     fridge = {
         {"zomboid:bread", 4, 1, 2}, {"zomboid:apple", 4, 1, 3}, {"zomboid:water_bottle", 3, 1, 1},
@@ -85,7 +84,6 @@ function loot.table_for(container, x, z)
     return special or TABLES[container]
 end
 
--- Fills a fresh container inventory; food gets its spoilage start time.
 function loot.fill(invid, container, x, z, apocalypse_hour)
     local entries = loot.table_for(container, x, z)
     if entries == nil then

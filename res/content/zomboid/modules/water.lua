@@ -3,7 +3,6 @@ local survival = require "zomboid:survival"
 
 local water = {}
 
--- Turns a held dirty water bottle into clean water, keeping the remaining sips.
 function water.purify_held(pid)
     local itemid, _, invid, slot = inv.held(pid)
     if itemid ~= item.index("zomboid:dirty_water_bottle") then
@@ -16,7 +15,6 @@ function water.purify_held(pid)
     return true
 end
 
--- Fills the held bottle; clean = tap water.
 function water.fill_held(pid, clean)
     local itemid, count, invid, slot = inv.held(pid)
     local name = item.name(itemid)
@@ -41,7 +39,6 @@ function water.is_container(itemid)
     return name == "zomboid:empty_bottle" or name == "zomboid:water_bottle" or name == "zomboid:dirty_water_bottle"
 end
 
--- Looks for a water block along the player's view.
 function water.find_source(pid)
     local x, y, z = player.get_pos(pid)
     local eye = {x, y + 0.7, z}

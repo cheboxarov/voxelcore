@@ -39,7 +39,6 @@ function inv.take(invid, item_name, amount)
     return true
 end
 
--- Puts items into the inventory; the rest is dropped near the player.
 function inv.give(pid, item_name, amount, data)
     local invid = player.get_inventory(pid)
     local itemid = id_of(item_name)

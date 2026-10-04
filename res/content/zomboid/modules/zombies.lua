@@ -41,7 +41,6 @@ function zombies.nearest_distance(pos)
     return best
 end
 
--- Every zombie within radius hears the sound and goes to check it.
 function zombies.noise(pos, radius, pid)
     for _, z in pairs(zombies.registry) do
         local d = vec3.distance(z.get_pos(), pos)
@@ -53,7 +52,6 @@ end
 
 local water_id
 
--- Feet level of a free spot in the column or nil if the chunk is not loaded.
 function zombies.find_ground(x, z, top)
     water_id = water_id or block.index("base:water")
     for y = top or 80, 8, -1 do

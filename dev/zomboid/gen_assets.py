@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Generates textures (PNG) and sounds (WAV) for the zomboid content pack."""
 import math
 import os
 import random
@@ -581,14 +580,6 @@ def matches(img):
     img.rect(4, 7, 11, 10, hexc("c03020"))
     img.line(6, 3, 6, 6, hexc("d0b080"))
     img.rect(6, 2, 6, 2, hexc("c02020"))
-
-
-@item
-def wood_log(img):
-    img.rect(2, 5, 13, 11, hexc("6d4a2a"))
-    img.rect(11, 5, 13, 11, hexc("c8a070"))
-    img.frame(11, 5, 13, 11, hexc("8a6038"))
-    img.line(3, 7, 9, 7, hexc("5a3c22"))
 
 
 def item_textures():

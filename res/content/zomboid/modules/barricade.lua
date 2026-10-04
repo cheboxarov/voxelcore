@@ -31,7 +31,6 @@ function barricade.is_target(id)
     return block.has_tag(id, "zomboid:window") or block.has_tag(id, "zomboid:barricade") or name == "base:wooden_door"
 end
 
--- Nails one more plank. Needs a hammer in hand, a plank and two nails.
 function barricade.add(pid, x, y, z)
     local id = block.get(x, y, z)
     if not barricade.is_target(id) then
@@ -67,7 +66,6 @@ function barricade.add(pid, x, y, z)
     return true
 end
 
--- Pries off one plank with a crowbar or hammer.
 function barricade.remove(pid, x, y, z)
     local id = block.get(x, y, z)
     if not block.has_tag(id, "zomboid:barricade") then
@@ -98,7 +96,6 @@ function barricade.restore(x, y, z)
     end
 end
 
--- Damage from a zombie. Returns true when the obstacle is gone.
 function barricade.bash(x, y, z, amount)
     local id = block.get(x, y, z)
     if id <= 0 then

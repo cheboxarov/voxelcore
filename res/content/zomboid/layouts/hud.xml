@@ -1,7 +1,7 @@
 <container id="root" size-func="unpack(gui.get_viewport())" interactive="false" z-index="-3">
     <container id="hurt" color="#a0000000" size-func="unpack(gui.get_viewport())" interactive="false"/>
     <container id="night" color="#00001000" size-func="unpack(gui.get_viewport())" interactive="false"/>
-    <panel id="stats" pos="10,10" size="236,0" color="#0000008c" padding="8" interval="5" interactive="false">
+    <panel id="stats" pos="10,10" size="236,0" max-length="900" color="#0000008c" padding="8" interval="5" interactive="false">
         <label id="clock" color="#ffe0a0">День 1, 08:00</label>
         <container size="220,16" color="#2a2a2acc">
             <container id="bar_health" size="220,16" color="#b83232"/>

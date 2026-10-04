@@ -23,7 +23,6 @@ function weapons.stats(itemid)
     }, true
 end
 
--- Melee hit from the player to a target point. Returns damage, knockback or nil.
 function weapons.attack(pid, target_pos)
     local state = survival.get(pid)
     if state.dead or state.sleeping then

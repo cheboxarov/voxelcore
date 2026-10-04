@@ -108,7 +108,6 @@ function survival.damage(pid, amount, cause)
     end
 end
 
--- Zombie attack against the player.
 function survival.zombie_hit(pid, night)
     local state = survival.get(pid)
     if state.dead then
@@ -134,7 +133,6 @@ function survival.zombie_hit(pid, night)
     end
 end
 
--- Advances survival stats by game hours dh and real seconds dt.
 function survival.update(pid, dh, dt)
     local state = survival.get(pid)
     if state.dead then
@@ -235,7 +233,6 @@ function survival.update(pid, dh, dt)
     end
 end
 
--- Movement modifiers derived from the state.
 function survival.speed_factor(state)
     local f = 1.0
     if state.energy < 20 then f = f * 0.8 end
@@ -261,7 +258,6 @@ function survival.eat(pid, hunger, thirst, sickness)
     end
 end
 
--- Medical treatment: returns true if the item was used.
 function survival.treat(pid, kind)
     local state = survival.get(pid)
     if kind == "bandage" or kind == "rag" then
@@ -306,7 +302,6 @@ function survival.treat(pid, kind)
     return false
 end
 
--- Sleep for up to 8 hours. Returns slept hours.
 function survival.sleep(pid)
     local state = survival.get(pid)
     if state.energy > 70 then
@@ -381,6 +376,7 @@ function survival.new_character(pid, pos)
         player.set_spawnpoint(pid, pos[1], pos[2], pos[3])
     end
     survival.notify(pid, "День " .. clock.day() .. ", " .. clock.format() .. ". Вы ещё живы.", "#ffe0a0")
+    survival.notify(pid, "G - крафт, ПКМ предметом - использовать, молоток + доски - баррикады", "#c0c0c0")
     events.emit("zomboid:new_character", pid)
     return state
 end

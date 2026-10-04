@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Runs zomboid headless tests: ./run_tests.sh <VoxelEngine> [test.lua ...]
 set -u
 ENGINE=${1:?path to VoxelEngine}
 shift

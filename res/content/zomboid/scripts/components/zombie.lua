@@ -74,6 +74,10 @@ function is_dead()
     return dead
 end
 
+function debug_info()
+    return {stuck = stuck, bash = bash_target, dir = move_dir, path = use_path, goal = goal}
+end
+
 local function horizontal_distance(a, b)
     local dx, dz = a[1] - b[1], a[3] - b[3]
     return math.sqrt(dx * dx + dz * dz)
@@ -198,8 +202,9 @@ local function try_attack()
     end
 end
 
-local function front_cell(pos, dir, dy)
-    return math.floor(pos[1] + dir[1] * 0.8), math.floor(pos[2] - 0.9 + dy), math.floor(pos[3] + dir[3] * 0.8)
+local function front_cell(pos, dir, dy, reach)
+    reach = reach or 0.8
+    return math.floor(pos[1] + dir[1] * reach), math.floor(pos[2] - 0.9 + dy), math.floor(pos[3] + dir[3] * reach)
 end
 
 local function check_stuck(pos)
@@ -211,12 +216,14 @@ local function check_stuck(pos)
         return
     end
     stuck = stuck + 1
-    for dy = 0, 1 do
-        local x, y, z = front_cell(pos, move_dir, dy)
-        local id = block.get(x, y, z)
-        if barricade.is_bashable(id) then
-            bash_target = {x, y, z}
-            return
+    for _, reach in ipairs({0.0, 0.45, 0.9}) do
+        for dy = 0, 1 do
+            local x, y, z = front_cell(pos, move_dir, dy, reach)
+            local id = block.get(x, y, z)
+            if barricade.is_bashable(id) then
+                bash_target = {x, y, z}
+                return
+            end
         end
     end
     if stuck >= 2 and body:is_grounded() then
