@@ -170,7 +170,7 @@ function zombies.tick(survival)
     local hour = clock.hour()
     for _, pid in ipairs(player.get_all()) do
         local state = survival.get(pid)
-        if not state.dead then
+        if not state.dead and not state.setup then
             local ppos = {player.get_pos(pid)}
             if clock.day() >= 2 and hour >= 22 and zombies.horde_day < clock.day() then
                 zombies.horde_day = clock.day()

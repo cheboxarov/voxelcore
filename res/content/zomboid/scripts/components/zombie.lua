@@ -140,7 +140,7 @@ end
 
 local function can_see(pid, ppos, dist)
     local state = survival.get(pid)
-    if state.dead then
+    if state.dead or state.setup then
         return false
     end
     local night = clock.is_night()
@@ -263,7 +263,7 @@ local function try_attack()
     local ppos = {player.get_pos(target_pid)}
     if horizontal_distance(pos, ppos) < 1.45 and math.abs(pos[2] - ppos[2]) < 1.6 then
         local state = survival.get(target_pid)
-        if state.dead then
+        if state.dead or state.setup then
             return
         end
         local night = clock.is_night()

@@ -46,6 +46,26 @@ local state = survival.get(pid)
 local invid, slot = player.get_inventory(pid)
 check(state.setup, "new character waits for profession")
 
+-- zombies leave a player alone while the character is being created
+local ppos0 = {player.get_pos(pid)}
+local zs = zombies.spawn(math.floor(ppos0[1]) + 1, math.floor(ppos0[2]), math.floor(ppos0[3]), {kind = "normal"})
+local zc = zs:get_component("zomboid:zombie")
+zc.hear(ppos0, pid, 1)
+app.sleep(3)
+check(state.health == 100 and #state.wounds == 0 and zc.mode ~= "chase", "no attacks during setup")
+state.setup = nil
+app.sleep_until(function() return state.health < 100 end, 400)
+check(state.health < 100, "the same zombie attacks once setup is over")
+zs:despawn()
+app.tick()
+state.setup, state.health, state.wounds, state.infection = true, 100, {}, nil
+clock.reset(24 + 22.5)
+zombies.enabled = true
+for _ = 1, 40 do zombies.tick(survival) end
+zombies.enabled = false
+check(zombies.horde_day == 0 and zombies.count() == 0, "no horde or spawns for a player in setup")
+clock.reset(clock.START_HOUR)
+
 local function hold(name, count)
     inventory.set(invid, slot, item.index(name), count or 1)
 end
@@ -198,5 +218,6 @@ check(near(world.get_day_time_speed(), 0.5), "day length restored")
 check(near(skills.xp(pid, "carpentry"), carpentry), "skills restored")
 check(survival.get(pid).profession == "carpenter" and survival.get(pid).books.cooking_1, "character restored")
 log("carpentry", skills.level(pid, "carpentry"), "melee", skills.level(pid, "melee"))
+
 app.close_world(false)
 app.delete_world("zskills")

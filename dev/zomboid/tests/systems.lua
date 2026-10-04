@@ -37,6 +37,7 @@ app.sleep_until(function()
 end, 10000)
 app.sleep(1)
 local state = survival.get(pid)
+state.setup = nil
 local invid = player.get_inventory(pid)
 
 -- crafting

@@ -35,6 +35,7 @@ app.sleep(1)
 
 -- new character inside the spawn house with a starter kit
 local state = survival.get(pid)
+state.setup = nil
 check(not state.fresh, "character initialized")
 local invid = player.get_inventory(pid)
 check(inv.count(invid, "zomboid:water_bottle") == 1, "starter water")
