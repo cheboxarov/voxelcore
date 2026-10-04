@@ -195,7 +195,9 @@
 
 ## Для разработчиков
 
-- `dev/zomboid/gen_assets.py` генерирует все текстуры и звуки пака (PNG и WAV).
+- `dev/zomboid/gen_assets.py` генерирует текстуры блоков и звуки пака (PNG и WAV).
+- `dev/zomboid/assets/items.py` рисует иконки предметов 24×24 и пишет `items/*_stale.json` из свежих продуктов
+  (после правки свежего продукта перезапустить); общие хелперы и палитра — `dev/zomboid/assets/common.py`.
 - `dev/zomboid/run_tests.sh build/VoxelEngine` запускает headless-тесты из `dev/zomboid/tests`:
   - генерация города;
   - цикл выживания: раны, лут, ИИ зомби, бой, баррикады, смерть и обращение, сохранение;

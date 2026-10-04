@@ -98,7 +98,7 @@ class Canvas:
                 if ((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1}
 
     def line_m(self, x0, y0, x1, y1, w=1):
-        n = max(abs(x1 - x0), abs(y1 - y0), 1)
+        n = max(round(abs(x1 - x0)), round(abs(y1 - y0)), 1)
         pts = {(round(x0 + (x1 - x0) * i / n), round(y0 + (y1 - y0) * i / n)) for i in range(n + 1)}
         return {(x + dx, y + dy) for x, y in pts for dx in range(w) for dy in range(w)}
 
