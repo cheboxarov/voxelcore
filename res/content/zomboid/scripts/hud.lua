@@ -13,6 +13,10 @@ local function toggle(layout)
     end
 end
 
+local function in_game()
+    return not hud.is_inventory_open() and not hud.is_paused()
+end
+
 local function update_vision()
     local slot = gfx.posteffects.index("zomboid:myopia")
     if slot < 0 then
@@ -40,13 +44,19 @@ function on_hud_open(playerid)
     events.on("zomboid:new_character", update_vision)
     update_vision()
     input.add_callback("player.attack", function()
-        firearms.fire(hud.get_player())
+        if in_game() then
+            firearms.fire(hud.get_player())
+        end
     end)
     input.add_callback("zomboid.reload", function()
-        firearms.reload(hud.get_player())
+        if in_game() then
+            firearms.reload(hud.get_player())
+        end
     end)
     input.add_callback("zomboid.push", function()
-        combat.push(hud.get_player())
+        if in_game() then
+            combat.push(hud.get_player())
+        end
     end)
     input.add_callback("zomboid.gear", function()
         toggle("zomboid:gear")
