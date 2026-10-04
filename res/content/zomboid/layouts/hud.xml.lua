@@ -81,7 +81,7 @@ end
 local function update()
     local pid = hud.get_player()
     local state = survival.get(pid)
-    if (state.setup or not sandbox.configured) and not state.dead and not hud.is_inventory_open()
+    if state.setup and not state.dead and not hud.is_inventory_open()
             and not hud.is_paused() then
         hud.show_overlay(sandbox.configured and "zomboid:character" or "zomboid:sandbox", false)
     end

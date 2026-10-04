@@ -219,5 +219,23 @@ check(near(skills.xp(pid, "carpentry"), carpentry), "skills restored")
 check(survival.get(pid).profession == "carpenter" and survival.get(pid).books.cooking_1, "character restored")
 log("carpentry", skills.level(pid, "carpentry"), "melee", skills.level(pid, "melee"))
 
+-- a world saved before sandbox settings existed gets defaults, but not one quit during creation
+local function reopen()
+    app.save_world()
+    app.close_world(true)
+    app.open_world("zskills")
+    sandbox = require "zomboid:sandbox"
+    survival = require "zomboid:survival"
+    require("zomboid:zombies").enabled = false
+    app.sleep(0.5)
+end
+local sandbox_file = pack.data_file("zomboid", "sandbox.json")
+file.remove(sandbox_file)
+survival.get(pid).setup = true
+reopen()
+check(not sandbox.configured, "creation in progress still asks for settings")
+survival.get(pid).setup = nil
+reopen()
+check(sandbox.configured and file.exists(sandbox_file) and sandbox.get("zombie_density") == 1.0, "old world gets defaults")
 app.close_world(false)
 app.delete_world("zskills")

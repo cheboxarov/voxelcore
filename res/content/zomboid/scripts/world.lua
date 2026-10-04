@@ -59,6 +59,14 @@ function on_world_open()
     sandbox.load()
     if not load_state() then
         clock.reset(clock.START_HOUR)
+    elseif not sandbox.configured then
+        local creating = false
+        for _, state in pairs(survival.states) do
+            creating = creating or state.setup == true
+        end
+        if not creating then
+            sandbox.save({})
+        end
     end
     environment.open()
     events.on("zomboid:player_died", function(pid, pos, items, infected)
