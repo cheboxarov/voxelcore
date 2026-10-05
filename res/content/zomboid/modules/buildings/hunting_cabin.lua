@@ -49,8 +49,12 @@ function cabin.column(p, x, z, out)
 end
 
 function cabin.lot(p, x, z, out)
-    if z == -4 and x == p.door + 3 then
-        if out then put(out, 1, "zomboid:campfire") end
+    local fx, fz = x - p.door - 3, z + 4
+    if math.abs(fx) <= 1 and math.abs(fz) <= 1 then
+        if out then
+            put(out, 0, "base:sand")
+            put(out, 1, fx == 0 and fz == 0 and "zomboid:campfire" or "core:struct_air")
+        end
         return "yard"
     end
     if x == -2 and z >= 1 and z <= 5 then

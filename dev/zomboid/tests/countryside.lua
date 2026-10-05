@@ -118,5 +118,19 @@ for _, kind in ipairs({"campsite", "trailer_park", "sawmill"}) do
     lot_checks(first[kind])
 end
 
+-- generated campfires have nothing flammable around them and never start a forest fire on their own
+local fire = require "zomboid:fire"
+local function campfire_safe(x, z)
+    visit(x, z, 8)
+    assert(name_at(x, G + 1, z) == "zomboid:campfire", "campfire at " .. x .. "," .. z)
+    player.set_pos(pid, x + 20, 90, z)
+    for _ = 1, 400 do
+        assert(not fire.unattended(x, G + 1, z), "generated campfire set fire at " .. x .. "," .. z)
+    end
+end
+campfire_safe(fx, fz)
+local camp = first.campsite
+campfire_safe(town.to_world(camp, 13, 10))
+
 app.close_world(false)
 app.delete_world("zcountry")

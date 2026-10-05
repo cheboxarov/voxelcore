@@ -63,6 +63,8 @@ function campsite.column(p, x, z, out)
     if fx == 0 and fz == 0 then
         surface(out, "base:sand")
         put(out, 1, "zomboid:campfire")
+    elseif math.abs(fx) <= 1 and math.abs(fz) <= 1 then
+        surface(out, "base:sand")
     elseif math.abs(fz) == 2 and math.abs(fx) <= 1 then
         put(out, 1, "zomboid:nature_log", 0)
     elseif math.abs(fx) == 2 and math.abs(fz) <= 1 then
