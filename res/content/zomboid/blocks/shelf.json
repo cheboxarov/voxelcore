@@ -1,8 +1,8 @@
 {
     "caption": "Стеллаж",
     "texture-faces": [
-        "wood_side",
-        "wood_side",
+        "wood_side_tall",
+        "wood_side_tall",
         "wood_side",
         "wood_side",
         "shelf_front",

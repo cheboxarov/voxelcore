@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import math
 import os
 import sys
 import zlib
@@ -62,10 +63,6 @@ def nail(c, x, y, t=PAL["iron"]):
     put(c, x + 1, y, t[1])
     put(c, x, y + 1, t[1])
     put(c, x + 1, y + 1, t[0])
-
-
-def grain_noise(c, amount=0.04):
-    c.noise(amount)
 
 
 ASPHALT = PAL["asphalt"]
@@ -309,64 +306,68 @@ for _lv in range(1, 5):
     tex("door_barricade_%d" % _lv, 32, 64)(door_barricade(_lv))
 
 
-@tex("fridge_front")
+@tex("fridge_front", 32, 64)
 def tex_fridge_front(c):
     t = ENAMEL
-    panel(c, 0, 0, 31, 10, t)
-    panel(c, 0, 11, 31, 31, t)
-    c.line(0, 10, 31, 10, t[0])
-    c.line(0, 11, 31, 11, t[1])
-    for y0, y1 in ((3, 8), (14, 24)):
+    panel(c, 0, 0, 31, 20, t)
+    panel(c, 0, 21, 31, 63, t)
+    c.line(0, 20, 31, 20, t[0])
+    c.line(0, 21, 31, 21, t[1])
+    for y0, y1 in ((5, 16), (26, 46)):
         c.rect(26, y0, 27, y1, CHROME[2])
         c.line(26, y0, 26, y1, CHROME[4])
         c.line(28, y0, 28, y1, CHROME[0])
-    c.rect(6, 15, 11, 21, PAL["paper"][3])
-    c.line(6, 21, 11, 21, PAL["paper"][1])
-    c.line(7, 17, 10, 17, PAL["plastic_blue"][2])
-    c.line(7, 19, 9, 19, PAL["plastic_blue"][2])
-    c.rect(8, 14, 9, 15, PAL["plastic_red"][2])
-    c.rect(15, 6, 17, 7, PAL["plastic_red"][2])
-    c.rect(1, 30, 30, 30, t[1])
+    c.rect(5, 29, 12, 38, PAL["paper"][3])
+    c.line(5, 38, 12, 38, PAL["paper"][1])
+    for y, n in ((31, 6), (33, 5), (35, 6)):
+        c.line(6, y, 5 + n, y, PAL["plastic_blue"][2])
+    c.rect(8, 27, 9, 28, PAL["plastic_red"][2])
+    c.rect(15, 10, 17, 12, PAL["plastic_red"][2])
+    c.rect(1, 60, 30, 62, DARK[1])
+    for x in range(3, 29, 3):
+        c.set(x, 61, DARK[0])
 
 
 @tex("fridge_side")
+@tex("fridge_side_tall", 32, 64)
 def tex_fridge_side(c):
     t = ENAMEL
-    panel(c, 0, 0, 31, 31, t)
-    for y in range(2, 30):
+    panel(c, 0, 0, 31, c.h - 1, t)
+    for y in range(2, c.h - 2):
         c.set(2, y, t[3])
         c.set(29, y, mix(t[2], t[1], 0.5))
     c.noise(0.015)
 
 
-WOOD = PAL["wood"]
 
-
-@tex("wardrobe_front")
+@tex("wardrobe_front", 32, 64)
 def tex_wardrobe_front(c):
     t = ramp("8a6038")
-    c.rect(0, 0, 31, 31, t[1])
+    c.rect(0, 0, 31, 63, t[1])
     for x0, x1 in ((1, 15), (16, 30)):
-        board(c, x0, 1, x1, 24, t, vertical=True, knots=False)
-        panel(c, x0 + 3, 4, x1 - 3, 21, t, sunk=True)
-        c.rect(x0 + 4, 5, x1 - 4, 20, t[2])
-    c.line(15, 1, 15, 24, t[0])
-    c.line(16, 1, 16, 24, t[3])
-    board(c, 1, 26, 30, 30, t, knots=False)
+        board(c, x0, 1, x1, 50, t, vertical=True, knots=False)
+        for y0, y1 in ((4, 21), (25, 47)):
+            panel(c, x0 + 3, y0, x1 - 3, y1, t, sunk=True)
+            c.rect(x0 + 4, y0 + 1, x1 - 4, y1 - 1, t[2])
+    c.line(15, 1, 15, 50, t[0])
+    c.line(16, 1, 16, 50, t[3])
+    board(c, 1, 53, 30, 61, t, knots=False)
     for x in (13, 18):
-        c.rect(x, 12, x, 14, PAL["brass"][3])
-        c.set(x, 14, PAL["brass"][1])
-    c.rect(14, 28, 17, 28, PAL["brass"][2])
-    c.line(0, 25, 31, 25, t[0])
-    c.frame(0, 0, 31, 31, t[0])
+        c.rect(x, 22, x, 26, PAL["brass"][3])
+        c.set(x, 26, PAL["brass"][1])
+    c.rect(14, 57, 17, 57, PAL["brass"][2])
+    c.line(0, 51, 31, 51, t[0])
+    c.line(0, 52, 31, 52, t[1])
+    c.frame(0, 0, 31, 63, t[0])
 
 
 @tex("wood_side")
+@tex("wood_side_tall", 32, 64)
 def tex_wood_side(c):
     t = ramp("8a6038")
     for x0, x1 in ((0, 7), (8, 15), (16, 23), (24, 31)):
-        board(c, x0, 0, x1, 31, t, vertical=True)
-    c.frame(0, 0, 31, 31, t[0])
+        board(c, x0, 0, x1, c.h - 1, t, vertical=True)
+    c.frame(0, 0, 31, c.h - 1, t[0])
     c.line(1, 1, 30, 1, t[3])
     c.noise(0.025)
 
@@ -405,11 +406,12 @@ SHELF_GOODS = (("c84a3a", "e0c040", "4a80c8", "58a050"), ("c87a3a", "e8e8e8", "a
                ("5aa0a0", "d86a30", "3a6ab0", "b8bcc4"))
 
 
-@tex("shelf_front")
+@tex("shelf_front", 32, 64)
 def tex_shelf_front(c):
     t = PAL["iron"]
-    c.rect(0, 0, 31, 31, DARK[0])
-    for i, cols in enumerate(SHELF_GOODS):
+    c.rect(0, 0, 31, 63, DARK[0])
+    for i in range(6):
+        cols = SHELF_GOODS[i % 3][::1 if i < 3 else -1]
         top = i * 10 + 1
         x = 2
         for j, col in enumerate(cols):
@@ -432,10 +434,10 @@ def tex_shelf_front(c):
         c.rect(0, top + 8, 31, top + 9, t[2])
         c.line(0, top + 8, 31, top + 8, t[3])
         c.line(0, top + 9, 31, top + 9, t[0])
-    c.rect(0, 0, 1, 31, t[2])
-    c.rect(30, 0, 31, 31, t[1])
-    c.line(0, 0, 0, 31, t[3])
-    c.line(31, 0, 31, 31, t[0])
+    c.rect(0, 0, 1, 63, t[2])
+    c.rect(30, 0, 31, 63, t[1])
+    c.line(0, 0, 0, 63, t[3])
+    c.line(31, 0, 31, 63, t[0])
 
 
 @tex("crate")
@@ -765,11 +767,11 @@ def tex_wooden_gate(c):
 def tex_palisade(c):
     for i, x0 in enumerate((0, 8, 16, 24)):
         t = ramp(("6a4c2c", "735230", "664a2a", "70502e")[i])
-        tip = 3 + (i * 5) % 4
+        tip = i % 2
         for y in range(tip, 32):
             for x in range(x0, x0 + 8):
                 d = x - x0
-                if y - tip < 4 and abs(d - 3.5) > (y - tip) + 0.5:
+                if y - tip < 2 and abs(d - 3.5) > (y - tip) + 1.5:
                     continue
                 tone = t[3] if d <= 1 else t[1] if d >= 6 else t[2]
                 c.set(x, y, tone)
@@ -784,11 +786,13 @@ def tex_palisade(c):
 
 @tex("palisade_top")
 def tex_palisade_top(c):
+    c.rect(0, 0, 31, 31, ramp("3a2a1a")[1])
     for gy in range(4):
         for gx in range(4):
             cx, cy = gx * 8 + 4, gy * 8 + 4
-            c.paint(c.ellipse_m(cx, cy, 2.6, 2.6), ramp("8a6a44"))
+            c.paint(c.ellipse_m(cx, cy, 3.8, 3.8), ramp("8a6a44"))
             c.set(cx - 1, cy - 1, ramp("c8a878")[3])
+            c.set(cx, cy, ramp("c8a878")[4])
 
 
 @tex("ladder")
@@ -802,13 +806,22 @@ def tex_ladder(c):
         nail(c, 26, y)
 
 
+FLOOR_TONES = (ramp("a88050"), ramp("9c7646"), ramp("b08858"), ramp("a27a4a"))
+
+
 @tex("wood_floor")
 def tex_wood_floor(c):
-    tones = (ramp("a88050"), ramp("9c7646"), ramp("b08858"), ramp("a27a4a"))
     joints = (5, 21, 13, 28)
     for col in range(4):
         x0, j = col * 8, joints[col]
-        board(c, x0, j, x0 + 7, j + 31, tones[col], vertical=True)
+        board(c, x0, j, x0 + 7, j + 31, FLOOR_TONES[col], vertical=True)
+    c.noise(0.03)
+
+
+@tex("wood_floor_side", 32, 16)
+def tex_wood_floor_side(c):
+    for col in range(4):
+        board(c, col * 8, 0, col * 8 + 7, 15, FLOOR_TONES[col], vertical=True, knots=False)
     c.noise(0.03)
 
 
@@ -940,7 +953,6 @@ def tex_campfire_top(c):
     ash, stone, log = ramp("4a4038"), PAL["stone"], ramp("6d4a2a")
     c.fill(c.ellipse_m(13, 13, 12.5, 12.5), ash[1])
     for i in range(12):
-        import math
         a = i / 12 * 2 * math.pi
         c.paint(c.ellipse_m(13 + 10.5 * math.cos(a), 13 + 10.5 * math.sin(a), 2.6, 2.6), stone)
     c.fill(c.ellipse_m(13, 13, 8, 8), ash[2])

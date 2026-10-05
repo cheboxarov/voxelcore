@@ -5,7 +5,7 @@
         "fridge_side",
         "fridge_side",
         "stove_top",
-        "stove_front",
+        "fridge_side",
         "stove_front"
     ],
     "material": "base:metal",

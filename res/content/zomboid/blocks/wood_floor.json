@@ -1,6 +1,13 @@
 {
     "caption": "Дощатый настил",
-    "texture": "wood_floor",
+    "texture-faces": [
+        "wood_floor_side",
+        "wood_floor_side",
+        "wood_floor",
+        "wood_floor",
+        "wood_floor_side",
+        "wood_floor_side"
+    ],
     "material": "base:wood",
     "model": "aabb",
     "hitbox": [

@@ -1,11 +1,11 @@
 {
     "caption": "Шкаф",
     "texture-faces": [
+        "wood_side_tall",
+        "wood_side_tall",
         "wood_side",
         "wood_side",
-        "wood_side",
-        "wood_side",
-        "wardrobe_front",
+        "wood_side_tall",
         "wardrobe_front"
     ],
     "material": "base:wood",

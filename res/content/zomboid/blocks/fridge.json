@@ -1,11 +1,11 @@
 {
     "caption": "Холодильник",
     "texture-faces": [
+        "fridge_side_tall",
+        "fridge_side_tall",
         "fridge_side",
         "fridge_side",
-        "fridge_side",
-        "fridge_side",
-        "fridge_front",
+        "fridge_side_tall",
         "fridge_front"
     ],
     "material": "base:metal",
