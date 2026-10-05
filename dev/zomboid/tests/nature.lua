@@ -108,6 +108,33 @@ local c, b = check_mirror(rx, rz, 16)
 print("[zomboid-test] river mirror at " .. rx .. "," .. rz .. ": " .. c .. " columns, " .. b .. " biome tops")
 assert(b > 10)
 
+-- no swimming in the engine: water edges outside the town step by at most one block almost everywhere
+local seed, edges, steep = world.get_seed(), 0, 0
+for cz = -30, 30, 3 do
+    for cx = -30, 30, 3 do
+        if not town.in_town(cx * 16, cz * 16) then
+            local hs = nature.chunk_heights(cx, cz, seed)
+            for i = 1, 255 do
+                if i % 16 ~= 0 then
+                    local a, o = hs[i], hs[i + 1]
+                    if math.min(a, o) < SEA then
+                        edges = edges + 1
+                        if math.abs(a - o) > 1 and math.max(a, o) >= SEA then steep = steep + 1 end
+                    end
+                end
+            end
+        end
+    end
+end
+print(string.format("[zomboid-test] steep water edges: %d of %d", steep, edges))
+assert(edges > 1000 and steep < edges * 0.01, "water is a trap")
+
+-- the river leaves the town through cut banks on both ends
+for _, z in ipairs({-200, 200}) do
+    visit(nature.RIVER_X, z, 12)
+    assert(name_at(nature.RIVER_X, SEA, z) == "base:water", "river leaves the town at z=" .. z)
+end
+
 -- the highway, the village and the town stand on flat ground
 for _, x in ipairs({-600, -400, -300, 300, 450, 615, 800}) do
     local z = math.floor(town.highway_z(x) + 0.5)

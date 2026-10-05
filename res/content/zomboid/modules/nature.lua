@@ -230,10 +230,11 @@ function nature.heightmap(x, y, w, h, bpd, seed)
 
     local lake = noise(x, y, w, h, bpd, seed + 6, 1 / 150)
     lake:sub(0.72)
-    lake:mul(7)
+    lake:mul(4)
     clamp01(lake)
     lake:mul(amp)
-    m:mixin(33.5, lake)
+    lake:mul(flat)
+    m:mixin(35.5, lake)
 
     local swamp = copy(f.wet)
     swamp:sub(0.35)
@@ -248,17 +249,17 @@ function nature.heightmap(x, y, w, h, bpd, seed)
 
     local stream = noise(x, y, w, h, bpd, seed + 8, 1 / 140)
     stream:abs()
-    stream:mul(-1 / 0.06)
+    stream:mul(-1 / 0.1)
     stream:add(1)
     clamp01(stream)
     stream:mul(flat)
     stream:mul(wild)
     stream:mul(0.9)
-    m:mixin(36.5, stream)
+    m:mixin(37, stream)
 
     local river = copy(f.river)
-    river:mul(-1 / 2.5)
-    river:add(9.5 / 2.5)
+    river:mul(-1 / 9)
+    river:add(13 / 9)
     m:mixin(nature.RIVER_BED, clamp01(river))
 
     m:mul(1 / 256)
@@ -361,6 +362,9 @@ function nature.biome(wx, wz)
 end
 
 function nature.water_at(wx, wz)
+    if town.in_town(wx, wz) then
+        return town.column(wx, wz) == "river"
+    end
     return nature.height(wx, wz) < nature.SEA_LEVEL
 end
 

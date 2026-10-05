@@ -18,56 +18,6 @@ local function put(out, name, x, y, z, rot)
     out[#out + 1] = {":block", id, {x, y, z}, rot or 0, 1}
 end
 
-local function disc(out, name, x, y, z, r, skip_center, salt)
-    local lim = r * r + r * 0.8
-    for i = -r, r do
-        for j = -r, r do
-            local d = i * i + j * j
-            if d <= lim and not (skip_center and i == 0 and j == 0)
-                and (d < r * r or hash(x + i, z + j, y + salt) < 0.7) then
-                put(out, name, x + i, y, z + j)
-            end
-        end
-    end
-end
-
-local function spruce(out, x, y, z, r)
-    local h = 7 + math.floor(r * 6)
-    for dy = 0, h - 1 do
-        put(out, "zomboid:nature_spruce_log", x, y + dy, z)
-    end
-    for dy = 2, h + 1 do
-        local t = h + 1 - dy
-        local radius = math.min(3, math.floor(t * 0.45))
-        if t % 2 == 1 and radius > 0 then
-            radius = radius - 1
-        end
-        disc(out, "zomboid:nature_spruce_leaves", x, y + dy, z, radius, dy < h, 3)
-    end
-end
-
-local function birch(out, x, y, z, r)
-    local h = 6 + math.floor(r * 4)
-    for dy = 0, h - 1 do
-        put(out, "zomboid:nature_birch_log", x, y + dy, z)
-    end
-    for dy = h - 3, h + 1 do
-        local radius = (dy == h - 3 or dy == h) and 1 or (dy == h + 1 and 0 or 2)
-        disc(out, "zomboid:nature_birch_leaves", x, y + dy, z, radius, dy < h, 5)
-    end
-end
-
-local function dead_tree(out, x, y, z, r)
-    local h = 4 + math.floor(r * 3)
-    for dy = 0, h - 1 do
-        put(out, "zomboid:nature_spruce_log", x, y + dy, z)
-    end
-    local side = math.floor(r * 40) % 4
-    local dx, dz = ({1, 0, -1, 0})[side + 1], ({0, 1, 0, -1})[side + 1]
-    put(out, "zomboid:nature_log", x + dx, y + h - 2, z + dz, side % 2)
-    put(out, "zomboid:nature_log", x - dz, y + h - 1, z + dx, (side + 1) % 2)
-end
-
 local function boulder(out, x, y, z, r, big)
     local stone = r < 0.5 and "base:stone" or "zomboid:nature_mossy_stone"
     local s = big and 2 or 1
@@ -101,15 +51,18 @@ local function bush(out, x, y, z, r)
     end
 end
 
--- {density per 4x4 cell, {builder, weight}...}
+-- baked fragments per kind (dev/zomboid/tree_fragments.lua), 7×7 around the trunk; "tree" are the old oaks
+local VARIANTS = {spruce = 6, birch = 4, dead = 3, tree = 3}
+
+-- {density per 4x4 cell, {fragment kind, weight}...}
 local MIX = {
-    forest = {0.62, {spruce, 0.82}, {birch, 0.06}, {"oak", 0.12}},
-    birch = {0.5, {birch, 0.75}, {"oak", 0.15}, {spruce, 0.1}},
-    meadow = {0.05, {"oak", 0.7}, {birch, 0.3}},
-    swamp = {0.22, {dead_tree, 0.45}, {birch, 0.35}, {spruce, 0.2}},
-    hills = {0.2, {spruce, 0.8}, {"oak", 0.2}},
-    river = {0.06, {birch, 0.6}, {"oak", 0.4}},
-    town = {0.05, {"oak", 1}},
+    forest = {0.62, {"spruce", 0.82}, {"birch", 0.06}, {"tree", 0.12}},
+    birch = {0.5, {"birch", 0.75}, {"tree", 0.15}, {"spruce", 0.1}},
+    meadow = {0.05, {"tree", 0.7}, {"birch", 0.3}},
+    swamp = {0.22, {"dead", 0.45}, {"birch", 0.35}, {"spruce", 0.2}},
+    hills = {0.2, {"spruce", 0.8}, {"tree", 0.2}},
+    river = {0.06, {"birch", 0.6}, {"tree", 0.4}},
+    town = {0.05, {"tree", 1}},
 }
 
 local SMALL = {
@@ -167,13 +120,10 @@ function flora.column(out, wx, wz, lx, lz, h, biome, hmap, seed)
     if wx - cx * CELL == spot % CELL and wz - cz * CELL == math.floor(spot / CELL) then
         if hash(cx, cz, seed + 42) < mix[1] then
             local kind = pick(mix, hash(cx, cz, seed + 43))
-            if clear(wx, wz, kind == "oak" and 6 or 3) then
+            if clear(wx, wz, kind == "tree" and 6 or 3) then
                 local r = hash(wx, wz, seed + 44)
-                if kind == "oak" then
-                    out[#out + 1] = {"tree" .. math.floor(r * 3), {lx - 3, h, lz - 3}, math.floor(r * 40) % 4, 1}
-                else
-                    kind(out, wx, y, wz, r)
-                end
+                local name = kind .. math.floor(r * VARIANTS[kind])
+                out[#out + 1] = {name, {lx - 3, kind == "tree" and h or y, lz - 3}, math.floor(r * 40) % 4, 1}
             end
             return
         end
