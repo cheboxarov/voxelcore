@@ -134,12 +134,8 @@ local function lot(p)
 end
 
 function yards.keep_clear(wx, wz)
-    local _, p = town.building_at(wx, wz)
-    if p then
-        return false
-    end
     local cx, cz = town.cell_at(wx, wz)
-    p = cx and town.plan(cx, cz)
+    local p = cx and town.plan(cx, cz)
     return p ~= nil and lot(p).clear[util.key(wx, wz)] == true
 end
 
