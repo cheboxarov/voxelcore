@@ -24,6 +24,7 @@ end
 
 zombies.enabled = false
 local pid = player.create("survivor")
+require("zomboid:survival").get(pid).fresh = nil
 local X, Z = 200, 200
 player.set_pos(pid, X, G + 3, Z)
 app.sleep_until(function() return block.get(X + 8, G, Z + 8) ~= -1 end, 20000)
