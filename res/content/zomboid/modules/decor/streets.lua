@@ -10,6 +10,16 @@ local SLOTS = {[0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [7] =
 local SPACING = 14
 local CITY = {downtown = true, plaza = true}
 
+local PLAZA = {}
+for _, s in ipairs({{1, 0, 1}, {-1, 0, 3}, {0, 1, 0}, {0, -1, 2}}) do
+    for _, t in ipairs({-2, 2}) do
+        PLAZA[util.key(s[1] * 7 + s[2] * t, s[2] * 7 + s[1] * t)] = {{1, "zomboid:decor_bench", s[3]}}
+    end
+end
+for _, c in ipairs({{6, 6}, {-6, 6}, {6, -6}, {-6, -6}}) do
+    PLAZA[util.key(c[1], c[2])] = util.lamp(c[1] > 0 and 1 or 3)
+end
+
 local function road_dir(wx, wz, reach)
     local found
     for _, d in ipairs(util.DIRS) do
@@ -81,7 +91,20 @@ local function corner(ctx, wx, wz, out)
     return place(out, {{1, "zomboid:decor_pole", 0}, {2, "zomboid:decor_sign_stop", util.face(0, wdz)}})
 end
 
+local function plaza(wx, wz, out)
+    local dx, dz = wx - town.CENTER[1], wz - town.CENTER[2]
+    local r2 = dx * dx + dz * dz
+    local item = PLAZA[util.key(dx, dz)]
+    if item == nil and r2 >= 25 and r2 <= 30 and math.abs(dx) > 1 and math.abs(dz) > 1 then
+        item = {{0, "zomboid:decor_soil", 0}, {1, "base:flower", 0}}
+    end
+    return item ~= nil and place(out, item)
+end
+
 function streets.column(ctx, wx, wz, out)
+    if ctx.kind == "plaza" then
+        return plaza(wx, wz, out)
+    end
     if ctx.kind ~= "sidewalk" or aftermath.occupied(wx, wz) then
         return false
     end

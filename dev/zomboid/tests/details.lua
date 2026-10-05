@@ -44,11 +44,12 @@ end
 
 -- generator output: decor is everywhere, never in buildings or on paths, roads stay drivable
 local SOFT = {["core:struct_air"] = true, ["zomboid:decor_blood"] = true, ["zomboid:decor_litter"] = true,
-    ["zomboid:decor_tape"] = true, ["zomboid:decor_note"] = true, ["zomboid:decor_firepit"] = true}
+    ["zomboid:decor_tape"] = true, ["zomboid:decor_note"] = true, ["zomboid:decor_firepit"] = true,
+    ["zomboid:car_spawner"] = true}
 local counts, found, solid, bad, ids, kinds = {}, {}, {}, {}, {}, {}
 local first_pass = {}
 local B = town.BOUNDS
-for wx = B[1] - 170, 560 do
+for wx = B[1] - 170, 680 do
     for wz = B[2] - 5, B[4] + 5 do
         local out = {}
         local kind = town.column(wx, wz, out)
@@ -133,6 +134,94 @@ end
 log("street sides closed off: " .. table.concat(blocked, ", "))
 check(#blocked >= 1 and #blocked <= 2, "only the overturned bus blocks a street")
 
+-- a car (3 blocks wide) drives from the spawn house to both ends of the highway
+local STREETS = {road = true, bridge = true, sidewalk = true, plaza = true, path = true}
+local YARDS = {road = true, bridge = true, sidewalk = true, plaza = true, path = true, lawn = true}
+local function drivable(x, z, drive)
+    for dx = -1, 1 do
+        for dz = -1, 1 do
+            local k = util.key(x + dx, z + dz)
+            if not drive[kinds[k] or ""] or solid[k] then return false end
+        end
+    end
+    return true
+end
+local spawn = town.spawn_point(1)
+local start
+for r = 0, 40 do
+    for dx = -r, r do
+        for _, dz in ipairs({-r, r}) do
+            local x, z = math.floor(spawn[1]) + dx, math.floor(spawn[3]) + dz
+            if not start and kinds[util.key(x, z)] == "road" and drivable(x, z, STREETS) then start = {x, z} end
+        end
+    end
+end
+check(start, "a road near the spawn house")
+local function drive_from(drive)
+    local seen, queue, head, west, east = {[util.key(start[1], start[2])] = true}, {start}, 1, false, false
+    while queue[head] do
+        local c = queue[head]
+        head = head + 1
+        west = west or c[1] <= B[1] - 150
+        east = east or c[1] >= 540
+        for _, d in ipairs(util.DIRS) do
+            local x, z = c[1] + d[1], c[2] + d[2]
+            local k = util.key(x, z)
+            if not seen[k] and kinds[k] ~= nil and drivable(x, z, drive) then
+                seen[k] = true
+                queue[#queue + 1] = {x, z}
+            end
+        end
+    end
+    return seen, #queue, west, east
+end
+local seen, reached, west, east = drive_from(STREETS)
+local cut = 0
+for x = B[1], B[3] do
+    for z = B[2], B[4] do
+        if kinds[util.key(x, z)] == "road" and not seen[util.key(x, z)] and drivable(x, z, STREETS) then cut = cut + 1 end
+    end
+end
+log(string.format("car from the spawn house reaches %d columns, west highway %s, east highway %s, cut off road %d",
+    reached, tostring(west), tostring(east), cut))
+check(west and east and cut == 0, "the car reaches both ends of the highway and every street from the spawn house")
+local yard = drive_from(YARDS)
+local garages, stuck = 0, {}
+for _, c in ipairs(town.cells()) do
+    local p = town.plan(c.cx, c.cz)
+    if p and p.kind == "house" and p.car and not p.garage and p.cx == c.cx and p.cz == c.cz then
+        local x, z = town.car_spot(p)
+        if not yard[util.key(x, z)] then table.insert(stuck, x .. "," .. z) end
+    end
+    if p and p.garage and p.cx == c.cx and p.cz == c.cz then
+        garages = garages + 1
+        check(seen[util.key(town.to_world(p, p.hw + 1, -2))], "garage driveway joins the streets")
+        for gx = 0, 2 do
+            for hz = 0, p.car[2] do
+                local o = {}
+                p.def.column(p, p.hw + gx, hz, o)
+                for _, e in ipairs(o) do
+                    check(e[1] < 1 or e[1] > 2 or e[2] == "core:struct_air" or e[2] == "zomboid:car_spawner",
+                        "garage way out blocked by " .. e[2])
+                end
+            end
+        end
+    end
+end
+check(#stuck == 0, "house cars boxed in: " .. table.concat(stuck, "; "))
+log("garages with a clear way to the street: " .. garages .. ", house cars in yards drive out too")
+
+-- the square around the fountain has benches, lamps and flower beds
+local C = town.CENTER
+local function top(x, z)
+    local o = {}
+    town.column(C[1] + x, C[2] + z, o)
+    return o[#o][2]
+end
+check(top(7, 2) == "zomboid:decor_bench" and top(-2, -7) == "zomboid:decor_bench", "benches by the fountain")
+check(top(6, -6) == "zomboid:decor_streetlight", "lamps by the fountain")
+check(top(3, 4) == "base:flower", "flower bed by the fountain")
+
 -- houses: the spawn house stays simple, every variant exists
 local variants = {floors = 0, gable = 0, garage = 0, basement = 0, boarded = 0, looted = 0, kids = 0, study = 0}
 local two_story, basement, garage, boarded, looted
@@ -158,7 +247,6 @@ for k, v in pairs(variants) do
 end
 table.sort(vs)
 log("house variants: " .. table.concat(vs, " "))
-local spawn = town.spawn_point(1)
 local home = town.plan(town.cell_at(math.floor(spawn[1]), math.floor(spawn[3])))
 check(home.classic and home.floors == 1 and not home.gable and not home.garage and not home.basement
     and not home.looted and not home.boarded, "spawn house is the classic one")
@@ -228,6 +316,10 @@ inventory.set(invid, hand, note_item, 1)
 events.emit("zomboid:lore_note.use", pid)
 local story = lore.STORIES[inventory.get_data(invid, hand, "story")]
 check(story and story.place == nil, "a found note gets a home story")
+for _ = 1, 5 do
+    events.emit("zomboid:lore_note.use", pid)
+    check(lore.STORIES[inventory.get_data(invid, hand, "story")] == story, "a found note keeps its story")
+end
 log("notes: " .. #found["zomboid:decor_note"] .. " on the ground, read: " .. story.title)
 inventory.set(invid, hand, 0, 0)
 
@@ -315,6 +407,11 @@ local _, by = player.get_pos(pid)
 by = by - feet
 log(string.format("walked down to y=%.2f (basement floor at %d)", by, G - 3))
 check(down, "stairs lead down to the basement")
+local up = walk({tx2, tz2}, {tx1, tz1}, 400, function()
+    local _, y = player.get_pos(pid)
+    return y - feet >= G + 0.95
+end)
+check(up, "stairs lead back up from the basement")
 -- wrecks block in every rotation: no walking into them, the lane beside them stays open
 local function blocks_walk(name, spot)
     local id = block.index(name)
