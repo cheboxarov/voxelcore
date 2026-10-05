@@ -1,4 +1,4 @@
--- Block textures: every face texture exists, aabb faces keep square pixels, palisade top is solid, furniture backs are plain
+-- Block textures: every face texture exists, aabb faces keep square pixels, palisade top is solid, furniture backs and traffic light sides are plain
 app.config_packs({"zomboid"})
 app.new_world("zfaces", "1", "zomboid:town")
 
@@ -59,4 +59,6 @@ for _, n in ipairs({"fridge", "stove", "sink", "kitchen_cabinet", "wardrobe"}) d
     local tex = block.get_textures(block.index("zomboid:" .. n))
     check(tex[5] ~= tex[6], n .. " back face differs from the front: " .. tex[5])
 end
-log("palisade top solid, furniture backs plain")
+local traffic = file.read("zomboid:models/zomboid_decor_traffic_light.vcm")
+check(not traffic:find('"blocks:decor_traffic_o'), "traffic light sides and top use the plain housing, not the lens face")
+log("palisade top solid, furniture backs plain, traffic light sides plain")

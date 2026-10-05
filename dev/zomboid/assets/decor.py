@@ -113,6 +113,8 @@ def traffic(lit):
             cy = 7.5 + i * 8.5
             t = ramp(col) if lit == i else ramp(mix(hexc(col), hexc("202020"), 0.72))
             c.fill(c.rect_m(11, int(cy) - 4, 20, int(cy) - 3), body[0])
+            if lit is None:
+                continue
             c.paint(c.ellipse_m(16, cy, 3.4, 3.4), t, grad=lit != i)
             if lit == i:
                 c.fill(c.ellipse_m(16, cy, 2, 2), t[4])
@@ -122,6 +124,7 @@ def traffic(lit):
 
 tex("traffic_on")(traffic(0))
 tex("traffic_off")(traffic(-1))
+tex("traffic_side")(traffic(None))
 
 
 @tex("sign_stop")
@@ -745,7 +748,7 @@ def detail_models():
     ])
     _vcm("zomboid_decor_traffic_light", [
         B((0.45, 0, 0.45), (0.55, 0.2, 0.55), "blocks:decor_metal"),
-        B((0.34, 0.15, 0.38), (0.66, 0.95, 0.62), "blocks:decor_traffic_off", {"north,south": "$0"}),
+        B((0.34, 0.15, 0.38), (0.66, 0.95, 0.62), "blocks:decor_traffic_side", {"north,south": "$0"}),
     ])
     _vcm("zomboid_decor_sign", [
         B((0.46, 0, 0.47), (0.54, 0.5, 0.55), "blocks:decor_metal"),
