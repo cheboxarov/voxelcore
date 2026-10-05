@@ -44,7 +44,7 @@ local function reg()
     if registry then
         return registry
     end
-    registry = {list = load_dir("buildings"), by_kind = {}, pick = {}, decor = {}}
+    registry = {list = load_dir("buildings"), by_kind = {}, pick = {}, decor = {}, clear = {}}
     for _, def in ipairs(registry.list) do
         registry.by_kind[def.kind] = def
         for _, zone in ipairs((def.cells or 1) == 1 and def.zones or {}) do
@@ -54,12 +54,28 @@ local function reg()
         end
     end
     for _, d in ipairs(load_dir("decor")) do
+        if d.keep_clear then
+            table.insert(registry.clear, d.keep_clear)
+        end
         for _, zone in ipairs(d.zones or {}) do
             registry.decor[zone] = registry.decor[zone] or {}
             table.insert(registry.decor[zone], d)
         end
     end
     return registry
+end
+
+function town.keep_clear(wx, wz, r)
+    for _, keep in ipairs(reg().clear) do
+        for dx = -r, r do
+            for dz = -r, r do
+                if keep(wx + dx, wz + dz) then
+                    return true
+                end
+            end
+        end
+    end
+    return false
 end
 
 function town.building_defs()
@@ -887,7 +903,7 @@ function town.tree_at(wx, wz, seed)
         if c.zone == "outskirts" then
             chance = chance * 2
         end
-        if r < chance then
+        if r < chance and not town.keep_clear(wx, wz, 2) then
             return math.floor(hash(wz, wx, 5) * 3)
         end
     end

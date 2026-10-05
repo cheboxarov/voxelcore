@@ -45,13 +45,14 @@ end
 -- generator output: decor is everywhere, never in buildings or on paths, roads stay drivable
 local SOFT = {["core:struct_air"] = true, ["zomboid:decor_blood"] = true, ["zomboid:decor_litter"] = true,
     ["zomboid:decor_tape"] = true, ["zomboid:decor_note"] = true, ["zomboid:decor_firepit"] = true}
-local counts, found, solid, bad, ids = {}, {}, {}, {}, {}
+local counts, found, solid, bad, ids, kinds = {}, {}, {}, {}, {}, {}
 local first_pass = {}
 local B = town.BOUNDS
 for wx = B[1] - 170, 560 do
     for wz = B[2] - 5, B[4] + 5 do
         local out = {}
         local kind = town.column(wx, wz, out)
+        kinds[util.key(wx, wz)] = kind
         for _, e in ipairs(out) do
             local name, dy = e[2], e[1]
             if name:find("decor_") then
@@ -392,6 +393,34 @@ for _, c in ipairs(wcells) do
     check(block.get(c[1], G + 2, c[2]) ~= collider, "collider left at " .. c[1] .. "," .. c[2])
 end
 log("wrecks block in all rotations, a broken one leaves no wall, heli colliders: " .. colliders)
+
+-- no trees grow through story places: the heli in the park and the army camp in the wild
+local function no_trees(x0, z0, x1, z1, what)
+    goto_area(math.floor((x0 + x1) / 2), math.floor((z0 + z1) / 2))
+    for x = x0, x1 do
+        for z = z0, z1 do
+            for y = G + 1, G + 9 do
+                local n = name_at(x, y, z)
+                check(not n:find("log") and not n:find("leaves") and not n:find("bush") and not n:find("stone"), what .. ": " .. n .. " at " .. x .. "," .. y .. "," .. z)
+            end
+        end
+    end
+end
+no_trees(heli[1] - 3, heli[3] - 3, heli[1] + 7, heli[3] + 9, "tree at the heli")
+local aftermath = require "zomboid:decor/aftermath"
+local nature = require "zomboid:nature"
+local cx0, cz0, cx1, cz1 = math.huge, math.huge, -math.huge, -math.huge
+for x = B[1] - 170, B[1] do
+    for z = -80, 80 do
+        if kinds[util.key(x, z)] == nil and aftermath.keep_clear(x, z) then
+            check(nature.height(x, z) == G, "camp on flat ground at " .. x .. "," .. z .. ": " .. nature.height(x, z))
+            cx0, cz0, cx1, cz1 = math.min(cx0, x), math.min(cz0, z), math.max(cx1, x), math.max(cz1, z)
+        end
+    end
+end
+check(cx1 - cx0 >= 10 and cz1 - cz0 >= 10, "army camp found")
+log(string.format("army camp at x %d..%d z %d..%d", cx0, cx1, cz0, cz1))
+no_trees(cx0, cz0, cx1, cz1, "tree in the camp")
 
 local wx, wz = town.to_world(garage, garage.hw + 3, garage.d - 2)
 goto_area(wx, wz)
