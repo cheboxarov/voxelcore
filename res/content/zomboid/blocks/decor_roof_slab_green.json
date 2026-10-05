@@ -1,6 +1,13 @@
 {
     "caption": "Зелёная кровля (скат)",
-    "texture": "decor_roof_green",
+    "texture-faces": [
+        "decor_roof_green_side",
+        "decor_roof_green_side",
+        "decor_roof_green",
+        "decor_roof_green",
+        "decor_roof_green_side",
+        "decor_roof_green_side"
+    ],
     "model": "aabb",
     "hitbox": [
         0,

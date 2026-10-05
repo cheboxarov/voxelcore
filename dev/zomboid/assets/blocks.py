@@ -167,24 +167,28 @@ for _name, _col in SIDING.items():
     tex("siding_" + _name)(siding(_col))
 
 
-@tex("roof")
-def tex_roof(c):
-    base = ramp("5b4038")
-    tabs = {(r, k): ramp(mix(base[2], base[c.r.choice((1, 3, 3))], c.r.uniform(0.1, 0.6))) for r in range(4) for k in range(2)}
-    for y in range(32):
+def shingles(c, col):
+    base = ramp(col)
+    tabs = {(r, k): ramp(mix(base[2], base[c.r.choice((1, 3, 3))], c.r.uniform(0.1, 0.6)))
+            for r in range(c.h // 8) for k in range(2)}
+    for y in range(c.h):
         row, ry = y // 8, y % 8
         off = 8 if row % 2 else 0
-        for x in range(32):
+        for x in range(c.w):
             t = tabs[(row, ((x + off) % 32) // 16)]
             tone = t[0] if ry == 7 else t[1] if ry in (0, 6) else t[3] if ry == 5 else t[2]
             if (x + off) % 16 == 0 and 2 <= ry <= 6:
                 tone = t[1]
             c.set(x, y, tone)
-    for _ in range(220):
-        x, y = c.r.randrange(32), c.r.randrange(32)
+    for _ in range(c.w * c.h // 5):
+        x, y = c.r.randrange(c.w), c.r.randrange(c.h)
         if y % 8 < 6:
             c.set(x, y, mix(c.get(x, y), base[4] if c.r.random() < 0.35 else base[0], 0.35))
     c.noise(0.03)
+
+
+tex("roof")(lambda c: shingles(c, "5b4038"))
+tex("roof_side", 32, 16)(lambda c: shingles(c, "5b4038"))
 
 
 @tex("trim")

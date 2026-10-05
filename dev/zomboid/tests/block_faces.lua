@@ -22,8 +22,8 @@ local function image(name)
     check(false, "texture " .. name)
 end
 
--- buildings.py, decor.py and nature.py textures are checked by their own owners
-local FOREIGN = {bld = true, decor = true, nature = true}
+-- buildings.py textures are checked by their owner
+local FOREIGN = {bld = true}
 local blocks, faces = 0, 0
 for id = 0, block.defs_count() - 1 do
     local name = block.name(id)

@@ -1,6 +1,13 @@
 {
     "caption": "Серая кровля (скат)",
-    "texture": "decor_roof_grey",
+    "texture-faces": [
+        "decor_roof_grey_side",
+        "decor_roof_grey_side",
+        "decor_roof_grey",
+        "decor_roof_grey",
+        "decor_roof_grey_side",
+        "decor_roof_grey_side"
+    ],
     "model": "aabb",
     "hitbox": [
         0,

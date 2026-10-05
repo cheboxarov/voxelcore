@@ -153,18 +153,19 @@ def birch_top(c):
 
 
 def foliage(c, t, holes, needles=False, berries=None):
-    c.rect(0, 0, 31, 31, t[2])
-    for _ in range(70):
-        x, y = c.r.randrange(32), c.r.randrange(32)
+    c.rect(0, 0, 31, 31, t[0])
+    for _ in range(48 if needles else 70):
+        x, y = c.r.uniform(0, 32), c.r.uniform(0, 32)
         if needles:
-            c.line(x, y, x + 2, y + 2, t[3] if c.r.random() < 0.5 else t[1])
+            for k in range(-3, 4):
+                for d in range(4 - abs(k) // 2):
+                    put(c, int(x) + k, int(y) + d - abs(k) // 2, t[3] if d == 0 else t[2] if d < 2 else t[1])
         else:
-            c.paint(c.ellipse_m(x, y, 1.6, 1.2), t, grad=False)
-    speckle(c, 30, (t[0], t[4]))
-    for _ in range(holes):
-        x, y = c.r.randrange(32), c.r.randrange(32)
+            m = {(px % 32, py % 32) for px, py in c.ellipse_m(x, y, 2.6, 2.1)}
+            c.paint(m, t, grad=False)
+    dark = [(x, y) for y in range(32) for x in range(32) if c.get(x, y) == t[0]]
+    for x, y in c.r.sample(dark, min(holes, len(dark))):
         c.set(x, y, CLEAR)
-        put(c, x + 1, y, CLEAR)
     for _ in range(berries or 0):
         x, y = c.r.randrange(1, 31), c.r.randrange(1, 31)
         c.set(x, y, ramp("b02a2a")[3])

@@ -5,26 +5,704 @@ import sys
 import zlib
 
 sys.path.insert(0, os.path.dirname(__file__))
-from common import BLOCKS, MODELS, Canvas, hexc, shade  # noqa: E402
+from blocks import board, nail, panel, put, shingles  # noqa: E402
+from common import BLOCKS, CLEAR, MODELS, PAL, Canvas, alpha, hexc, mix, ramp  # noqa: E402
 
 
-class Img(Canvas):
-    def __init__(self, fill=(0, 0, 0, 0), seed=0):
-        super().__init__(16, seed=seed, fill=fill)
-
-    def noise(self, base, amount=0.12):
-        for y in range(16):
-            for x in range(16):
-                self.set(x, y, shade(base, 1 + self.r.uniform(-amount, amount)))
-
-    def speckle(self, c, count):
-        for _ in range(count):
-            self.set(self.r.randrange(16), self.r.randrange(16), c)
-
-    def save(self, folder, name):
-        super().save(os.path.join(folder, name + ".png"))
+TEX = {}
 
 
+def tex(name, w=32, h=None):
+    def reg(fn):
+        TEX["decor_" + name] = (fn, w, h or w)
+        return fn
+    return reg
+
+
+STEEL, IRON, DARK = PAL["steel"], PAL["iron"], ramp("2a2c30")
+WHITE = ramp("f0f0ea")
+
+
+def streaks(c, t, n, vertical=True, length=(4, 12)):
+    for _ in range(n):
+        x, y, k = c.r.randrange(c.w), c.r.randrange(c.h), c.r.randrange(*length)
+        tone = t[1] if c.r.random() < 0.6 else t[3]
+        for i in range(k):
+            c.set(x, (y + i) % c.h, tone) if vertical else c.set((x + i) % c.w, y, tone)
+
+
+def chips(c, t, n, under=None):
+    for _ in range(n):
+        x, y = c.r.randrange(c.w), c.r.randrange(c.h)
+        c.set(x, y, (under or PAL["rust"])[c.r.choice((1, 2))])
+        if c.r.random() < 0.5:
+            c.set((x + 1) % c.w, y, t[1])
+
+
+def letters(c, word, x0, y0, col, glyphs):
+    for ch in word:
+        for dy, row in enumerate(glyphs[ch]):
+            for dx, bit in enumerate(row):
+                if bit == "1":
+                    c.set(x0 + dx, y0 + dy, col)
+        x0 += len(glyphs[ch][0]) + 1
+
+
+GLYPHS = {"S": ("0111", "1000", "0110", "0001", "1110"), "T": ("111", "010", "010", "010", "010"),
+          "O": ("0110", "1001", "1001", "1001", "0110"), "P": ("1110", "1001", "1110", "1000", "1000"),
+          "4": ("1001", "1001", "1111", "0001", "0001"), "0": ("0110", "1001", "1001", "1001", "0110")}
+
+
+@tex("metal")
+def metal(c):
+    c.rect(0, 0, 31, 31, IRON[2])
+    for x in range(32):
+        tone = IRON[3] if x % 8 in (1, 2) else IRON[1] if x % 8 == 6 else IRON[2]
+        for y in range(32):
+            c.set(x, y, tone)
+    streaks(c, IRON, 30)
+    c.noise(0.03)
+
+
+@tex("metal_red")
+def metal_red(c):
+    t = ramp("b8402e")
+    for x in range(32):
+        tone = t[3] if x % 8 in (1, 2) else t[1] if x % 8 == 6 else t[2]
+        for y in range(32):
+            c.set(x, y, tone)
+    chips(c, t, 14, IRON)
+    c.noise(0.03)
+
+
+@tex("rubber")
+def rubber(c):
+    t = ramp("2a2a2e")
+    for y in range(32):
+        for x in range(32):
+            c.set(x, y, t[1] if (x + y) % 8 in (0, 1) else t[2] if (x - y) % 8 else t[0])
+    c.paint(c.ellipse_m(16, 16, 7, 7), STEEL)
+    c.fill(c.ellipse_m(16, 16, 2.5, 2.5), IRON[0])
+    c.noise(0.04)
+
+
+def light(on):
+    def draw(c):
+        panel(c, 0, 0, 31, 31, IRON)
+        lens = ramp("fff4c8") if on else ramp("8c8a80")
+        c.paint(c.rect_m(10, 8, 21, 23), lens, grad=not on)
+        if on:
+            c.fill(c.rect_m(12, 10, 19, 21), lens[4])
+            c.fill(c.rect_m(14, 12, 16, 15), (255, 255, 250, 255))
+        else:
+            c.line(11, 10, 14, 10, lens[4])
+        c.frame(9, 7, 22, 24, IRON[0])
+    return draw
+
+
+tex("light_on")(light(True))
+tex("light_off")(light(False))
+
+
+def traffic(lit):
+    def draw(c):
+        body = ramp("34383a")
+        c.rect(0, 0, 31, 31, body[1])
+        panel(c, 10, 2, 21, 29, body)
+        for i, col in enumerate(("ff3020", "ffb020", "40e060")):
+            cy = 7.5 + i * 8.5
+            t = ramp(col) if lit == i else ramp(mix(hexc(col), hexc("202020"), 0.72))
+            c.fill(c.rect_m(11, int(cy) - 4, 20, int(cy) - 3), body[0])
+            c.paint(c.ellipse_m(16, cy, 3.4, 3.4), t, grad=lit != i)
+            if lit == i:
+                c.fill(c.ellipse_m(16, cy, 2, 2), t[4])
+            c.set(14, int(cy) - 2, t[4])
+    return draw
+
+
+tex("traffic_on")(traffic(0))
+tex("traffic_off")(traffic(-1))
+
+
+@tex("sign_stop")
+def sign_stop(c):
+    red = ramp("c8261e")
+    oct_ = [(10, 5), (21, 5), (27, 11), (27, 21), (21, 27), (10, 27), (4, 21), (4, 11)]
+    c.fill(c.poly_m(oct_), WHITE[3])
+    inner = [(x + (1 if x < 16 else -1), y + (1 if y < 16 else -1)) for x, y in oct_]
+    c.paint(c.poly_m(inner), red, grad=False)
+    letters(c, "STOP", 8, 14, WHITE[3], GLYPHS)
+
+
+@tex("sign_speed")
+def sign_speed(c):
+    c.fill(c.ellipse_m(16, 16, 11, 11), WHITE[3])
+    c.paint(c.ellipse_m(16, 16, 10.5, 10.5), ramp("d02a22"), grad=False)
+    c.fill(c.ellipse_m(16, 16, 7.5, 7.5), WHITE[3])
+    letters(c, "40", 12, 14, DARK[1], GLYPHS)
+
+
+@tex("sign_crossing")
+def sign_crossing(c):
+    blue = ramp("2a5ab0")
+    panel(c, 3, 5, 28, 26, blue)
+    c.frame(4, 6, 27, 25, WHITE[3])
+    c.poly([(16, 8), (26, 24), (6, 24)], WHITE[3])
+    ink = DARK[1]
+    c.rect(15, 12, 16, 13, ink)
+    c.line(15, 14, 14, 18, ink)
+    c.line(14, 18, 12, 22, ink)
+    c.line(14, 18, 17, 22, ink)
+    c.line(15, 15, 18, 17, ink)
+    c.line(15, 15, 12, 17, ink)
+    for x in range(9, 24, 3):
+        c.set(x, 23, ink)
+
+
+@tex("sign_back")
+def sign_back(c):
+    metal(c)
+    c.frame(3, 4, 28, 27, IRON[1])
+    for x, y in ((16, 9), (16, 22)):
+        nail(c, x, y, STEEL)
+
+
+@tex("hydrant")
+def hydrant(c):
+    t = ramp("c8301e")
+    for x in range(32):
+        tone = t[3] if 11 <= x <= 13 else t[4] if x == 12 else t[1] if x >= 19 else t[2]
+        for y in range(32):
+            c.set(x, y, tone)
+    for y in (6, 25):
+        for x in range(32):
+            c.set(x, y, mix(c.get(x, y), t[0], 0.5))
+    chips(c, t, 8)
+    for x, y in ((8, 15), (23, 15)):
+        nail(c, x, y, PAL["brass"])
+
+
+@tex("bench")
+def bench(c):
+    t = ramp("8a5a30")
+    for y0 in range(1, 32, 6):
+        board(c, -3, y0, 34, y0 + 4, t, knots=False)
+        c.line(0, y0 - 1, 31, y0 - 1, ramp("4e3018")[1])
+    c.noise(0.03)
+
+
+@tex("trash")
+def trash(c):
+    t = ramp("3a5a3a")
+    for x in range(32):
+        tone = (t[3], t[2], t[2], t[1])[x % 4]
+        for y in range(32):
+            c.set(x, y, tone)
+    for y in (3, 28):
+        c.line(0, y, 31, y, t[0])
+        c.line(0, y + 1, 31, y + 1, t[3])
+    chips(c, t, 10)
+
+
+@tex("trash_top")
+def trash_top(c):
+    t = ramp("2e4a2e")
+    panel(c, 0, 0, 31, 31, t)
+    c.paint(c.ellipse_m(16, 16, 9, 9), t)
+    c.fill(c.ellipse_m(16, 16, 6, 6), DARK[0])
+    c.line(12, 13, 15, 12, DARK[2])
+
+
+@tex("mailbox")
+def mailbox(c):
+    t = ramp("2a4a9a")
+    for y in range(32):
+        tone = t[3] if y < 12 else t[4] if y == 12 else t[1] if y > 26 else t[2]
+        for x in range(32):
+            c.set(x, y, tone)
+    c.line(0, 18, 31, 18, WHITE[2])
+    chips(c, t, 6)
+
+
+@tex("mailbox_front")
+def mailbox_front(c):
+    mailbox(c)
+    t = ramp("2a4a9a")
+    panel(c, 11, 11, 20, 20, t)
+    c.rect(14, 15, 17, 16, STEEL[3])
+    c.set(17, 16, STEEL[0])
+    c.rect(20, 9, 21, 15, ramp("d02a22")[2])
+    c.set(20, 9, ramp("d02a22")[4])
+
+
+@tex("dumpster")
+def dumpster(c):
+    t = ramp("2e5a46")
+    for x in range(32):
+        tone = t[3] if x % 8 == 1 else t[1] if x % 8 == 6 else t[2]
+        for y in range(32):
+            c.set(x, y, tone)
+    c.rect(0, 0, 31, 3, t[1])
+    c.line(0, 3, 31, 3, t[0])
+    chips(c, t, 30)
+    for _ in range(4):
+        x = c.r.randrange(32)
+        for y in range(4, 4 + c.r.randrange(4, 14)):
+            c.set(x, y, PAL["rust"][1])
+    c.paint(c.rect_m(12, 10, 19, 14), ramp("e8e8e0"), grad=False)
+
+
+@tex("glass")
+def glass(c):
+    c.rect(0, 0, 31, 31, alpha(PAL["glass"][2], 90))
+    c.frame(0, 0, 31, 31, IRON[1])
+    c.frame(1, 1, 30, 30, IRON[3])
+    for d in (0, 5):
+        c.line(5 + d, 26, 18 + d, 13, alpha(PAL["glass"][4], 140))
+    c.line(20, 8, 24, 4, alpha(PAL["glass"][4], 140))
+
+
+@tex("bus_sign")
+def bus_sign(c):
+    blue = ramp("1e4a8a")
+    c.rect(0, 0, 31, 31, blue[2])
+    panel(c, 0, 10, 31, 21, blue)
+    c.paint(c.rect_m(9, 12, 22, 18), WHITE)
+    c.fill(c.rect_m(10, 13, 21, 15), blue[2])
+    c.line(15, 13, 15, 15, WHITE[3])
+    c.rect(10, 19, 11, 20, DARK[1])
+    c.rect(20, 19, 21, 20, DARK[1])
+
+
+@tex("fence")
+def fence(c):
+    t = ramp("e8e4d8")
+    for x0 in range(0, 32, 8):
+        board(c, x0, 0, x0 + 7, 31, t, vertical=True, knots=False)
+    for x in range(32):
+        for y in range(27, 32):
+            c.set(x, y, mix(c.get(x, y), ramp("8a7a5a")[2], 0.15 * (y - 26)))
+
+
+def leaves(c, t, n, r=(2.2, 3.4)):
+    for _ in range(n):
+        x, y, rr = c.r.uniform(0, 32), c.r.uniform(0, 32), c.r.uniform(*r)
+        m = {(px % 32, py % 32) for px, py in c.ellipse_m(x, y, rr, rr * 0.8)}
+        c.paint(m, t, grad=False)
+
+
+@tex("hedge")
+def hedge(c):
+    t = ramp("3a6a2e")
+    c.rect(0, 0, 31, 31, t[0])
+    leaves(c, t, 90)
+    for _ in range(30):
+        c.set(c.r.randrange(32), c.r.randrange(32), t[4])
+
+
+@tex("soil")
+def soil(c):
+    t = ramp("4a3020")
+    c.rect(0, 0, 31, 31, t[2])
+    for _ in range(40):
+        x, y = c.r.randrange(32), c.r.randrange(32)
+        c.set(x, y, t[3])
+        put(c, x + 1, y, t[3])
+        put(c, x, y + 1, t[1])
+        put(c, x + 1, y + 1, t[0])
+    for _ in range(60):
+        c.set(c.r.randrange(32), c.r.randrange(32), t[1])
+    for _ in range(6):
+        x, y = c.r.randrange(32), c.r.randrange(32)
+        c.set(x, y, PAL["grass"][3])
+    c.noise(0.04)
+
+
+@tex("gravel")
+def gravel(c):
+    t = ramp("a49a86")
+    c.rect(0, 0, 31, 31, t[1])
+    for _ in range(110):
+        x, y = c.r.randrange(32), c.r.randrange(32)
+        s = ramp(mix(t[2], hexc(c.r.choice(("8a8478", "b0a690", "7a7262", "c8bea8"))), 0.6))
+        put(c, x, y, s[3])
+        put(c, x + 1, y, s[2])
+        put(c, x, y + 1, s[2])
+        put(c, x + 1, y + 1, s[0])
+    c.noise(0.03)
+
+
+@tex("concrete")
+def concrete(c):
+    t = ramp("8e8c88")
+    c.rect(0, 0, 31, 31, t[2])
+    for _ in range(90):
+        c.set(c.r.randrange(32), c.r.randrange(32), t[1] if c.r.random() < 0.6 else t[3])
+    for _ in range(8):
+        c.set(c.r.randrange(32), c.r.randrange(32), t[0])
+    c.line(0, 15, 31, 15, mix(t[2], t[1], 0.6))
+    c.line(0, 31, 31, 31, t[1])
+    c.line(31, 0, 31, 31, t[1])
+    c.noise(0.03)
+
+
+@tex("slide")
+def slide(c):
+    t = ramp("e0b020")
+    for x in range(32):
+        tone = t[3] if 6 <= x <= 9 else t[4] if x == 7 else t[1] if x >= 26 else t[2]
+        for y in range(32):
+            c.set(x, y, tone)
+    streaks(c, t, 6, length=(6, 16))
+    c.noise(0.02)
+
+
+def car_paint(col, stripe=None):
+    def draw(c):
+        t = ramp(col)
+        for y in range(32):
+            tone = t[3] if y < 4 else t[1] if y > 27 else t[2]
+            for x in range(32):
+                c.set(x, y, tone)
+        if stripe:
+            c.paint(c.rect_m(0, 13, 31, 18), ramp(stripe), grad=False)
+        c.line(3, 22, 14, 24, t[0])
+        c.line(4, 23, 13, 25, t[3])
+        chips(c, t, 14)
+        c.noise(0.03)
+    return draw
+
+
+for _n, _col, _stripe in (("red", "9a2a22", None), ("blue", "2a4a8a", None), ("white", "c8c8c0", None),
+                          ("police", "e0e0dc", "1a3a9a"), ("army", "4e5a32", None)):
+    tex("paint_" + _n)(car_paint(_col, _stripe))
+
+
+@tex("burnt")
+def burnt(c):
+    t = ramp("2a2624")
+    c.rect(0, 0, 31, 31, t[1])
+    for _ in range(60):
+        x, y = c.r.randrange(32), c.r.randrange(32)
+        c.set(x, y, PAL["rust"][c.r.choice((1, 2, 3))])
+    for _ in range(50):
+        c.set(c.r.randrange(32), c.r.randrange(32), t[c.r.choice((0, 2, 3))])
+    for y in range(0, 32, 8):
+        c.line(0, y, 31, y, t[0])
+    c.noise(0.05)
+
+
+@tex("broken_glass")
+def broken_glass(c):
+    g = ramp("3a4a56")
+    c.rect(0, 0, 31, 31, g[2])
+    c.line(0, 31, 31, 0, g[3])
+    for a, b in (((16, 15), (4, 2)), ((16, 15), (29, 9)), ((16, 15), (11, 31)), ((16, 15), (31, 24)), ((16, 15), (0, 18))):
+        c.line(a[0], a[1], b[0], b[1], ramp("b0c8d8")[3])
+    c.paint(c.ellipse_m(17, 16, 3, 3), DARK)
+    c.line(4, 8, 8, 4, g[4])
+
+
+def bus_base(c):
+    t = ramp("e0a81e")
+    for y in range(32):
+        tone = t[3] if y < 2 else t[1] if y > 29 else t[2]
+        for x in range(32):
+            c.set(x, y, tone)
+    return t
+
+
+@tex("bus_side")
+def bus_side(c):
+    t = bus_base(c)
+    for x0 in (2, 18):
+        panel(c, x0, 5, x0 + 12, 15, ramp("2a3a46"), sunk=True)
+        c.line(x0 + 2, 13, x0 + 6, 7, ramp("2a3a46")[4])
+    c.rect(0, 20, 31, 21, DARK[1])
+    c.rect(0, 25, 31, 25, DARK[1])
+    chips(c, t, 10)
+
+
+@tex("bus_roof")
+def bus_roof(c):
+    t = ramp("d8d4c8")
+    for x in range(32):
+        tone = t[3] if x % 16 == 1 else t[1] if x % 16 == 14 else t[2]
+        for y in range(32):
+            c.set(x, y, tone)
+    chips(c, t, 12)
+    c.paint(c.rect_m(10, 10, 21, 21), ramp("8a8478"))
+
+
+@tex("bus_under")
+def bus_under(c):
+    t = ramp("2e2e2e")
+    c.rect(0, 0, 31, 31, t[2])
+    c.paint(c.rect_m(0, 12, 31, 19), IRON, grad=False)
+    for x in range(0, 32, 8):
+        c.paint(c.rect_m(x, 4, x + 1, 27), t, grad=False)
+    chips(c, t, 30)
+
+
+@tex("bus_front")
+def bus_front(c):
+    t = bus_base(c)
+    panel(c, 2, 3, 29, 15, ramp("2a3a46"), sunk=True)
+    c.line(5, 13, 11, 6, ramp("b0c8d8")[3])
+    c.line(15, 3, 15, 15, DARK[1])
+    for x0 in (2, 25):
+        c.paint(c.rect_m(x0, 20, x0 + 4, 23), ramp("f0f0c0"))
+    c.rect(9, 20, 22, 23, DARK[2])
+    for x in range(10, 22, 2):
+        c.line(x, 21, x, 22, DARK[0])
+    c.rect(0, 27, 31, 29, STEEL[1])
+
+
+@tex("heli")
+def heli(c):
+    t = ramp("4a5432")
+    c.rect(0, 0, 31, 31, t[2])
+    for y in (0, 16):
+        c.line(0, y, 31, y, t[0])
+        c.line(0, y + 1, 31, y + 1, t[3])
+    c.line(15, 0, 15, 31, t[0])
+    for x in range(3, 32, 6):
+        for y in (3, 19):
+            c.set(x, y, t[3])
+    star = [(16, 5), (18, 10), (23, 10), (19, 13), (21, 18), (16, 15), (11, 18), (13, 13), (9, 10), (14, 10)]
+    c.paint(c.poly_m(star), ramp("e8e8e0"), grad=False)
+    chips(c, t, 16)
+
+
+@tex("barrier")
+def barrier(c):
+    o, w = ramp("e86a1a"), WHITE
+    for y in range(32):
+        for x in range(32):
+            k = (x + y) % 16
+            c.set(x, y, (o if k < 8 else w)[3 if k in (0, 8) else 1 if k in (7, 15) else 2])
+
+
+@tex("tape")
+def tape(c):
+    y_, k_ = ramp("f0d020"), DARK
+    for x in range(32):
+        for y in range(14, 18):
+            c.set(x, y, y_[3 if y == 14 else 2] if (x + y) % 8 < 4 else k_[2])
+
+
+@tex("sandbag")
+def sandbag(c):
+    t = ramp("a08a5e")
+    for y in range(32):
+        for x in range(32):
+            c.set(x, y, t[3] if (x + y) % 3 == 0 else t[1] if (x - y) % 4 == 0 else t[2])
+    bag = c.rect_m(8, 11, 23, 20) - {(8, 11), (23, 11), (8, 20), (23, 20)}
+    edge = {(x, y) for x, y in bag if not all((x + dx, y + dy) in bag for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
+    for x, y in edge:
+        c.set(x, y, t[0] if y > 15 or x > 20 else t[4])
+    c.line(10, 15, 21, 15, t[1])
+    c.noise(0.03)
+
+
+@tex("army_crate", 28, 22)
+def army_crate(c):
+    t = ramp("4e5a32")
+    for y0 in (0, 7, 14):
+        board(c, 0, y0, 27, y0 + 6, t, knots=False)
+    c.frame(0, 0, 27, 21, t[0])
+    for x0 in (0, 24):
+        c.paint(c.rect_m(x0, 0, x0 + 3, 21), ramp("3e4826"), grad=False)
+    c.paint(c.rect_m(9, 8, 18, 13), ramp("d8d0a0"), grad=False)
+    c.fill(c.rect_m(11, 10, 16, 11), t[1])
+    for x, y in ((1, 1), (25, 1), (1, 19), (25, 19)):
+        nail(c, x, y)
+
+
+@tex("tent")
+def tent(c):
+    t = ramp("4a6a3a")
+    for y in range(32):
+        tone = t[3] if y % 16 == 1 else t[1] if y % 16 == 14 else t[2]
+        for x in range(32):
+            c.set(x, y, tone)
+    c.line(0, 0, 31, 0, t[0])
+    c.line(15, 0, 15, 31, t[1])
+    c.line(16, 0, 16, 31, t[3])
+    streaks(c, t, 10, vertical=False)
+    c.noise(0.02)
+
+
+@tex("blood")
+def blood(c):
+    dark, wet = alpha(ramp("6a0a0a")[2], 235), alpha(ramp("7a1010")[3], 220)
+    cx, cy = c.r.uniform(12, 20), c.r.uniform(12, 20)
+    for y in range(32):
+        for x in range(32):
+            d = math.hypot(x - cx, y - cy) + c.r.uniform(-2.5, 2.5)
+            if d < 7:
+                c.set(x, y, dark)
+            elif d < 12 and c.r.random() < 0.25:
+                c.set(x, y, wet)
+    for _ in range(3):
+        a = c.r.uniform(0, 2 * math.pi)
+        for k in range(8, 16):
+            c.set(int(cx + math.cos(a) * k), int(cy + math.sin(a) * k), alpha(ramp("5a0808")[2], 210))
+    c.set(int(cx) - 2, int(cy) - 2, alpha(ramp("7a1010")[4], 235))
+
+
+@tex("litter")
+def litter(c):
+    paper = ramp("e8e4d8")
+    c.paint(c.poly_m([(3, 5), (12, 3), (13, 11), (4, 12)]), paper, grad=False)
+    c.line(5, 6, 11, 5, IRON[2])
+    c.line(5, 8, 10, 7, IRON[2])
+    can = ramp("c83a2a")
+    c.paint(c.rect_m(20, 18, 26, 22), can, grad=False)
+    c.rect(26, 18, 27, 22, STEEL[2])
+    c.paint(c.poly_m([(6, 22), (13, 20), (14, 25), (8, 27)]), ramp("6a8a4a"), grad=False)
+    c.rect(24, 5, 25, 6, PAL["brass"][2])
+    c.rect(16, 13, 19, 13, ramp("e8e0c8")[3])
+    c.set(20, 13, ramp("c87a3a")[2])
+    c.set(28, 28, STEEL[3])
+
+
+@tex("note", 18, 16)
+def note(c):
+    paper = ramp("f0ead0")
+    c.rect(0, 0, 17, 15, paper[2])
+    c.line(0, 0, 17, 0, paper[3])
+    c.line(17, 0, 17, 15, paper[1])
+    c.line(0, 15, 17, 15, paper[1])
+    c.line(9, 0, 9, 15, mix(paper[2], paper[1], 0.5))
+    for y in range(3, 14, 2):
+        x1 = 15 - c.r.randrange(0, 5)
+        for x in range(2, x1):
+            if c.r.random() < 0.8:
+                c.set(x, y, ramp("3a3a6a")[2])
+    c.set(15, 2, ramp("c03020")[2])
+
+
+@tex("firepit", 29)
+def firepit(c):
+    ash, stone, log = ramp("4a4038"), PAL["stone"], ramp("3a2a1e")
+    c.rect(0, 0, 28, 28, ash[1])
+    for i in range(14):
+        a = i / 14 * 2 * math.pi
+        c.paint(c.ellipse_m(14.5 + 11.5 * math.cos(a), 14.5 + 11.5 * math.sin(a), 2.6, 2.4), stone)
+    c.fill(c.ellipse_m(14.5, 14.5, 8.5, 8.5), ash[2])
+    for a, b in (((8, 9), (21, 19)), ((20, 8), (9, 21))):
+        c.paint(c.line_m(a[0], a[1], b[0], b[1], 2), log, grad=False)
+    for _ in range(25):
+        x, y = c.r.randrange(29), c.r.randrange(29)
+        if c.get(x, y) == ash[2]:
+            c.set(x, y, ash[3] if c.r.random() < 0.7 else ramp("f08020")[1])
+
+
+def roof_green(c):
+    t = ramp("3e5a44")
+    for x in range(32):
+        tone = t[4] if x % 8 == 0 else t[3] if x % 8 == 1 else t[0] if x % 8 == 2 else t[1] if x % 8 == 7 else t[2]
+        for y in range(c.h):
+            c.set(x, y, tone)
+    chips(c, t, c.h // 2)
+    c.noise(0.02)
+
+
+tex("roof_green")(roof_green)
+tex("roof_green_side", 32, 16)(roof_green)
+tex("roof_grey")(lambda c: shingles(c, "5a5e64"))
+tex("roof_grey_side", 32, 16)(lambda c: shingles(c, "5a5e64"))
+
+
+@tex("workbench_top")
+def workbench_top(c):
+    t = ramp("9a7444")
+    for y0 in (0, 8, 16, 24):
+        board(c, 0, y0, 31, y0 + 7, t, knots=False)
+    c.paint(c.rect_m(2, 3, 9, 6), IRON)
+    c.paint(c.rect_m(5, 7, 6, 10), IRON, grad=False)
+    c.paint(c.line_m(14, 24, 24, 14, 2), STEEL, grad=False)
+    c.paint(c.rect_m(24, 11, 27, 15), ramp("c03030"))
+    c.paint(c.line_m(18, 6, 26, 6, 1) | c.line_m(18, 7, 21, 7, 1), ramp("6a4428"), grad=False)
+    c.rect(22, 5, 27, 8, STEEL[2])
+    for x, y in ((4, 20), (6, 22), (9, 19)):
+        c.set(x, y, STEEL[3])
+
+
+@tex("workbench_side", 32, 29)
+def workbench_side(c):
+    t = ramp("7a5a34")
+    c.rect(0, 0, 31, 28, CLEAR)
+    board(c, 0, 0, 31, 4, t, knots=False)
+    for x0 in (0, 27):
+        board(c, x0, 5, x0 + 4, 28, t, vertical=True, knots=False)
+    board(c, 5, 19, 26, 22, t, knots=False)
+    panel(c, 7, 7, 24, 13, t)
+    c.rect(14, 10, 17, 10, STEEL[3])
+
+
+@tex("ceramic")
+def ceramic(c):
+    t = ramp("e8eae8")
+    c.rect(0, 0, 31, 31, t[2])
+    for y in range(32):
+        for x in range(32):
+            if 4 <= x + y // 3 <= 7:
+                c.set(x, y, t[3])
+    c.line(0, 31, 31, 31, t[1])
+    c.line(31, 0, 31, 31, t[1])
+
+
+@tex("desk")
+def desk(c):
+    t = ramp("6a4a2e")
+    for y0 in (0, 8, 16, 24):
+        board(c, 0, y0, 31, y0 + 7, t, knots=False)
+    c.noise(0.02)
+
+
+@tex("desk_front")
+def desk_front(c):
+    t = ramp("6a4a2e")
+    c.rect(0, 0, 31, 31, t[1])
+    for y0 in (4, 12, 20):
+        panel(c, 10, y0, 21, y0 + 6, t)
+        c.rect(15, y0 + 3, 16, y0 + 3, PAL["brass"][3])
+
+
+@tex("toybox", 24, 20)
+def toybox(c):
+    t = ramp("d06a8a")
+    panel(c, 0, 0, 23, 19, t)
+    c.frame(0, 0, 23, 19, t[0])
+    c.line(0, 5, 23, 5, t[0])
+    for x0, y0, col in ((3, 9, "f0d040"), (10, 11, "40a0e0"), (17, 9, "60c060")):
+        c.paint(c.rect_m(x0, y0, x0 + 4, y0 + 4), ramp(col))
+    c.paint(c.ellipse_m(12, 2.5, 2.5, 1.5), ramp("f0d040"), grad=False)
+
+
+@tex("bookshelf", 32, 64)
+def bookshelf(c):
+    w = ramp("4e3420")
+    c.rect(0, 0, 31, 63, w[1])
+    c.frame(0, 0, 31, 63, w[0])
+    c.line(1, 1, 30, 1, w[3])
+    c.line(1, 1, 1, 62, w[3])
+    for y0 in (3, 18, 33, 48):
+        c.rect(2, y0, 29, y0 + 11, DARK[0])
+        x = 3
+        while x < 28:
+            bw, bh = 2 + c.r.randrange(3), 8 + c.r.randrange(4)
+            b = ramp(c.r.choice(("8a2a22", "2a4a7a", "3a6a3a", "c8a040", "5a3a6a", "d8d0c0")))
+            x1 = min(28, x + bw - 1)
+            m = c.rect_m(x, y0 + 12 - bh, x1, y0 + 11)
+            c.paint(m, b, grad=False)
+            c.line(x, y0 + 12 - bh + 2, x1, y0 + 12 - bh + 2, b[4])
+            x += bw + (1 if c.r.random() < 0.2 else 0)
+        c.rect(1, y0 + 12, 30, y0 + 14, w[2])
+        c.line(1, y0 + 12, 30, y0 + 12, w[3])
+        c.line(1, y0 + 14, 30, y0 + 14, w[0])
 
 
 def _vcm_box(a, b, tex=None, faces=None, rotate=None, origin=None):
@@ -52,319 +730,10 @@ def _vcm(name, boxes):
 
 
 def detail_textures():
-    def block(name, seed, fn, fill=None):
-        img = Img(fill or (0, 0, 0, 0), seed=seed)
-        fn(img)
-        img.save(BLOCKS, "decor_" + name)
-
-    clear = (0, 0, 0, 0)
-    block("metal", 500, lambda img: (img.noise(hexc("6c7074"), 0.06), img.line(0, 0, 0, 15, hexc("8a8e92"))))
-    block("metal_red", 501, lambda img: img.noise(hexc("b8402e"), 0.06))
-    block("rubber", 502, lambda img: (img.noise(hexc("1c1c1e"), 0.12), img.frame(4, 4, 11, 11, hexc("4a4a4e"))))
-
-    def light(on):
-        def draw(img):
-            img.noise(hexc("fff4c8") if on else hexc("7c7a70"), 0.03)
-            img.frame(0, 0, 15, 15, hexc("50545a"))
-        return draw
-    block("light_on", 503, light(True))
-    block("light_off", 504, light(False))
-
-    def traffic(lit):
-        def draw(img):
-            img.noise(hexc("202224"), 0.05)
-            for i, (on, off) in enumerate((("ff3020", "4a1410"), ("ffc020", "4a3a10"), ("40e060", "103a1a"))):
-                y = 1 + i * 5
-                img.rect(5, y, 10, y + 3, hexc(on if lit == i else off))
-        return draw
-    block("traffic_on", 505, traffic(0))
-    block("traffic_off", 506, traffic(-1))
-
-    font = {"S": ("111", "100", "111", "001", "111"), "T": ("111", "010", "010", "010", "010"),
-            "O": ("111", "101", "101", "101", "111"), "P": ("111", "101", "111", "100", "100"),
-            "4": ("101", "101", "111", "001", "001"), "0": ("111", "101", "101", "101", "111")}
-
-    def text(img, word, x0, y0, c):
-        for i, ch in enumerate(word):
-            for dy, row in enumerate(font[ch]):
-                for dx, bit in enumerate(row):
-                    if bit == "1":
-                        img.set(x0 + i * 4 + dx, y0 + dy, c)
-
-    def sign_stop(img):
-        img.p = [clear] * 256
-        red = hexc("c8261e")
-        for y in range(16):
-            cut = max(0, 4 - y, y - 11)
-            img.rect(cut, y, 15 - cut, y, red)
-        text(img, "STOP", 0, 5, hexc("f0f0f0"))
-    block("sign_stop", 507, sign_stop)
-
-    def sign_speed(img):
-        img.p = [clear] * 256
-        for y in range(16):
-            for x in range(16):
-                d = math.hypot(x - 7.5, y - 7.5)
-                if d < 8:
-                    img.set(x, y, hexc("d02a22") if d > 5.6 else hexc("f4f4f0"))
-        text(img, "40", 4, 5, hexc("202020"))
-    block("sign_speed", 508, sign_speed)
-
-    def sign_crossing(img):
-        img.noise(hexc("2a5ab0"), 0.03)
-        img.frame(0, 0, 15, 15, hexc("f0f0f0"))
-        img.line(1, 14, 14, 1, hexc("f0f0f0"))
-        img.rect(7, 3, 8, 4, hexc("202020"))
-        img.line(7, 5, 6, 10, hexc("202020"))
-        img.line(6, 10, 4, 13, hexc("202020"))
-        img.line(6, 10, 9, 13, hexc("202020"))
-        img.line(7, 6, 10, 8, hexc("202020"))
-    block("sign_crossing", 509, sign_crossing)
-    block("sign_back", 510, lambda img: (img.noise(hexc("8a8e92"), 0.04), img.frame(0, 0, 15, 15, hexc("6a6e72"))))
-
-    block("hydrant", 511, lambda img: (img.noise(hexc("c8301e"), 0.08), img.line(0, 3, 15, 3, hexc("e8c040"))))
-
-    def bench(img):
-        img.noise(hexc("8a5a30"), 0.08)
-        for y in (0, 5, 10, 15):
-            img.line(0, y, 15, y, hexc("4e3018"))
-    block("bench", 512, bench)
-
-    def trash(img):
-        img.noise(hexc("3a5a3a"), 0.06)
-        for x in range(1, 16, 3):
-            img.line(x, 0, x, 15, hexc("2a422a"))
-    block("trash", 513, trash)
-    block("trash_top", 514, lambda img: (img.noise(hexc("2e4a2e"), 0.06), img.rect(6, 6, 9, 9, hexc("1a1a1a"))))
-
-    def mailbox(img):
-        img.noise(hexc("2a4a9a"), 0.05)
-        img.rect(2, 2, 13, 4, hexc("e8e8e8"))
-    block("mailbox", 515, mailbox)
-    block("mailbox_front", 516, lambda img: (img.noise(hexc("2a4a9a"), 0.05), img.rect(3, 6, 12, 8, hexc("101010")),
-                                             img.rect(12, 2, 13, 6, hexc("d02a22"))))
-
-    def dumpster(img):
-        img.noise(hexc("2e5a46"), 0.08)
-        img.speckle(hexc("7a4a2a"), 20)
-        img.line(0, 3, 15, 3, hexc("1e3e30"))
-    block("dumpster", 517, dumpster)
-
-    def glass(img):
-        img.p = [hexc("a0c4d8", 90)] * 256
-        img.frame(0, 0, 15, 15, hexc("50545a"))
-        img.line(3, 12, 8, 7, hexc("e0f0ff", 140))
-    block("glass", 518, glass)
-
-    def bus_sign(img):
-        img.noise(hexc("1e4a8a"), 0.03)
-        img.rect(2, 4, 13, 11, hexc("f0f0f0"))
-        img.rect(4, 6, 11, 9, hexc("1e4a8a"))
-        img.rect(4, 10, 5, 11, hexc("202020"))
-        img.rect(10, 10, 11, 11, hexc("202020"))
-    block("bus_sign", 519, bus_sign)
-
-    def fence(img):
-        img.noise(hexc("e8e4d8"), 0.04)
-        img.line(0, 15, 15, 15, hexc("b0aca0"))
-    block("fence", 520, fence)
-
-    def hedge(img):
-        img.noise(hexc("2e5e26"), 0.18)
-        img.speckle(hexc("1e3e18"), 40)
-        img.speckle(hexc("4a7a36"), 20)
-    block("hedge", 521, hedge)
-
-    def soil(img):
-        img.noise(hexc("4a3020"), 0.15)
-        img.speckle(hexc("6a4a2a"), 30)
-    block("soil", 522, soil)
-    block("gravel", 523, lambda img: (img.noise(hexc("a49a86"), 0.12), img.speckle(hexc("7a7262"), 40),
-                                      img.speckle(hexc("c8bea8"), 20)))
-    block("slide", 524, lambda img: (img.noise(hexc("e0b020"), 0.04), img.line(0, 0, 15, 0, hexc("c08a10"))))
-
-    def paint(name, col, seed, stripe=None):
-        def draw(img):
-            img.noise(hexc(col), 0.05)
-            img.speckle(shade(hexc(col), 0.6), 10)
-            img.speckle(hexc("6a3a20"), 6)
-            if stripe:
-                img.rect(0, 6, 15, 9, hexc(stripe))
-            img.line(2, 11, 9, 12, shade(hexc(col), 0.5))
-        block("paint_" + name, seed, draw)
-    paint("red", "9a2a22", 525)
-    paint("blue", "2a4a8a", 526)
-    paint("white", "c8c8c0", 527)
-    paint("police", "e0e0dc", 528, "1a3a9a")
-    paint("army", "4e5a32", 529)
-
-    def burnt(img):
-        img.noise(hexc("262220"), 0.2)
-        img.speckle(hexc("6a3a1e"), 30)
-        img.speckle(hexc("4a4642"), 20)
-    block("burnt", 530, burnt)
-
-    def broken_glass(img):
-        img.p = [hexc("3a4a56")] * 256
-        img.noise(hexc("3a4a56"), 0.08)
-        img.line(2, 1, 8, 8, hexc("b0c8d8"))
-        img.line(8, 8, 14, 5, hexc("b0c8d8"))
-        img.line(8, 8, 6, 15, hexc("b0c8d8"))
-        img.rect(9, 10, 13, 13, hexc("101418"))
-    block("broken_glass", 531, broken_glass)
-
-    def bus_side(img):
-        img.noise(hexc("e0a81e"), 0.04)
-        for x in range(0, 16, 4):
-            img.rect(x + 1, 3, x + 3, 7, hexc("2a3a46"))
-        img.line(0, 10, 15, 10, hexc("202020"))
-        img.speckle(hexc("6a3a1e"), 6)
-    block("bus_side", 532, bus_side)
-    block("bus_roof", 533, lambda img: (img.noise(hexc("d8d4c8"), 0.05), img.speckle(hexc("8a8478"), 10)))
-
-    def bus_under(img):
-        img.noise(hexc("2a2a2a"), 0.12)
-        img.rect(0, 6, 15, 9, hexc("3a3a3a"))
-        img.speckle(hexc("6a3a1e"), 16)
-    block("bus_under", 534, bus_under)
-
-    def bus_front(img):
-        img.noise(hexc("e0a81e"), 0.04)
-        img.rect(1, 2, 14, 8, hexc("2a3a46"))
-        img.line(3, 3, 7, 7, hexc("b0c8d8"))
-        img.rect(1, 11, 3, 12, hexc("f0f0c0"))
-        img.rect(12, 11, 14, 12, hexc("f0f0c0"))
-    block("bus_front", 535, bus_front)
-
-    block("heli", 536, lambda img: (img.noise(hexc("4a5432"), 0.07), img.speckle(hexc("2a2a22"), 14),
-                                    img.rect(5, 6, 10, 9, hexc("e8e8e0"))))
-
-    def barrier(img):
-        for y in range(16):
-            for x in range(16):
-                img.set(x, y, hexc("e86a1a") if ((x + y) // 4) % 2 == 0 else hexc("f0f0f0"))
-    block("barrier", 537, barrier)
-
-    def tape(img):
-        img.p = [clear] * 256
-        for x in range(16):
-            img.rect(x, 6, x, 9, hexc("f0d020") if (x // 3) % 2 == 0 else hexc("202020"))
-    block("tape", 538, tape)
-
-    def sandbag(img):
-        img.noise(hexc("a08a5e"), 0.1)
-        img.frame(0, 0, 15, 15, hexc("6e5c3a"))
-        img.line(0, 7, 15, 7, hexc("7e6a46"))
-    block("sandbag", 539, sandbag)
-
-    def army_crate(img):
-        img.noise(hexc("4e5a32"), 0.06)
-        img.frame(0, 0, 15, 15, hexc("2e361e"))
-        img.rect(4, 6, 11, 9, hexc("d8d0a0"))
-        img.rect(6, 7, 9, 8, hexc("4e5a32"))
-    block("army_crate", 540, army_crate)
-
-    def tent(img):
-        img.noise(hexc("4a6a3a"), 0.06)
-        img.line(0, 0, 15, 0, hexc("2e4a24"))
-        img.line(7, 0, 7, 15, hexc("3a5a2e"))
-    block("tent", 541, tent)
-
-    def blood(img):
-        img.p = [clear] * 256
-        cx, cy = img.r.uniform(5, 10), img.r.uniform(5, 10)
-        for y in range(16):
-            for x in range(16):
-                d = math.hypot(x - cx, y - cy) + img.r.uniform(-1.5, 1.5)
-                if d < 4.5:
-                    img.set(x, y, hexc("6a0a0a", 235))
-                elif d < 7 and img.r.random() < 0.35:
-                    img.set(x, y, hexc("7a1010", 220))
-        img.line(int(cx), int(cy), 15, 3, hexc("5a0808", 210))
-    block("blood", 542, blood)
-
-    def litter(img):
-        img.p = [clear] * 256
-        img.rect(2, 3, 6, 6, hexc("e8e4d8"))
-        img.line(3, 4, 5, 4, hexc("8a8a8a"))
-        img.rect(10, 9, 12, 13, hexc("c83a2a"))
-        img.rect(10, 9, 12, 9, hexc("b0b0b0"))
-        img.rect(4, 11, 7, 12, hexc("6a8a4a"))
-        img.set(13, 3, hexc("d8c060"))
-        img.set(8, 7, hexc("a0a0a0"))
-    block("litter", 543, litter)
-
-    def note(img):
-        img.p = [clear] * 256
-        img.rect(3, 2, 12, 13, hexc("f0ead0"))
-        for y in range(4, 12, 2):
-            img.line(4, y, 11, y, hexc("5a5a7a"))
-    block("note", 544, note)
-
-    def firepit(img):
-        img.noise(hexc("3a3430"), 0.15)
-        img.frame(1, 1, 14, 14, hexc("8a8680"))
-        img.speckle(hexc("1a1a1a"), 20)
-        img.rect(6, 6, 9, 9, hexc("4a3a2a"))
-    block("firepit", 545, firepit)
-
-    def roof(name, col):
-        def draw(img):
-            img.noise(hexc(col), 0.1)
-            dark = shade(hexc(col), 0.65)
-            for y in range(0, 16, 4):
-                img.line(0, y, 15, y, dark)
-                off = 0 if (y // 4) % 2 == 0 else 4
-                for x in range(off, 16, 8):
-                    img.line(x, y, x, y + 3, dark)
-        block("roof_" + name, zlib.crc32(name.encode()) & 0xFFFF, draw)
-    roof("grey", "5a5e64")
-    roof("green", "3e5a44")
-
-    def workbench(img):
-        img.noise(hexc("9a7444"), 0.08)
-        img.rect(2, 3, 6, 4, hexc("8a8a8a"))
-        img.rect(9, 9, 13, 10, hexc("c03030"))
-        img.line(3, 11, 7, 7, hexc("5a5a5a"))
-    block("workbench_top", 546, workbench)
-    block("workbench_side", 547, lambda img: (img.noise(hexc("7a5a34"), 0.08), img.frame(0, 0, 15, 15, hexc("4e3820")),
-                                              img.rect(3, 5, 12, 8, hexc("5e4428"))))
-    block("ceramic", 548, lambda img: (img.noise(hexc("e8eae8"), 0.03), img.frame(0, 0, 15, 15, hexc("c8cac8"))))
-
-    def desk(img):
-        img.noise(hexc("6a4a2e"), 0.07)
-        img.rect(2, 3, 13, 6, hexc("4e3420"))
-        img.rect(2, 9, 13, 12, hexc("4e3420"))
-        img.rect(7, 4, 8, 4, hexc("c0a040"))
-        img.rect(7, 10, 8, 10, hexc("c0a040"))
-    block("desk", 549, desk)
-
-    shelf = Canvas(32, 64, seed=550)
-    shelf.rect(0, 0, 31, 63, hexc("4e3420"))
-    shelf.rect(2, 2, 29, 61, hexc("6a4a2e"))
-    for y0 in (3, 18, 33, 48):
-        x = 3
-        while x < 29:
-            w = 2 + shelf.r.randrange(3)
-            h = 10 + shelf.r.randrange(3)
-            col = hexc(shelf.r.choice(("8a2a22", "2a4a7a", "3a6a3a", "c8a040", "5a3a6a", "d8d0c0")))
-            shelf.rect(x, y0 + 12 - h, min(28, x + w - 1), y0 + 11, col)
-            shelf.line(x, y0 + 12 - h, x, y0 + 11, shade(col, 1.2))
-            x += w
-        shelf.rect(2, y0 + 12, 29, y0 + 14, hexc("4e3420"))
-    shelf.save(os.path.join(BLOCKS, "decor_bookshelf.png"))
-
-    def toys(img):
-        img.noise(hexc("d06a8a"), 0.05)
-        img.frame(0, 0, 15, 15, hexc("8a3a5a"))
-        img.rect(3, 4, 6, 7, hexc("f0d040"))
-        img.rect(9, 8, 12, 11, hexc("40a0e0"))
-    block("toybox", 551, toys)
-
-    def concrete(img):
-        img.noise(hexc("8e8c88"), 0.07)
-        img.speckle(hexc("74726e"), 18)
-    block("concrete", 552, concrete)
+    for name, (fn, w, h) in TEX.items():
+        c = Canvas(w, h, seed=zlib.crc32(name.encode()))
+        fn(c)
+        c.save(os.path.join(BLOCKS, name + ".png"))
 
 
 def detail_models():
@@ -506,7 +875,7 @@ def detail_models():
     ])
     _vcm("zomboid_decor_desk", [
         B((0, 0.74, 0.1), (1, 0.82, 0.9), "blocks:decor_desk"),
-        B((0.58, 0, 0.12), (0.98, 0.74, 0.88), "blocks:wood_side", {"north": "blocks:decor_desk"}),
+        B((0.58, 0, 0.12), (0.98, 0.74, 0.88), "blocks:wood_side", {"north": "blocks:decor_desk_front"}),
         B((0.04, 0, 0.14), (0.12, 0.74, 0.22), "blocks:wood_side"),
         B((0.04, 0, 0.78), (0.12, 0.74, 0.86), "blocks:wood_side"),
         B((0.2, 0.82, 0.55), (0.45, 0.85, 0.8), "blocks:decor_note"),

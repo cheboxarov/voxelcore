@@ -1,6 +1,13 @@
 {
     "caption": "Кровля (скат)",
-    "texture": "roof",
+    "texture-faces": [
+        "roof_side",
+        "roof_side",
+        "roof",
+        "roof",
+        "roof_side",
+        "roof_side"
+    ],
     "model": "aabb",
     "hitbox": [
         0,
