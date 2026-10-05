@@ -105,6 +105,8 @@ end
 for _, paint in ipairs({"red", "blue", "white", "police", "army", "burnt"}) do
     check(file.exists("zomboid:models/zomboid_car_wreck_" .. paint .. ".vcm"), "wreck " .. paint)
 end
+local pump_box = block.get_hitbox(block.index("zomboid:fuel_pump"), 0)
+check(pump_box[2][2] == 2, "fuel pump hitbox keeps both segments " .. pump_box[2][2])
 local gen = block.index("zomboid:generator")
 check(block.get_model(gen, 1) == "custom", "generator 'on' variant keeps the model")
 log("models ok")
