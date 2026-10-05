@@ -108,6 +108,21 @@ local function flat_line(hmap, lx, lz, dx, dz, n, h)
     return true
 end
 
+-- dry land under a 3×3 footprint inside the chunk
+local function dry(hmap, lx, lz)
+    if lx > 13 or lz > 13 then
+        return false
+    end
+    for i = 0, 2 do
+        for j = 0, 2 do
+            if hmap:at(lx + i, lz + j) * 256 < SEA then
+                return false
+            end
+        end
+    end
+    return true
+end
+
 -- vegetation and rocks for one wild column; h is the surface height
 function flora.column(out, wx, wz, lx, lz, h, biome, hmap, seed)
     if h < SEA then
@@ -137,7 +152,7 @@ function flora.column(out, wx, wz, lx, lz, h, biome, hmap, seed)
             acc = acc + p
             if r < acc then
                 local r2 = hash(wz, wx, seed + 46)
-                if not clear(wx, wz, 1) then
+                if not clear(wx, wz, 1) or name ~= "log" and not dry(hmap, lx, lz) then
                     return
                 end
                 if name == "bush" then

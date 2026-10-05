@@ -43,7 +43,7 @@ local function check_mirror(x0, z0, r)
                 assert(top ~= "core:air" and top ~= "base:water" and not LAYER[above],
                     string.format("height mirror at %d,%d: h=%d top=%s above=%s", x, z, h, top, above))
                 if h < SEA then
-                    assert(name_at(x, SEA, z) == "base:water", "water expected at " .. x .. "," .. z)
+                    assert(name_at(x, SEA, z) == "base:water", "water expected at " .. x .. "," .. z .. ": " .. name_at(x, SEA, z) .. " h=" .. h)
                     assert(nature.water_at(x, z))
                 elseif LAYER[top] then
                     local expected = TOP[nature.biome(x, z)] or "base:grass_block"
