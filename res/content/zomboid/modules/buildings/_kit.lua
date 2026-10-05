@@ -64,6 +64,22 @@ local ROOMS = {["."] = true, [":"] = true, L = true, [";"] = true}
 local FACING = {{0, -1, 2}, {1, 0, 1}, {0, 1, 0}, {-1, 0, 3}}
 local MIRROR = {[0] = 0, 3, 2, 1}
 
+local function bfs(w, start, linked)
+    local nxt, queue, i = {[start[2] * w + start[1]] = false}, {start}, 1
+    while queue[i] do
+        local x, z = queue[i][1], queue[i][2]
+        i = i + 1
+        for _, dir in ipairs(FACING) do
+            local nx, nz = x + dir[1], z + dir[2]
+            if nxt[nz * w + nx] == nil and linked(x, z, nx, nz) then
+                nxt[nz * w + nx] = z * w + x
+                table.insert(queue, {nx, nz})
+            end
+        end
+    end
+    return nxt
+end
+
 local function compile(def)
     local floors = def.floors
     local w, d = #floors[1][1], #floors[1]
@@ -235,33 +251,22 @@ local function compile(def)
         for _, up in ipairs({true, false}) do
             local start, entry, level = s and s[up and 8 or 1], up and 1 or 8, up and k or k + 1
             if start and s[entry] then
-                local nxt, queue, i = {[start[2] * w + start[1]] = false}, {start}, 1
-                while queue[i] do
-                    local x, z = queue[i][1], queue[i][2]
-                    i = i + 1
-                    local a = step(k, x, z)
-                    for _, dir in ipairs(FACING) do
-                        local nx, nz = x + dir[1], z + dir[2]
-                        local b = step(k, nx, nz)
-                        local ok
-                        if a and b then
-                            ok = link[z * w + x] == nz * w + nx or link[nz * w + nx] == z * w + x
-                        elseif (a or b) == entry then
-                            ok = b ~= nil or WALKABLE[at(level, nx, nz)]
-                        else
-                            ok = not a and not b and WALKABLE[at(level, nx, nz)]
-                        end
-                        if ok and nxt[nz * w + nx] == nil then
-                            nxt[nz * w + nx] = z * w + x
-                            table.insert(queue, {nx, nz})
-                        end
+                flows[k * 2 + (up and 1 or 0)] = bfs(w, start, function(x, z, nx, nz)
+                    local a, b = step(k, x, z), step(k, nx, nz)
+                    if a and b then
+                        return link[z * w + x] == nz * w + nx or link[nz * w + nx] == z * w + x
+                    elseif (a or b) == entry then
+                        return b ~= nil or WALKABLE[at(level, nx, nz)]
                     end
-                end
-                flows[k * 2 + (up and 1 or 0)] = nxt
+                    return not a and not b and WALKABLE[at(level, nx, nz)]
+                end)
             end
         end
     end
     def.w, def.d, def.grid, def.spots, def.yard, def.flows, def.car = w, d, cells, spots, yard, flows, car
+    function def.route_to(f, x, z)
+        return bfs(w, {x, z}, function(_, _, nx, nz) return WALKABLE[at(f, nx, nz)] end)
+    end
     def.door = def.door or door
     def.own_car = car ~= nil
     def.ground = {}
@@ -311,13 +316,39 @@ function kit.building(def)
         return def.ground[hz * w + (p.flip and w - 1 - hx or hx)]
     end
 
-    function def.stair_path(p, k, up, hx, hz)
-        local field = def.flows[k * 2 + (up and 1 or 0)]
+    local function follow(p, field, hx, hz)
         local nxt = field and field[hz * w + (p.flip and w - 1 - hx or hx)]
         if nxt then
             local x = nxt % w
             return p.flip and w - 1 - x or x, math.floor(nxt / w)
         end
+    end
+
+    function def.stair_path(p, k, up, hx, hz)
+        return follow(p, def.flows[k * 2 + (up and 1 or 0)], hx, hz)
+    end
+
+    local route_key, route
+    function def.path_to(p, f, hx, hz, tx, tz)
+        local key = (f * 256 + tz) * 256 + (p.flip and w - 1 - tx or tx)
+        if key ~= route_key then
+            route_key, route = key, def.route_to(f, p.flip and w - 1 - tx or tx, tz)
+        end
+        local x = p.flip and w - 1 - hx or hx
+        if route[hz * w + x] == nil then
+            for r = 1, 2 do
+                for dz = -r, r do
+                    for dx = -r, r do
+                        local nx, nz = x + dx, hz + dz
+                        if math.abs(dx) + math.abs(dz) == r and nx >= 0 and nx < w and route[nz * w + nx] ~= nil then
+                            return p.flip and w - 1 - nx or nx, nz
+                        end
+                    end
+                end
+            end
+            return nil
+        end
+        return follow(p, route, hx, hz)
     end
 
     function def.spot(p, rand, outdoor)

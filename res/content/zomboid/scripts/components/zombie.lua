@@ -96,6 +96,7 @@ local move_dir = nil
 local move_mul = 1.0
 local use_path = false
 local rail = nil
+local planned = false
 
 function get_pos()
     return tsf:get_pos()
@@ -311,7 +312,7 @@ local function check_stuck(pos)
             end
         end
     end
-    if stuck >= 2 and body:is_grounded() then
+    if stuck >= 2 and body:is_grounded() and not rail then
         local x, y, z = front_cell(pos, move_dir, 0)
         if ledge(x, y, z) then
             mob.jump()
@@ -453,12 +454,12 @@ function is_downed()
     return now < downed_until
 end
 
-local function stairs_toward(pos, goal)
+local function plan_step(pos, goal, level)
     local x, z = math.floor(pos[1]), math.floor(pos[3])
     local _, p = town.building_at(x, z)
+    local _, gp = town.building_at(math.floor(goal[1]), math.floor(goal[3]))
     if p == nil then
-        local _, gp = town.building_at(math.floor(goal[1]), math.floor(goal[3]))
-        if gp == nil or gp.def.stair_path == nil then
+        if level or gp == nil or gp.def.stair_path == nil then
             return nil
         end
         local dx, dz = town.to_world(gp, gp.door, 0)
@@ -467,10 +468,22 @@ local function stairs_toward(pos, goal)
     if p.def.stair_path == nil then
         return nil
     end
-    local up = goal[2] > pos[2]
-    local level = (pos[2] - kind.half - town.GROUND - 1) / 4
+    local floor = (pos[2] - kind.half - town.GROUND - 1) / 4
+    planned = true
     local hx, hz = town.to_local(p, x, z)
-    local nx, nz = p.def.stair_path(p, up and math.floor(level + 0.05) or math.ceil(level - 0.05) - 1, up, hx, hz)
+    local nx, nz
+    if level then
+        local f, tx, tz = math.floor(floor + 0.5), p.door, 0
+        if gp == p then
+            tx, tz = town.to_local(p, math.floor(goal[1]), math.floor(goal[3]))
+        elseif f ~= 0 then
+            return nil
+        end
+        nx, nz = p.def.path_to(p, f, hx, hz, tx, tz)
+    else
+        local up = goal[2] > pos[2]
+        nx, nz = p.def.stair_path(p, up and math.floor(floor + 0.05) or math.ceil(floor - 0.05) - 1, up, hx, hz)
+    end
     if nx then
         local wx, wz = town.to_world(p, nx, nz)
         rail = wx == x and {1, x + 0.5} or {3, z + 0.5}
@@ -519,6 +532,7 @@ function on_update(tps)
     move_dir = nil
     use_path = false
     rail = nil
+    planned = false
     if now < stun_until or goal == nil or bash_target ~= nil then
         pf.set_target(nil)
         return
@@ -532,21 +546,18 @@ function on_update(tps)
     local height = (pos[2] - kind.half - town.GROUND - 1) % 4
     local level = math.abs(goal[2] - pos[2]) < ((height < 0.3 or height > 3.7) and 1.2 or 0.4)
     local target, walk
-    if not level then
-        target, walk = stairs_toward(pos, goal)
+    if not level or dist >= 1.2 and (mode == "investigate" or mode == "chase") then
+        target, walk = plan_step(pos, goal, level)
     end
     if dist < 1.0 and target == nil then
         return
     end
     move_mul = speed_multiplier()
-    if walk then
-        move_mul = math.min(move_mul, 0.6)
-        if stuck < 3 then
-            goal_until = math.max(goal_until, now + 2)
-        end
+    if walk and stuck < 3 then
+        goal_until = math.max(goal_until, now + 2)
     end
     local route = pf.get_route()
-    local direct = walk or target == nil and (dist < 7 or (mode == "chase" and now - last_seen < 0.5) or (route ~= nil and #route == 0))
+    local direct = walk or planned or target == nil and (dist < 7 or (mode == "chase" and now - last_seen < 0.5) or (route ~= nil and #route == 0))
     target = target or goal
     if direct then
         pf.set_target(nil)
@@ -570,18 +581,17 @@ function on_physics_update(delta)
     else
         mob.set_dir({move_dir[1], 0, move_dir[3]})
         mob.go({move_dir[1], move_dir[3]}, move_mul, false, false)
-        if body:is_grounded() and body:get_vel()[2] <= 0 then
+        if rail then
+            local vel = body:get_vel()
+            vel[rail[1]] = (rail[2] - tsf:get_pos()[rail[1]]) * 8
+            body:set_vel(vel)
+        elseif body:is_grounded() and body:get_vel()[2] <= 0 then
             local x, y, z = front_cell(tsf:get_pos(), move_dir, 0, 0.6)
             if ledge(x, y, z) then
                 mob.jump()
                 local vel = body:get_vel()
                 body:set_vel({move_dir[1] * 3, vel[2], move_dir[3] * 3})
             end
-        end
-        if rail then
-            local vel = body:get_vel()
-            vel[rail[1]] = (rail[2] - tsf:get_pos()[rail[1]]) * 8
-            body:set_vel(vel)
         end
     end
 end

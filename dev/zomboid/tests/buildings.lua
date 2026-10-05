@@ -317,7 +317,7 @@ for _, kind in ipairs({"apartments", "school", "hospital", "fire_station", "ware
     end
 end
 
--- a zombie under or above the player takes the stairs to the player's floor
+-- a zombie under, above or inside walks the plan and the stairs to the player, also out of the front door
 survival.get(pid).setup = nil
 for _, kind in ipairs({"apartments", "hospital"}) do
     local p = placed[kind]
@@ -339,11 +339,14 @@ for _, kind in ipairs({"apartments", "hospital"}) do
     end
     check(best, kind .. " has a room above a room")
     local x, z = best[1], best[2]
-    for _, up in ipairs({true, false}) do
+    local ox, oz = town.to_world(p, p.door, -5)
+    for _, case in ipairs({"up", "down", "out"}) do
+        local up = case == "up"
         player.set_pos(pid, x + 0.5, G + (up and 5.9 or 1.9), z + 0.5)
+        if case == "out" then player.set_pos(pid, ox + 0.5, G + 1.9, oz + 0.5) end
         player.set_vel(pid, 0, 0, 0)
         survival.get(pid).health = 100
-        local uid = zombies.spawn(x, G + (up and 1 or 5), z, {kind = "normal"}):get_uid()
+        local uid = zombies.spawn(x, G + (case == "down" and 5 or 1), z, {kind = "normal"}):get_uid()
         app.tick()
         local comp = zombies.registry[uid]
         comp.hear({player.get_pos(pid)}, pid)
@@ -353,16 +356,15 @@ for _, kind in ipairs({"apartments", "hospital"}) do
             check(comp.goal and math.abs(comp.goal[1] - x - 10.5) < 1, kind .. " zombie on a trail still turns to a decoy")
             comp.hear({player.get_pos(pid)}, pid)
         end
-        local ticks = 0
+        local ticks, near = 0, false
         repeat
             app.tick()
             ticks = ticks + 1
-            local y = comp.get_pos()[2]
-        until ticks >= 2400 or (up and y > G + 5.5 or not up and y < G + 2.5)
-        log(kind, up and "upstairs" or "downstairs", "from", best_d, "blocks off the stairs, ticks", ticks,
-            "zombie y", comp.get_pos()[2])
-        check(ticks < 2400,
-            kind .. " zombie follows the player " .. (up and "upstairs" or "downstairs"))
+            local zp, pp = comp.get_pos(), {player.get_pos(pid)}
+            near = math.abs(zp[2] - pp[2]) < 0.5 and math.abs(zp[1] - pp[1]) + math.abs(zp[3] - pp[3]) < 2
+        until ticks >= 3000 or near
+        log(kind, "zombie follows the player", case, "from", best_d, "blocks off the stairs, ticks", ticks)
+        check(near, kind .. " zombie follows the player " .. case)
         entities.get(uid):despawn()
         app.tick()
     end
