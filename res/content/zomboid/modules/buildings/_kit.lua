@@ -50,7 +50,7 @@ local LEGEND = {
     g = {"zomboid:bld_gravestone", g = "base:grass_block", out = true, face = true},
     x = {SANDBAG, SANDBAG, g = "base:dirt", out = true},
     y = {SANDBAG, g = "base:dirt", out = true},
-    ["|"] = {"zomboid:bld_fence", "zomboid:bld_fence", g = "base:grass_block", out = true},
+    ["|"] = {"zomboid:bld_fence", "zomboid:bld_fence", g = "base:dirt", out = true},
     P = {"base:wood", "base:wood", "base:wood", "base:wood", "base:wood", SANDBAG, g = "base:dirt", out = true},
     R = {false, false, false, false, "base:planks", SANDBAG, g = "base:dirt", out = true},
     O = {false, false, false, false, "base:planks", g = "base:dirt", out = true},

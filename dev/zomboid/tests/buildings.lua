@@ -102,14 +102,14 @@ for _, kind in ipairs(KINDS) do
             local hx, hz = i % p.w, math.floor(i / p.w)
             local x, z = town.to_world(p, hx, hz)
             for _, e in ipairs(out) do
-                if e[2] ~= "core:struct_air" and not block.is_segment(x, G + e[1], z) then
+                if e[2] ~= "core:struct_air" and e[2] ~= "zomboid:car_spawner" and not block.is_segment(x, G + e[1], z) then
                     total = total + 1
                     if block.name(block.get(x, G + e[1], z)) ~= e[2] then wrong = wrong + 1 end
                 end
             end
         end
         log("generated", kind, "rot", p.rot, "blocks", total, "mismatched", wrong)
-        check(wrong <= total * 0.01, kind .. " generated as planned")
+        check(wrong == 0, kind .. " generated as planned")
         if p.def.car_color then
             local sx, sz = town.car_spot(p)
             local color
