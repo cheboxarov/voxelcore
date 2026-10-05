@@ -4,7 +4,7 @@ local aftermath = require "zomboid:decor/aftermath"
 
 local hash = town.hash
 
-local streets = {zones = util.ZONES}
+local streets = {zones = util.ZONES, kinds = {sidewalk = true, plaza = true}}
 
 local SLOTS = {[0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [7] = true, [10] = true}
 local SPACING = 14
@@ -23,7 +23,7 @@ end
 local function road_dir(wx, wz, reach)
     local found
     for _, d in ipairs(util.DIRS) do
-        if town.column(wx + d[1] * reach, wz + d[2] * reach) == "road" then
+        if util.kind(wx + d[1] * reach, wz + d[2] * reach) == "road" then
             if found then
                 return nil, true
             end
@@ -39,7 +39,7 @@ local function near_entrance(wx, wz, dx, dz, curb)
     for s = -1, 1 do
         local tx, tz = dz * s, dx * s
         for _, k in ipairs({curb and -2 or -1, across + width + (curb and 2 or 1)}) do
-            if town.column(wx + dx * k + tx, wz + dz * k + tz) == "path" then
+            if util.kind(wx + dx * k + tx, wz + dz * k + tz) == "path" then
                 return true
             end
         end
@@ -47,6 +47,11 @@ local function near_entrance(wx, wz, dx, dz, curb)
     local cx, cz = town.cell_at(wx - dx * 3, wz - dz * 3)
     local sx, sz = town.car_spot(cx and town.plan(cx, cz))
     return sx ~= nil and math.abs(wx - sx) <= 3 and math.abs(wz - sz) <= 3
+end
+
+local function maybe(t, wx, wz)
+    return (t >= 0 and t <= 4) or (t == 7 and hash(wx, wz, 62) < 0.4)
+        or (t == 10 and (hash(wx, wz, 64) < 0.6 or hash(wx, wz, 66) < 0.5))
 end
 
 local function place(out, entries)
@@ -64,7 +69,7 @@ local function bus_stop(wx, wz, dx, dz, t, out)
     local ox, oz = util.origin(sx, sz, rot, 3, 1)
     for i = 0, 2 do
         local x, z = sx + tx * i, sz + tz * i
-        if town.column(x, z) ~= "sidewalk" or aftermath.occupied(x, z) or town.column(x - dx, z - dz) == "path" then
+        if util.kind(x, z) ~= "sidewalk" or aftermath.occupied(x, z) or util.kind(x - dx, z - dz) == "path" then
             return false
         end
     end
@@ -78,12 +83,8 @@ local function bus_stop(wx, wz, dx, dz, t, out)
 end
 
 local function corner(ctx, wx, wz, out)
-    local _, two = road_dir(wx, wz, 1)
-    if not two then
-        return false
-    end
-    local wdx = town.column(wx - 1, wz) == "road" and -1 or 1
-    local wdz = town.column(wx, wz - 1) == "road" and -1 or 1
+    local wdx = util.kind(wx - 1, wz) == "road" and -1 or 1
+    local wdz = util.kind(wx, wz - 1) == "road" and -1 or 1
     if CITY[ctx.zone] then
         return place(out, {{1, "zomboid:decor_pole", 0}, {2, "zomboid:decor_pole", 0},
             {3, "zomboid:decor_traffic_light", util.face(wdx, 0)}})
@@ -113,14 +114,18 @@ function streets.column(ctx, wx, wz, out)
     if not SLOTS[mx] and not SLOTS[mz] and r >= 0.04 then
         return false
     end
-    local d = road_dir(wx, wz, 1)
+    local turn = hash(wx, wz, 61) < 0.5
+    if r >= 0.03 and not turn and not maybe(mx, wx, wz) and not maybe(mz, wx, wz) then
+        return false
+    end
+    local d, two = road_dir(wx, wz, 1)
     local curb = d ~= nil
     if d == nil then
-        if hash(wx, wz, 61) < 0.5 and corner(ctx, wx, wz, out) then
+        if turn and two and corner(ctx, wx, wz, out) then
             return true
         end
         d = road_dir(wx, wz, 2)
-        if d == nil or town.column(wx + d[1], wz + d[2]) ~= "sidewalk" then
+        if d == nil or util.kind(wx + d[1], wz + d[2]) ~= "sidewalk" then
             return false
         end
     end

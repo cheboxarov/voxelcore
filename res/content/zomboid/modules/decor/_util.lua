@@ -21,9 +21,24 @@ function util.cell(cx, cz)
     return cellmap[util.key(cx, cz)]
 end
 
+local kinds, cached = {}, 0
+
+function util.kind(x, z)
+    local k = util.key(x, z)
+    local v = kinds[k]
+    if v == nil then
+        if cached > 200000 then
+            kinds, cached = {}, 0
+        end
+        v = town.column(x, z) or false
+        kinds[k], cached = v, cached + 1
+    end
+    return v or nil
+end
+
 function util.run(x, z, dx, dz, kind, limit)
     local n = 0
-    while n < limit and town.column(x + dx * n, z + dz * n) == kind do n = n + 1 end
+    while n < limit and util.kind(x + dx * n, z + dz * n) == kind do n = n + 1 end
     return n
 end
 

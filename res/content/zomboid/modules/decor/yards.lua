@@ -3,7 +3,7 @@ local util = require "zomboid:decor/_util"
 
 local hash = town.hash
 
-local yards = {zones = util.ZONES}
+local yards = {zones = util.ZONES, kinds = {lawn = true}}
 
 local lots = {}
 
@@ -17,7 +17,7 @@ local function builder(p)
     local b = {blocks = {}, clear = {}}
     function b.lawn(hx, hz)
         local x, z = town.to_world(p, hx, hz)
-        if town.column(x, z) ~= "lawn" or b.blocks[util.key(x, z)] then
+        if util.kind(x, z) ~= "lawn" or b.blocks[util.key(x, z)] then
             return nil
         end
         if p.car and math.abs(hx - p.car[1]) <= 2 and math.abs(hz - p.car[2]) <= 2 then
@@ -146,9 +146,11 @@ function yards.column(ctx, wx, wz, out)
     if util.emit(lot(ctx.plan).blocks, wx, wz, out) then
         return true
     end
+    if ctx.plan.classic or hash(wx, wz, 99) >= 0.006 then
+        return false
+    end
     local hx, hz = town.to_local(ctx.plan, wx, wz)
-    local near = hx >= -1 and hx <= ctx.plan.w and hz >= -1 and hz <= ctx.plan.d
-    if not near and not ctx.plan.classic and hash(wx, wz, 99) < 0.006 then
+    if hx < -1 or hx > ctx.plan.w or hz < -1 or hz > ctx.plan.d then
         table.insert(out, util.decal("litter", hash(wz, wx, 100))[1])
         return true
     end

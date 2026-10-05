@@ -3,7 +3,7 @@ local util = require "zomboid:decor/_util"
 
 local hash = town.hash
 
-local parks = {zones = util.ZONES}
+local parks = {zones = util.ZONES, kinds = {park = true}}
 
 local GREEN = {park = true, suburb = true, downtown = true}
 
@@ -14,10 +14,10 @@ local places = {}
 local function area(c)
     local mx, mz = math.floor((c.x0 + c.x1) / 2), math.floor((c.z0 + c.z1) / 2)
     local x0, x1, z0, z1 = c.x0, c.x1, c.z0, c.z1
-    while x0 < mx and town.column(x0, mz) ~= "park" do x0 = x0 + 1 end
-    while x1 > mx and town.column(x1, mz) ~= "park" do x1 = x1 - 1 end
-    while z0 < mz and town.column(mx, z0) ~= "park" do z0 = z0 + 1 end
-    while z1 > mz and town.column(mx, z1) ~= "park" do z1 = z1 - 1 end
+    while x0 < mx and util.kind(x0, mz) ~= "park" do x0 = x0 + 1 end
+    while x1 > mx and util.kind(x1, mz) ~= "park" do x1 = x1 - 1 end
+    while z0 < mz and util.kind(mx, z0) ~= "park" do z0 = z0 + 1 end
+    while z1 > mz and util.kind(mx, z1) ~= "park" do z1 = z1 - 1 end
     return x0, z0, x1, z1
 end
 

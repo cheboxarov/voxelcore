@@ -1,6 +1,7 @@
 local town = require "zomboid:town"
 local nature = require "zomboid:nature"
 local countryside = require "zomboid:countryside"
+local aftermath = require "zomboid:decor/aftermath"
 
 local flora = {}
 
@@ -100,7 +101,7 @@ local AROUND = {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}
 local DIAGONAL = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}
 
 local function free(x, z)
-    return town.column(x, z) == nil and not countryside.near_road(x, z) and not town.keep_clear(x, z, 0)
+    return town.column(x, z) == nil and not countryside.near_road(x, z) and not aftermath.keep_clear(x, z)
 end
 
 local function clear(wx, wz, radius)

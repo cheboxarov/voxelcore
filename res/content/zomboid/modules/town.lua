@@ -38,6 +38,7 @@ end
 
 local PARK_WEIGHT = {downtown = 2, suburb = 8, outskirts = 22, industrial = 6, highway = 2, village = 0}
 
+local DECOR_KINDS = {"road", "sidewalk", "lawn", "park", "plaza", "wild"}
 local registry
 
 local function reg()
@@ -58,8 +59,14 @@ local function reg()
             table.insert(registry.clear, d.keep_clear)
         end
         for _, zone in ipairs(d.zones or {}) do
-            registry.decor[zone] = registry.decor[zone] or {}
-            table.insert(registry.decor[zone], d)
+            local by_kind = registry.decor[zone] or {}
+            registry.decor[zone] = by_kind
+            for _, kind in ipairs(DECOR_KINDS) do
+                if d.kinds == nil or d.kinds[kind] then
+                    by_kind[kind] = by_kind[kind] or {}
+                    table.insert(by_kind[kind], d)
+                end
+            end
         end
     end
     return registry
@@ -565,7 +572,8 @@ end
 local ctx = {}
 
 local function decorate(kind, zone, c, lx, lz, p, wx, wz, out)
-    local list = reg().decor[zone]
+    local by_kind = reg().decor[zone]
+    local list = by_kind and by_kind[kind]
     if list == nil then
         return
     end

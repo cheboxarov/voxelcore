@@ -14,7 +14,7 @@ local blocks, occupied, places, clear
 
 local function free(cells, kinds)
     for _, c in ipairs(cells) do
-        if occupied[util.key(c[1], c[2])] or not kinds[town.column(c[1], c[2]) or "wild"] then
+        if occupied[util.key(c[1], c[2])] or not kinds[util.kind(c[1], c[2]) or "wild"] then
             return false
         end
     end
@@ -58,8 +58,8 @@ local function side(c, i)
     end
     local mx, mz = s.point(math.floor((s.a + s.b) / 2), 1)
     s.width = util.run(mx, mz, d[1], d[2], "road", 12)
-    s.walk = town.column(s.point(math.floor((s.a + s.b) / 2), 0)) == "sidewalk"
-    s.far_walk = town.column(s.point(math.floor((s.a + s.b) / 2), s.width + 1)) == "sidewalk"
+    s.walk = util.kind(s.point(math.floor((s.a + s.b) / 2), 0)) == "sidewalk"
+    s.far_walk = util.kind(s.point(math.floor((s.a + s.b) / 2), s.width + 1)) == "sidewalk"
     return s
 end
 
@@ -99,7 +99,7 @@ local function police(s)
     end
     for _, k in ipairs({-1, 0, 6, 7}) do
         local x, z = s.point(t, k)
-        if town.column(x, z) == "sidewalk" and not occupied[util.key(x, z)] then
+        if util.kind(x, z) == "sidewalk" and not occupied[util.key(x, z)] then
             single(x, z, {{1, "zomboid:decor_tape", rot}})
         end
     end
@@ -114,14 +114,14 @@ local function camp_spot()
     for x = CORDON_X, CORDON_X - 120, -6 do
         local z0, z1
         for z = -45, 45 do
-            if town.column(x, z) == "road" then
+            if util.kind(x, z) == "road" then
                 z0, z1 = z0 or z, z
             end
         end
         local wild = z0 ~= nil
         for dx = -13, 3 do
             for dz = -16, -1 do
-                wild = wild and town.column(x + dx, z0 + dz) == nil
+                wild = wild and util.kind(x + dx, z0 + dz) == nil
             end
         end
         if wild then
@@ -229,9 +229,11 @@ function aftermath.place_at(wx, wz)
 end
 
 function aftermath.column(ctx, wx, wz, out)
-    init()
-    if util.emit(blocks, wx, wz, out) then
-        return true
+    if blocks == nil then
+        init()
+    end
+    if blocks[util.key(wx, wz)] then
+        return util.emit(blocks, wx, wz, out)
     end
     if ctx.kind ~= "road" then
         return false
@@ -240,9 +242,8 @@ function aftermath.column(ctx, wx, wz, out)
     if r >= 0.025 then
         return false
     end
-    local wide_x = util.run(wx, wz, 1, 0, "road", 6) + util.run(wx, wz, -1, 0, "road", 6)
-    local wide_z = util.run(wx, wz, 0, 1, "road", 6) + util.run(wx, wz, 0, -1, "road", 6)
-    if math.min(wide_x, wide_z) > 6 then
+    if util.run(wx, wz, 1, 0, "road", 6) + util.run(wx, wz, -1, 0, "road", 6) > 6
+        and util.run(wx, wz, 0, 1, "road", 6) + util.run(wx, wz, 0, -1, "road", 6) > 6 then
         return false
     end
     table.insert(out, util.decal(r < 0.018 and "litter" or "blood", hash(wz, wx, 50))[1])
