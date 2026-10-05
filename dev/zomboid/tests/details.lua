@@ -314,6 +314,85 @@ local _, by = player.get_pos(pid)
 by = by - feet
 log(string.format("walked down to y=%.2f (basement floor at %d)", by, G - 3))
 check(down, "stairs lead down to the basement")
+-- wrecks block in every rotation: no walking into them, the lane beside them stays open
+local function blocks_walk(name, spot)
+    local id = block.index(name)
+    local sx, _, sz = block.get_size(id)
+    local cells, inside = util.footprint(spot[1], spot[3], spot[4], sx, sz), {}
+    for _, c in ipairs(cells) do inside[util.key(c[1], c[2])] = true end
+    local function open(x, z)
+        return not inside[util.key(x, z)] and not solid[util.key(x, z)] and town.column(x, z) == "road"
+    end
+    for _, d in ipairs(util.DIRS) do
+        local lane = {}
+        for _, c in ipairs(cells) do
+            if not inside[util.key(c[1] + d[1], c[2] + d[2])] then table.insert(lane, {c[1] + d[1], c[2] + d[2]}) end
+        end
+        local px, pz = d[2] ~= 0 and 1 or 0, d[1] ~= 0 and 1 or 0
+        table.sort(lane, function(a, b) return a[1] * px + a[2] * pz < b[1] * px + b[2] * pz end)
+        local a, b = lane[1], lane[#lane]
+        local ok = open(a[1] - px, a[2] - pz) and open(b[1] + px, b[2] + pz)
+        for _, c in ipairs(lane) do ok = ok and open(c[1], c[2]) end
+        if ok then
+            goto_area(spot[1], spot[3])
+            player.set_pos(pid, a[1] - px + 0.5, G + 1.05, a[2] - pz + 0.5)
+            player.set_vel(pid, 0, 0, 0)
+            app.sleep(0.2)
+            local passed = walk({0, 0}, {px, pz}, 200, function()
+                local x, _, z = player.get_pos(pid)
+                return math.floor(x) == b[1] + px and math.floor(z) == b[2] + pz
+            end)
+            check(passed, name .. " rot " .. spot[4] .. ": the lane beside it is open")
+            local m = lane[math.ceil(#lane / 2)]
+            player.set_pos(pid, m[1] + 0.5, G + 1.05, m[2] + 0.5)
+            player.set_vel(pid, 0, 0, 0)
+            app.sleep(0.2)
+            walk({0, 0}, {-d[1], -d[2]}, 60, function() return false end)
+            local x, _, z = player.get_pos(pid)
+            check(not inside[util.key(math.floor(x), math.floor(z))], name .. " rot " .. spot[4] .. ": walked into it")
+            return true
+        end
+    end
+    return false
+end
+local rots = {}
+for name, list in pairs(found) do
+    if name:find("wreck_") or name:find("bus_wreck") then
+        for _, s in ipairs(list) do
+            if s[2] == G + 1 and not rots[s[4]] and blocks_walk(name, s) then rots[s[4]] = name end
+        end
+    end
+end
+for r = 0, 3 do check(rots[r], "a wreck tested in rotation " .. r) end
+local heli = found["zomboid:decor_heli_wreck"][1]
+goto_area(heli[1], heli[3])
+local colliders, collider = 0, block.index("zomboid:decor_collider")
+for dx = 0, 6 do
+    for dz = -6, 6 do
+        if block.get(heli[1] + dx, G + 2, heli[3] + dz) == collider then colliders = colliders + 1 end
+    end
+end
+check(colliders == 20, "heli colliders only under its 4x5 body: " .. colliders)
+-- a broken wreck leaves no invisible wall behind
+local w = found["zomboid:decor_wreck_burnt"][1]
+goto_area(w[1], w[3])
+local wid = block.index("zomboid:decor_wreck_burnt")
+local wcells = util.footprint(w[1], w[3], w[4], 2, 3)
+local far = wcells[#wcells]
+check(block.get(far[1], G + 2, far[2]) == collider, "collider over the wreck")
+local _, hand = player.get_inventory(pid)
+inventory.set(player.get_inventory(pid), hand, item.index("zomboid:crowbar"), 1)
+for _ = 1, 2000 do
+    if block.get(far[1], G + 1, far[2]) ~= wid then break end
+    events.emit("zomboid:.blockbreaking", wid, far[1], G + 1, far[2], pid)
+end
+inventory.set(player.get_inventory(pid), hand, 0, 0)
+check(block.get(w[1], G + 1, w[3]) == 0, "wreck broken: " .. name_at(w[1], G + 1, w[3]))
+for _, c in ipairs(wcells) do
+    check(block.get(c[1], G + 2, c[2]) ~= collider, "collider left at " .. c[1] .. "," .. c[2])
+end
+log("wrecks block in all rotations, a broken one leaves no wall, heli colliders: " .. colliders)
+
 local wx, wz = town.to_world(garage, garage.hw + 3, garage.d - 2)
 goto_area(wx, wz)
 check(name_at(wx, G + 1, wz) == "zomboid:decor_workbench", "garage workbench")

@@ -73,9 +73,14 @@ end
 function util.wide(map, name, ox, oz, rot, sx, sz)
     util.put(map, ox, oz, {{1, name, rot, 3}})
     local cells = util.footprint(ox, oz, rot, sx, sz)
-    if name:find("wreck") or name:find("dumpster") then
-        for _, c in ipairs(cells) do
+    local box = (name:find("wreck") or name:find("dumpster")) and block.get_hitbox(block.index(name), rot)
+    for _, c in ipairs(cells) do
+        local x, z = c[1] - ox + 0.5, c[2] - oz + 0.5
+        if box and math.abs(x - box[1][1] - box[2][1] / 2) < box[2][1] / 2 + 0.49
+            and math.abs(z - box[1][3] - box[2][3] / 2) < box[2][3] / 2 + 0.49 then
             util.put(map, c[1], c[2], {{2, "zomboid:decor_collider", 0, 3}})
+        else
+            util.put(map, c[1], c[2], {})
         end
     end
     return cells

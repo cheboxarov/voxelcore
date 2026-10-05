@@ -177,6 +177,18 @@ function on_block_breaking(blockid, x, y, z, pid)
         end
     end
     block.destruct(x, y, z, pid)
+    if block.is_extended(blockid) then
+        local collider = block.index("zomboid:decor_collider")
+        local sx, _, sz = block.get_size(blockid)
+        local r = math.max(sx, sz)
+        for cx = x - r, x + r do
+            for cz = z - r, z + r do
+                if block.get(cx, y + 1, cz) == collider and block.get(cx, y, cz) == 0 then
+                    block.set(cx, y + 1, cz, 0, 0)
+                end
+            end
+        end
+    end
     for _, drop in ipairs(drops) do
         if drop.item and drop.item ~= 0 and drop.count > 0 then
             util.drop({x + 0.5, y + 0.5, z + 0.5}, drop.item, drop.count, drop.data, 0.3)

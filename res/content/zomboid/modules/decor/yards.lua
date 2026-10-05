@@ -56,7 +56,6 @@ local function builder(p)
         end
         local ox, oz = util.origin(minx, minz, rot, sx, sz)
         for _, f in ipairs(util.wide(b.blocks, name, ox, oz, rot, sx, sz)) do
-            b.blocks[util.key(f[1], f[2])] = b.blocks[util.key(f[1], f[2])] or {}
             b.clear[util.key(f[1], f[2])] = true
         end
         return true
