@@ -1,6 +1,13 @@
 {
     "caption": "Бетонная ступень",
-    "texture": "bld_concrete",
+    "texture-faces": [
+        "bld_step_side",
+        "bld_step_side",
+        "bld_concrete",
+        "bld_concrete",
+        "bld_step_side",
+        "bld_step_side"
+    ],
     "material": "base:stone",
     "base:durability": 10.0,
     "base:loot": [],

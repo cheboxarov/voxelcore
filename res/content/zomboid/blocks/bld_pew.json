@@ -1,9 +1,9 @@
 {
     "caption": "Церковная скамья",
     "texture-faces": [
-        "bld_pew",
-        "bld_pew",
-        "bld_pew",
+        "bld_pew_side",
+        "bld_pew_side",
+        "bld_pew_top",
         "bld_pew_top",
         "bld_pew",
         "bld_pew"

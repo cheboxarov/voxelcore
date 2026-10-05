@@ -22,8 +22,6 @@ local function image(name)
     check(false, "texture " .. name)
 end
 
--- buildings.py textures are checked by their owner
-local FOREIGN = {bld = true}
 local blocks, faces = 0, 0
 for id = 0, block.defs_count() - 1 do
     local name = block.name(id)
@@ -31,7 +29,7 @@ for id = 0, block.defs_count() - 1 do
         blocks = blocks + 1
         local tex = block.get_textures(id)
         for _, t in ipairs(tex) do image(t) end
-        if block.get_model(id) == "aabb" and not FOREIGN[name:match("^zomboid:(%a+)_")] then
+        if block.get_model(id) == "aabb" then
             local size = block.get_hitbox(id, 0)[2]
             local sx, sy, sz = size[1], size[2], size[3]
             local dims = {{sz, sy}, {sz, sy}, {sx, sz}, {sx, sz}, {sx, sy}, {sx, sy}}

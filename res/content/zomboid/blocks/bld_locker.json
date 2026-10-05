@@ -1,11 +1,11 @@
 {
     "caption": "Шкафчик",
     "texture-faces": [
+        "bld_locker_side_tall",
+        "bld_locker_side_tall",
         "bld_locker_side",
         "bld_locker_side",
-        "bld_locker_side",
-        "bld_locker_side",
-        "bld_locker_front",
+        "bld_locker_side_tall",
         "bld_locker_front"
     ],
     "material": "base:metal",

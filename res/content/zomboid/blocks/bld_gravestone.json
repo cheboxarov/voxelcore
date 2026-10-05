@@ -1,6 +1,13 @@
 {
     "caption": "Надгробие",
-    "texture": "bld_gravestone",
+    "texture-faces": [
+        "bld_gravestone_edge",
+        "bld_gravestone_edge",
+        "bld_gravestone_edge",
+        "bld_gravestone_edge",
+        "bld_gravestone",
+        "bld_gravestone"
+    ],
     "material": "base:stone",
     "base:durability": 12.0,
     "base:loot": [],
