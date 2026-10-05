@@ -207,7 +207,7 @@ local function think()
         local mark = noise.loudest(pos, heard_at)
         if mark then
             heard_at = mark.time
-            if mark.pid or mode ~= "investigate" or target_pid == nil then
+            if mark.pid or mode ~= "investigate" or horizontal_distance(pos, mark.pos) > 3 then
                 hear(mark.pos, mark.pid, vec3.distance(pos, mark.pos))
             end
         end

@@ -96,7 +96,33 @@ for _, kind in ipairs(KINDS) do
             end
         end
     end
-    log(kind, a.w .. "x" .. a.d, "blocks " .. blocks, "door " .. a.door)
+    local routes = 0
+    for k = 0, #def.floors - 1 do
+        for _, up in ipairs({true, false}) do
+            for _, flip in ipairs({false, true}) do
+                local q = {flip = flip}
+                for _, sp in ipairs(def.spots) do
+                    if sp[2] == (up and k or k + 1) then
+                        local x, z = flip and a.w - 1 - sp[1] or sp[1], sp[3]
+                        local steps = 0
+                        while steps < 300 do
+                            local nx, nz = def.stair_path(q, k, up, x, z)
+                            if nx == nil then break end
+                            x, z, steps = nx, nz, steps + 1
+                        end
+                        if steps > 0 then
+                            local hx = flip and a.w - 1 - x or x
+                            local c = def.floors[k + 1][z + 1]:sub(hx + 1, hx + 1)
+                            check(c == (up and "8" or "1"), kind .. " stairs route from a room ends on the flight")
+                            routes = routes + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+    check(routes > 0 or next(def.flows) == nil, kind .. " rooms lead to the stairs")
+    log(kind, a.w .. "x" .. a.d, "blocks " .. blocks, "door " .. a.door, "stair routes " .. routes)
 end
 check(#blocked == 0, "doors blocked by furniture: " .. table.concat(blocked, " "))
 
@@ -321,6 +347,12 @@ for _, kind in ipairs({"apartments", "hospital"}) do
         app.tick()
         local comp = zombies.registry[uid]
         comp.hear({player.get_pos(pid)}, pid)
+        if up then
+            zombies.noise({x + 10.5, G + 1, z + 0.5}, 30)
+            for _ = 1, 10 do app.tick() end
+            check(comp.goal and math.abs(comp.goal[1] - x - 10.5) < 1, kind .. " zombie on a trail still turns to a decoy")
+            comp.hear({player.get_pos(pid)}, pid)
+        end
         local ticks = 0
         repeat
             app.tick()
