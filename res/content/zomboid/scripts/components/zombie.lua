@@ -52,7 +52,6 @@ if kind.hitbox then
 end
 mob.set_movement_speed(kind.speed)
 mob.set_jump_force(8)
-mob.set_ground_damping(12)
 
 rig:set_texture("$shirt", "blocks:z_shirt_" .. data.shirt)
 rig:set_texture("$pants", "blocks:z_pants_" .. data.pants)
@@ -520,7 +519,7 @@ function on_physics_update(delta)
     else
         mob.set_dir({move_dir[1], 0, move_dir[3]})
         mob.go({move_dir[1], move_dir[3]}, move_mul, false, false)
-        if body:is_grounded() then
+        if body:is_grounded() and body:get_vel()[2] <= 0 then
             local x, y, z = front_cell(tsf:get_pos(), move_dir, 0, 0.6)
             if ledge(x, y, z) then
                 mob.jump()
