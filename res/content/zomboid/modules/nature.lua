@@ -194,6 +194,7 @@ local function nearness(dist)
 end
 
 function nature.heightmap(x, y, w, h, bpd, seed)
+    seed = seed % 1000003
     local f = fields(x, y, w, h, bpd, seed)
     local amp = town_field(f, x, y, w, h, bpd, wildness)
     local pads = pad_mask(f, x, y, w, h, bpd)
@@ -274,6 +275,7 @@ function nature.heightmap(x, y, w, h, bpd, seed)
 end
 
 function nature.biome_params(x, y, w, h, bpd, seed)
+    seed = seed % 1000003
     local f = fields(x, y, w, h, bpd, seed)
     f.open:add(town_field(f, x, y, w, h, bpd, nearness))
     f.open:mixin(3, town_field(f, x, y, w, h, bpd, townness))
@@ -357,18 +359,20 @@ function nature.chunk_heights(cx, cz, seed)
     return out
 end
 
-local cache = {}
-local cached = 0
+local cache, cached, cache_seed = {}, 0, nil
 
 local function chunk(wx, wz)
     local cx, cz = math.floor(wx / CHUNK), math.floor(wz / CHUNK)
     local key = cx * 65536 + cz
+    local seed = world.get_seed()
+    if seed ~= cache_seed then
+        cache, cached, cache_seed = {}, 0, seed
+    end
     local c = cache[key]
     if c == nil then
         if cached >= 1024 then
             cache, cached = {}, 0
         end
-        local seed = world.get_seed()
         c = {nature.chunk_heights(cx, cz, seed), nature.chunk_biomes(cx, cz, seed)}
         cache[key] = c
         cached = cached + 1
