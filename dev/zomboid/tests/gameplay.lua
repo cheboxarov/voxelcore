@@ -144,6 +144,11 @@ for _ = 1, 20 do
 end
 check(broken, "zombies break barricades")
 check(block.name(block.get(wx, wy, wz)) == "zomboid:window_broken", "window left broken")
+block.set(wx, wy, wz, block.index("zomboid:bld_stained_glass"), 0)
+local planks = inv.count(invid, "zomboid:plank")
+check(barricade.add(pid, wx, wy, wz), "stained glass plank")
+check(block.name(block.get(wx, wy, wz)) == "zomboid:barricade", "stained glass barricaded")
+check(inv.count(invid, "zomboid:plank") == planks - 1, "stained glass barricade takes a plank")
 
 -- infected death: the body rises with the inventory
 state.infection = 1

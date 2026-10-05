@@ -44,9 +44,9 @@ function barricade.add(pid, x, y, z)
     local name = block.name(id)
     local plank_hp = math.floor(barricade.HP_PER_PLANK * skills.mul(pid, "barricade_hp"))
     x, y, z = origin(x, y, z)
-    if name == "zomboid:window" or name == "zomboid:window_broken" then
+    if block.has_tag(id, "zomboid:window") then
         block.set(x, y, z, block.index("zomboid:barricade"), 0)
-        block.set_field(x, y, z, "glass", name == "zomboid:window" and 1 or 0)
+        block.set_field(x, y, z, "glass", block.has_tag(id, "zomboid:glass") and 1 or 0)
         block.set_field(x, y, z, "hp", plank_hp)
     elseif name == "base:wooden_door" then
         local rot = block.get_rotation(x, y, z)
