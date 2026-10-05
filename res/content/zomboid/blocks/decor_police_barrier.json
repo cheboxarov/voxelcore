@@ -1,0 +1,29 @@
+{
+    "caption": "Полицейское ограждение",
+    "texture": "decor_barrier",
+    "rotation": "pane",
+    "hitbox": [
+        0,
+        0,
+        0.3,
+        1,
+        0.92,
+        0.35
+    ],
+    "material": "base:wood",
+    "base:durability": 6.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "tags": [
+        "zomboid:flammable"
+    ],
+    "model-name": "zomboid_decor_police_barrier",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true
+}

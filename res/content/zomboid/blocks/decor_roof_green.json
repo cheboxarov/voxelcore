@@ -1,0 +1,7 @@
+{
+    "caption": "Зелёная кровля",
+    "texture": "decor_roof_green",
+    "material": "base:wood",
+    "base:durability": 14.0,
+    "base:loot": []
+}

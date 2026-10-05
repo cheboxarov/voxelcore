@@ -1,0 +1,7 @@
+{
+    "caption": "Серая кровля",
+    "texture": "decor_roof_grey",
+    "material": "base:wood",
+    "base:durability": 14.0,
+    "base:loot": []
+}

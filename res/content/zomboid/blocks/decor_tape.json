@@ -1,0 +1,23 @@
+{
+    "caption": "Оградительная лента",
+    "texture": "decor_tape",
+    "rotation": "pane",
+    "hitbox": [
+        0,
+        0.85,
+        0.45,
+        1,
+        0.15,
+        0.1
+    ],
+    "obstacle": false,
+    "selectable": false,
+    "replaceable": true,
+    "material": "base:grass",
+    "base:durability": 0.1,
+    "model-name": "zomboid_decor_tape",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

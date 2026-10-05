@@ -34,7 +34,7 @@ function place_structures(x, z, w, d, hmap, chunk_height)
             local kind = town.column(wx, wz, column)
             for _, entry in ipairs(column) do
                 table.insert(placements, {
-                    ":block", id_of(entry[2]), {wx, GROUND + entry[1], wz}, entry[3], 2
+                    ":block", id_of(entry[2]), {wx, GROUND + entry[1], wz}, entry[3], entry[4] or 2
                 })
             end
             if kind == nil then

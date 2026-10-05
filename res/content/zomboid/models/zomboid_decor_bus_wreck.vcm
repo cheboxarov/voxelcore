@@ -1,0 +1,76 @@
+@box from (0.1,0.05,0) to (2.9,2.5,1) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,1) to (2.9,2.5,2) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,2) to (2.9,2.5,3) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,3) to (2.9,2.5,4) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,4) to (2.9,2.5,5) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,5) to (2.9,2.5,6) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,6) to (2.9,2.5,7) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,7) to (2.9,2.5,8) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0.1,0.05,8) to (2.9,2.5,9) {
+    @part tags (top) texture "blocks:decor_bus_side" region (0,0,1,1)
+    @part tags (bottom) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (east) texture "blocks:decor_bus_roof" region (0,0,1,1)
+    @part tags (west) texture "blocks:decor_bus_under" region (0,0,1,1)
+    @part tags (north) texture "blocks:decor_bus_front" region (0,0,1,1)
+    @part tags (south) texture "blocks:decor_bus_front" region (0,0,1,1)
+}
+@box from (0,0.3,1.2) to (0.12,1,1.9) texture "blocks:decor_rubber"
+@box from (0,0.3,6.8) to (0.12,1,7.5) texture "blocks:decor_rubber"
+@box from (0,1.5,1.2) to (0.12,2.2,1.9) texture "blocks:decor_rubber"
+@box from (0,1.5,6.8) to (0.12,2.2,7.5) texture "blocks:decor_rubber"

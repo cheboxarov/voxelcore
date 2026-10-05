@@ -1,0 +1,2 @@
+@box from (0.22,0,0.22) to (0.78,0.85,0.78) texture "blocks:decor_trash"
+@box from (0.18,0.85,0.18) to (0.82,0.92,0.82) texture "blocks:decor_trash_top"

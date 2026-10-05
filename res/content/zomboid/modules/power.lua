@@ -16,6 +16,15 @@ local power = {
 local tick = 0
 local grid_was_on
 
+local LAMPS = {}
+for _, pair in ipairs({
+    {"zomboid:lamp", "zomboid:lamp_off"},
+    {"zomboid:decor_streetlight", "zomboid:decor_streetlight_off"},
+    {"zomboid:decor_traffic_light", "zomboid:decor_traffic_light_off"},
+}) do
+    LAMPS[pair[1]], LAMPS[pair[2]] = pair, pair
+end
+
 local function key(x, y, z)
     return x .. ":" .. y .. ":" .. z
 end
@@ -66,12 +75,13 @@ function power.refresh_lamp(x, y, z)
         return
     end
     local name = block.name(block.get(x, y, z))
-    if name ~= "zomboid:lamp" and name ~= "zomboid:lamp_off" then
+    local pair = LAMPS[name]
+    if pair == nil then
         power.lamps[key(x, y, z)] = nil
         return
     end
     power.lamps[key(x, y, z)] = {x, y, z}
-    local want = power.has_power(x, y, z) and "zomboid:lamp" or "zomboid:lamp_off"
+    local want = power.has_power(x, y, z) and pair[1] or pair[2]
     if name ~= want then
         block.set(x, y, z, block.index(want), block.get_states(x, y, z))
     end

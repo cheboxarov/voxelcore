@@ -1,0 +1,26 @@
+{
+    "caption": "Горка",
+    "texture": "decor_slide",
+    "rotation": "pane",
+    "size": [
+        1,
+        3,
+        3
+    ],
+    "hitbox": [
+        0.1,
+        0,
+        2.2,
+        0.8,
+        1.8,
+        0.75
+    ],
+    "obstacle": false,
+    "material": "base:metal",
+    "base:durability": 15.0,
+    "model-name": "zomboid_decor_slide",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

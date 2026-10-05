@@ -1,0 +1,6 @@
+@box from (0,0.72,0.42) to (1,0.92,0.5) texture "blocks:decor_barrier"
+@box from (0,0.32,0.42) to (1,0.44,0.5) texture "blocks:decor_barrier"
+@box from (0.06,0,0.3) to (0.13,0.92,0.37) texture "blocks:decor_metal" rotate (-12,0,0)
+@box from (0.87,0,0.3) to (0.94,0.92,0.37) texture "blocks:decor_metal" rotate (-12,0,0)
+@box from (0.06,0,0.55) to (0.13,0.92,0.62) texture "blocks:decor_metal" rotate (12,0,0)
+@box from (0.87,0,0.55) to (0.94,0.92,0.62) texture "blocks:decor_metal" rotate (12,0,0)

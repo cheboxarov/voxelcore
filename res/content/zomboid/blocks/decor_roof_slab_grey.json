@@ -1,0 +1,16 @@
+{
+    "caption": "Серая кровля (скат)",
+    "texture": "decor_roof_grey",
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.5,
+        1
+    ],
+    "material": "base:wood",
+    "base:durability": 10.0,
+    "base:loot": []
+}

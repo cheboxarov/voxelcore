@@ -1,0 +1,26 @@
+{
+    "caption": "Уличный фонарь",
+    "texture": "decor_light_on",
+    "rotation": "pane",
+    "emission": [
+        15,
+        14,
+        11
+    ],
+    "hitbox": [
+        0.42,
+        0,
+        0.42,
+        0.16,
+        0.55,
+        0.16
+    ],
+    "material": "base:metal",
+    "script-name": "lamp",
+    "base:durability": 6.0,
+    "model-name": "zomboid_decor_streetlight",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

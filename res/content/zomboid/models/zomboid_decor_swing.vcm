@@ -1,0 +1,31 @@
+@box from (0.05,0,0.08) to (0.17,2.45,0.2) texture "blocks:decor_metal_red" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (0.05,0,0.8) to (0.17,2.45,0.92) texture "blocks:decor_metal_red" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (2.83,0,0.08) to (2.95,2.45,0.2) texture "blocks:decor_metal_red" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (2.83,0,0.8) to (2.95,2.45,0.92) texture "blocks:decor_metal_red" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (0.02,2.33,0.08) to (0.2,2.47,0.92) texture "blocks:decor_metal_red"
+@box from (2.8,2.33,0.08) to (2.98,2.47,0.92) texture "blocks:decor_metal_red"
+@box from (0,2.35,0.44) to (3,2.47,0.56) texture "blocks:decor_metal_red" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (0.62,0.98,0.49) to (0.65,2.35,0.52) texture "blocks:decor_metal" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (1.05,0.98,0.49) to (1.08,2.35,0.52) texture "blocks:decor_metal" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (1.95,0.98,0.49) to (1.98,2.35,0.52) texture "blocks:decor_metal" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (2.38,0.98,0.49) to (2.41,2.35,0.52) texture "blocks:decor_metal" {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (0.6,0.92,0.36) to (1.1,0.99,0.64) texture "blocks:decor_rubber"
+@box from (1.92,0.92,0.36) to (2.42,0.99,0.64) texture "blocks:decor_rubber"

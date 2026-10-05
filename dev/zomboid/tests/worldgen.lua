@@ -100,10 +100,24 @@ for _, c in ipairs(town.cells()) do
             cars = cars + 1
             local cx, cz = town.car_spot(p)
             local b, _, out = blocked(cx, cz)
+            if p.garage then
+                out = {}
+                p.def.column(p, p.car[1], p.car[2], out)
+                b = nil
+            end
             check(b == nil and has(out, "zomboid:car_spawner"), p.kind .. " car spawner is placed: " .. tostring(b))
             for dx = -1, 1 do
                 for dz = -1, 1 do
-                    check(blocked(cx + dx, cz + dz) == nil, p.kind .. " car has room")
+                    local b = blocked(cx + dx, cz + dz)
+                    if p.garage then
+                        local o = {}
+                        p.def.column(p, p.car[1] + dx, p.car[2] + dz, o)
+                        b = nil
+                        for _, e in ipairs(o) do
+                            if (e[1] == 1 or e[1] == 2) and e[2] ~= "core:struct_air" and e[2] ~= "zomboid:car_spawner" then b = e[2] end
+                        end
+                    end
+                    check(b == nil, p.kind .. " car has room: " .. tostring(b))
                 end
             end
         end

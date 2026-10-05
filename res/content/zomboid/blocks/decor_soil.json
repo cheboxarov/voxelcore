@@ -1,0 +1,14 @@
+{
+    "caption": "Клумба",
+    "texture-faces": [
+        "decor_soil",
+        "decor_soil",
+        "decor_soil",
+        "decor_soil",
+        "decor_soil",
+        "decor_soil"
+    ],
+    "material": "base:grass",
+    "base:durability": 1.0,
+    "base:loot": []
+}

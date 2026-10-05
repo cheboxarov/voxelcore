@@ -1,0 +1,3 @@
+@box from (0.32,0,0.25) to (0.68,0.4,0.72) texture "blocks:decor_ceramic"
+@box from (0.26,0.4,0.15) to (0.74,0.46,0.72) texture "blocks:decor_ceramic"
+@box from (0.24,0.4,0.7) to (0.76,0.95,0.9) texture "blocks:decor_ceramic"

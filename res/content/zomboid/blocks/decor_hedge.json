@@ -1,0 +1,18 @@
+{
+    "caption": "Живая изгородь",
+    "texture": "decor_hedge",
+    "material": "base:grass",
+    "draw-group": 5,
+    "light-passing": true,
+    "base:durability": 3.0,
+    "base:loot": [
+        {
+            "item": "zomboid:stick",
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "tags": [
+        "zomboid:flammable"
+    ]
+}

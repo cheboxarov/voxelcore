@@ -1,0 +1,29 @@
+{
+    "caption": "Книжный шкаф",
+    "texture-faces": [
+        "wood_side",
+        "wood_side",
+        "wood_side",
+        "wood_side",
+        "decor_bookshelf",
+        "decor_bookshelf"
+    ],
+    "rotation": "pane",
+    "size": [
+        1,
+        2,
+        1
+    ],
+    "material": "base:wood",
+    "base:durability": 8.0,
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "bookshelf",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container",
+        "zomboid:flammable"
+    ],
+    "base:loot": []
+}

@@ -1,0 +1,33 @@
+{
+    "caption": "Разбитая машина",
+    "texture-faces": [
+        "decor_paint_white",
+        "decor_broken_glass",
+        "decor_rubber",
+        "decor_paint_white",
+        "decor_paint_white",
+        "decor_paint_white"
+    ],
+    "model-name": "zomboid_car_wreck_white",
+    "rotation": "pane",
+    "size": [
+        2,
+        1,
+        3
+    ],
+    "hitbox": [
+        0.12,
+        0,
+        0,
+        1.76,
+        1,
+        3
+    ],
+    "obstacle": false,
+    "material": "base:metal",
+    "base:durability": 60.0,
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

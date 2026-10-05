@@ -1,0 +1,24 @@
+{
+    "caption": "Записка",
+    "texture": "decor_note",
+    "model": "aabb",
+    "hitbox": [
+        0.22,
+        0,
+        0.25,
+        0.56,
+        0.03,
+        0.5
+    ],
+    "rotation": "pane",
+    "obstacle": false,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "material": "base:grass",
+    "script-name": "decor_note",
+    "base:durability": 0.1,
+    "tags": [
+        "zomboid:interactive"
+    ],
+    "base:loot": []
+}

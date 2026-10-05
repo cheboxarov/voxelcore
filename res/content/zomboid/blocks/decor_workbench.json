@@ -1,0 +1,33 @@
+{
+    "caption": "Верстак",
+    "texture-faces": [
+        "decor_workbench_side",
+        "decor_workbench_side",
+        "decor_workbench_side",
+        "decor_workbench_top",
+        "decor_workbench_side",
+        "decor_workbench_side"
+    ],
+    "model": "aabb",
+    "rotation": "pane",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.9,
+        1
+    ],
+    "material": "base:wood",
+    "base:durability": 10.0,
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "workbench",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container",
+        "zomboid:flammable"
+    ],
+    "base:loot": []
+}

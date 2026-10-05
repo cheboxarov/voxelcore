@@ -1,0 +1,19 @@
+{
+    "caption": "Потухшее кострище",
+    "texture": "decor_firepit",
+    "model": "aabb",
+    "hitbox": [
+        0.05,
+        0,
+        0.05,
+        0.9,
+        0.12,
+        0.9
+    ],
+    "obstacle": false,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "material": "base:sand",
+    "base:durability": 1.0,
+    "base:loot": []
+}

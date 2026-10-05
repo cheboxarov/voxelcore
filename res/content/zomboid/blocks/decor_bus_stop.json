@@ -1,0 +1,62 @@
+{
+    "caption": "Автобусная остановка",
+    "texture": "decor_glass",
+    "rotation": "pane",
+    "size": [
+        3,
+        3,
+        1
+    ],
+    "translucent": true,
+    "draw-group": 2,
+    "obstacle": false,
+    "material": "base:glass",
+    "base:durability": 12.0,
+    "hitboxes": [
+        [
+            0,
+            0,
+            0.86,
+            3,
+            2.3,
+            0.08
+        ],
+        [
+            0,
+            0,
+            0.1,
+            0.08,
+            2.3,
+            0.76
+        ],
+        [
+            2.92,
+            0,
+            0.1,
+            0.08,
+            2.3,
+            0.76
+        ],
+        [
+            0,
+            2.3,
+            0,
+            3,
+            0.12,
+            1
+        ],
+        [
+            0.3,
+            0,
+            0.5,
+            2.4,
+            0.5,
+            0.34
+        ]
+    ],
+    "model-name": "zomboid_decor_bus_stop",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

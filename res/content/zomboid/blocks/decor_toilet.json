@@ -1,0 +1,20 @@
+{
+    "caption": "Унитаз",
+    "texture": "decor_ceramic",
+    "rotation": "pane",
+    "hitbox": [
+        0.25,
+        0,
+        0.15,
+        0.5,
+        0.95,
+        0.75
+    ],
+    "material": "base:glass",
+    "base:durability": 10.0,
+    "model-name": "zomboid_decor_toilet",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

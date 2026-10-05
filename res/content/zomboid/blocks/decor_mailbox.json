@@ -1,0 +1,28 @@
+{
+    "caption": "Почтовый ящик",
+    "texture": "decor_mailbox",
+    "rotation": "pane",
+    "hitbox": [
+        0.3,
+        0,
+        0.22,
+        0.4,
+        1,
+        0.6
+    ],
+    "material": "base:metal",
+    "base:durability": 5.0,
+    "inventory-size": 6,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "mailbox",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container"
+    ],
+    "model-name": "zomboid_decor_mailbox",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

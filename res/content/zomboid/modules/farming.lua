@@ -84,7 +84,7 @@ function farming.update(x, y, z)
         block.set_variant(x, y, z, farming.DEAD)
         return
     end
-    local stage = math.min(farming.STAGES, math.floor(growth / (farming.GROW_HOURS[kind] / farming.STAGES)))
+    local stage = math.min(farming.STAGES, math.floor(growth / (farming.GROW_HOURS[kind] / farming.STAGES) + 1e-4))
     if stage ~= block.get_variant(x, y, z) then
         block.set_variant(x, y, z, stage)
     end

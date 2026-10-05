@@ -1,0 +1,34 @@
+{
+    "caption": "Мусорный контейнер",
+    "texture": "decor_dumpster",
+    "rotation": "pane",
+    "size": [
+        2,
+        1,
+        1
+    ],
+    "hitbox": [
+        0.05,
+        0,
+        0.05,
+        1.9,
+        1,
+        0.9
+    ],
+    "obstacle": false,
+    "material": "base:metal",
+    "base:durability": 30.0,
+    "inventory-size": 16,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "dumpster",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container"
+    ],
+    "model-name": "zomboid_decor_dumpster",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

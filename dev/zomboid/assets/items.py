@@ -776,6 +776,16 @@ def map(c):
 
 
 @art
+def lore_note(c):
+    paper = ramp("e8e0c8")
+    c.paint(c.poly_m([(5, 3), (17, 2), (19, 20), (6, 21)]), paper)
+    c.fill(c.poly_m([(15, 2), (17, 2), (18, 5)]), paper[1])
+    ink = ramp("3a3a5a")[1]
+    for y in range(6, 19, 3):
+        c.fill(c.line_m(8, y, 16, y - 1), ink)
+
+
+@art
 def radio(c):
     case = ramp("4a4a44")
     c.paint(c.rect_m(3, 8, 20, 21), case)

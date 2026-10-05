@@ -1,0 +1,26 @@
+{
+    "caption": "Перевёрнутый автобус",
+    "texture": "decor_bus_side",
+    "rotation": "pane",
+    "size": [
+        3,
+        1,
+        9
+    ],
+    "hitbox": [
+        0.1,
+        0,
+        0,
+        2.8,
+        1,
+        9
+    ],
+    "obstacle": false,
+    "material": "base:metal",
+    "base:durability": 200.0,
+    "model-name": "zomboid_decor_bus_wreck",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

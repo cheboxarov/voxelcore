@@ -1,0 +1,4 @@
+@box from (0.45,0,0.45) to (0.55,0.72,0.55) texture "blocks:decor_bench"
+@box from (0.32,0.72,0.22) to (0.68,1,0.82) texture "blocks:decor_mailbox" {
+    @part tags (north) texture "blocks:decor_mailbox_front"
+}

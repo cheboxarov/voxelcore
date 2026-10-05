@@ -1,0 +1,63 @@
+{
+    "caption": "Разбитый вертолёт",
+    "texture": "decor_heli",
+    "rotation": "pane",
+    "size": [
+        5,
+        1,
+        7
+    ],
+    "hitbox": [
+        0.8,
+        0,
+        0.3,
+        3.2,
+        1,
+        4.4
+    ],
+    "obstacle": false,
+    "material": "base:metal",
+    "base:durability": 200.0,
+    "particles": {
+        "lifetime": 5.0,
+        "spawn_interval": 0.7,
+        "acceleration": [
+            0.1,
+            0.3,
+            0
+        ],
+        "velocity": [
+            0,
+            0.6,
+            0
+        ],
+        "explosion": [
+            0.2,
+            0,
+            0.2
+        ],
+        "size": [
+            0.45,
+            0.45,
+            0.45
+        ],
+        "size_spread": 0.2,
+        "spawn_shape": "box",
+        "spawn_spread": [
+            0.6,
+            0.2,
+            0.6
+        ],
+        "lighting": false,
+        "collision": false,
+        "frames": [
+            "particles:smoke_0",
+            "particles:smoke_1"
+        ]
+    },
+    "model-name": "zomboid_decor_heli_wreck",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

@@ -1,0 +1,27 @@
+{
+    "caption": "Армейский ящик",
+    "texture": "decor_army_crate",
+    "model": "aabb",
+    "rotation": "pane",
+    "hitbox": [
+        0.06,
+        0,
+        0.12,
+        0.88,
+        0.62,
+        0.76
+    ],
+    "light-passing": true,
+    "material": "base:wood",
+    "base:durability": 8.0,
+    "inventory-size": 12,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "army",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container",
+        "zomboid:flammable"
+    ],
+    "base:loot": []
+}

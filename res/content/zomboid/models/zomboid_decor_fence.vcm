@@ -1,0 +1,6 @@
+@box from (0.04,0,0.45) to (0.16,1,0.55) texture "blocks:decor_fence"
+@box from (0.29,0,0.45) to (0.41,1,0.55) texture "blocks:decor_fence"
+@box from (0.54,0,0.45) to (0.66,1,0.55) texture "blocks:decor_fence"
+@box from (0.79,0,0.45) to (0.91,1,0.55) texture "blocks:decor_fence"
+@box from (0,0.25,0.4) to (1,0.35,0.45) texture "blocks:decor_fence"
+@box from (0,0.7,0.4) to (1,0.8,0.45) texture "blocks:decor_fence"

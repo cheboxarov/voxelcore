@@ -1,0 +1,7 @@
+@box from (0,0.74,0.1) to (1,0.82,0.9) texture "blocks:decor_desk"
+@box from (0.58,0,0.12) to (0.98,0.74,0.88) texture "blocks:wood_side" {
+    @part tags (north) texture "blocks:decor_desk"
+}
+@box from (0.04,0,0.14) to (0.12,0.74,0.22) texture "blocks:wood_side"
+@box from (0.04,0,0.78) to (0.12,0.74,0.86) texture "blocks:wood_side"
+@box from (0.2,0.82,0.55) to (0.45,0.85,0.8) texture "blocks:decor_note"

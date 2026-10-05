@@ -1,0 +1,14 @@
+{
+    "caption": "Препятствие",
+    "model": "none",
+    "hidden": true,
+    "picking-item": "zomboid:decor_pole.item",
+    "obstacle": true,
+    "selectable": false,
+    "breakable": false,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "material": "base:metal",
+    "base:durability": 200.0,
+    "base:loot": []
+}

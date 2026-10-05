@@ -1,0 +1,18 @@
+{
+    "caption": "Столб",
+    "texture": "decor_metal",
+    "model": "aabb",
+    "hitbox": [
+        0.42,
+        0,
+        0.42,
+        0.16,
+        1,
+        0.16
+    ],
+    "light-passing": true,
+    "sky-light-passing": true,
+    "material": "base:metal",
+    "base:durability": 20.0,
+    "base:loot": []
+}

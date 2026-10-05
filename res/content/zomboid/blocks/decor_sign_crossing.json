@@ -1,0 +1,20 @@
+{
+    "caption": "Знак «Пешеходный переход»",
+    "texture": "decor_sign_crossing",
+    "rotation": "pane",
+    "hitbox": [
+        0.1,
+        0,
+        0.42,
+        0.8,
+        0.95,
+        0.13
+    ],
+    "material": "base:metal",
+    "base:durability": 8.0,
+    "model-name": "zomboid_decor_sign",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

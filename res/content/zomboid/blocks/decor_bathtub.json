@@ -1,0 +1,26 @@
+{
+    "caption": "Ванна",
+    "texture": "decor_ceramic",
+    "rotation": "pane",
+    "size": [
+        1,
+        1,
+        2
+    ],
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.6,
+        2
+    ],
+    "obstacle": false,
+    "material": "base:glass",
+    "base:durability": 20.0,
+    "model-name": "zomboid_decor_bathtub",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

@@ -1,0 +1,24 @@
+{
+    "caption": "Пятно крови",
+    "material": "base:grass",
+    "texture": "decor_blood",
+    "model": "aabb",
+    "hitbox": [
+        0,
+        0,
+        0,
+        1,
+        0.02,
+        1
+    ],
+    "rotation": "pane",
+    "obstacle": false,
+    "selectable": false,
+    "replaceable": true,
+    "light-passing": true,
+    "sky-light-passing": true,
+    "shadeless": false,
+    "draw-group": 3,
+    "base:durability": 0.1,
+    "base:loot": []
+}

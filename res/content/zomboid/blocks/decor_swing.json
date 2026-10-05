@@ -1,0 +1,36 @@
+{
+    "caption": "Качели",
+    "texture": "decor_metal_red",
+    "rotation": "pane",
+    "size": [
+        3,
+        3,
+        1
+    ],
+    "hitboxes": [
+        [
+            0.05,
+            0,
+            0.08,
+            0.12,
+            2.45,
+            0.84
+        ],
+        [
+            2.83,
+            0,
+            0.08,
+            0.12,
+            2.45,
+            0.84
+        ]
+    ],
+    "obstacle": false,
+    "material": "base:metal",
+    "base:durability": 15.0,
+    "model-name": "zomboid_decor_swing",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

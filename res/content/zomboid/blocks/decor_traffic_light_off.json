@@ -1,0 +1,23 @@
+{
+    "caption": "Светофор (нет тока)",
+    "texture": "decor_traffic_off",
+    "rotation": "pane",
+    "hidden": true,
+    "picking-item": "zomboid:decor_traffic_light.item",
+    "hitbox": [
+        0.34,
+        0,
+        0.38,
+        0.32,
+        0.95,
+        0.24
+    ],
+    "material": "base:metal",
+    "script-name": "lamp",
+    "base:durability": 6.0,
+    "model-name": "zomboid_decor_traffic_light",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

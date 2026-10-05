@@ -1,0 +1,27 @@
+{
+    "caption": "Ящик с игрушками",
+    "texture": "decor_toybox",
+    "model": "aabb",
+    "rotation": "pane",
+    "hitbox": [
+        0.1,
+        0,
+        0.15,
+        0.8,
+        0.6,
+        0.7
+    ],
+    "light-passing": true,
+    "material": "base:wood",
+    "base:durability": 5.0,
+    "inventory-size": 8,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "toys",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container",
+        "zomboid:flammable"
+    ],
+    "base:loot": []
+}

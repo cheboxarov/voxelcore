@@ -1,0 +1,7 @@
+<container id="root" size-func="unpack(gui.get_viewport())" color="#00000080">
+    <panel gravity="center-center" size="520,440" color="#e8e0c8f0" padding="20" interval="12">
+        <label id="title" color="#3a2a1a" text-align="center">...</label>
+        <label id="text" color="#2a2420" multiline="true" text-wrap="true" size="480,330">...</label>
+        <button onclick="hud.close('zomboid:note')">Закрыть</button>
+    </panel>
+</container>

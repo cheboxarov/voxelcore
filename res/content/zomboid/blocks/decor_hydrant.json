@@ -1,0 +1,19 @@
+{
+    "caption": "Пожарный гидрант",
+    "texture": "decor_hydrant",
+    "hitbox": [
+        0.3,
+        0,
+        0.3,
+        0.4,
+        0.74,
+        0.4
+    ],
+    "material": "base:metal",
+    "base:durability": 25.0,
+    "model-name": "zomboid_decor_hydrant",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

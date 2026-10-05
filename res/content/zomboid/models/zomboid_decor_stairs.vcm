@@ -1,0 +1,2 @@
+@box from (0,0,0) to (1,0.5,1) texture "blocks:wood_floor"
+@box from (0,0.5,0.5) to (1,1,1) texture "blocks:wood_floor"

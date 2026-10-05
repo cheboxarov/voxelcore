@@ -1,0 +1,23 @@
+@box from (1,0,1.2) to (3.6,2,4.4) texture "blocks:decor_heli" rotate (0,0,-14) {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (1.3,0.2,0.3) to (3.3,1.8,1.25) texture "blocks:decor_broken_glass" rotate (0,0,-14) {
+    @part tags (top) texture "blocks:decor_heli" region (0,0,1,1)
+}
+@box from (2,1,4.3) to (2.6,1.5,6.9) texture "blocks:decor_heli" rotate (4,6,-10) {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (2.2,1.4,6.3) to (2.4,2.4,6.9) texture "blocks:decor_heli" rotate (0,6,-10)
+@box from (0.6,0,1) to (0.8,0.12,4.6) texture "blocks:decor_metal" rotate (0,0,-8) {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (3.5,0,1) to (3.7,0.12,4.6) texture "blocks:decor_metal" rotate (0,0,10) {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (0.2,0.02,5.2) to (4.8,0.1,5.45) texture "blocks:decor_burnt" rotate (0,28,0) {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (0.4,0.02,0.2) to (3,0.1,0.45) texture "blocks:decor_burnt" rotate (0,-12,0) {
+    @part tags (top,bottom,north,south,east,west) region (0,0,1,1)
+}
+@box from (2.25,2,2.6) to (2.55,2.4,2.9) texture "blocks:decor_metal" rotate (0,0,-14)

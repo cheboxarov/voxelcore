@@ -1,0 +1,9 @@
+{
+    "caption": "Записка",
+    "description": "ПКМ - прочитать",
+    "icon-type": "sprite",
+    "icon": "items:lore_note",
+    "stack-size": 1,
+    "script-name": "lore_note",
+    "zomboid:weight": 0.05
+}

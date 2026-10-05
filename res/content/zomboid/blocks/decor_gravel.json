@@ -1,0 +1,7 @@
+{
+    "caption": "Гравий",
+    "texture": "decor_gravel",
+    "material": "base:sand",
+    "base:durability": 1.5,
+    "base:loot": []
+}

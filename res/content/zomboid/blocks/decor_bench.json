@@ -1,0 +1,29 @@
+{
+    "caption": "Скамейка",
+    "texture": "decor_bench",
+    "rotation": "pane",
+    "hitbox": [
+        0,
+        0,
+        0.15,
+        1,
+        0.5,
+        0.5
+    ],
+    "material": "base:wood",
+    "base:durability": 6.0,
+    "base:loot": [
+        {
+            "item": "zomboid:plank",
+            "min": 0,
+            "max": 2
+        }
+    ],
+    "tags": [
+        "zomboid:flammable"
+    ],
+    "model-name": "zomboid_decor_bench",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true
+}

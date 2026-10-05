@@ -1,0 +1,27 @@
+{
+    "caption": "Урна",
+    "texture": "decor_trash",
+    "hitbox": [
+        0.2,
+        0,
+        0.2,
+        0.6,
+        0.92,
+        0.6
+    ],
+    "material": "base:metal",
+    "base:durability": 5.0,
+    "inventory-size": 8,
+    "ui-layout": "zomboid:container",
+    "script-name": "container",
+    "zomboid:loot": "trash",
+    "tags": [
+        "zomboid:interactive",
+        "zomboid:container"
+    ],
+    "model-name": "zomboid_decor_trash_can",
+    "model": "custom",
+    "light-passing": true,
+    "sky-light-passing": true,
+    "base:loot": []
+}

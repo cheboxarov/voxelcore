@@ -1,0 +1,5 @@
+@box from (0.42,0,0.42) to (0.58,0.55,0.58) texture "blocks:decor_metal"
+@box from (0.45,0.45,-0.2) to (0.55,0.55,0.5) texture "blocks:decor_metal"
+@box from (0.3,0.32,-0.45) to (0.7,0.45,0.05) texture "blocks:decor_metal" {
+    @part tags (bottom) texture "$0"
+}
