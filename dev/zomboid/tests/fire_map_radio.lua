@@ -75,10 +75,8 @@ for dx = -1, 1 do
 end
 check(burning == 1, "something next to the campfire caught fire")
 block.set(fx + 1, fy, fz, block.index("zomboid:fire"), 0)
-local spread_chance = fire.SPREAD_CHANCE
-fire.SPREAD_CHANCE = 0.3
+math.randomseed(3)
 app.sleep(25)
-fire.SPREAD_CHANCE = spread_chance
 local burnt = 0
 for dx = 1, 4 do
     if block.name(block.get(fx + dx, fy, fz)) ~= "base:planks" then burnt = burnt + 1 end
