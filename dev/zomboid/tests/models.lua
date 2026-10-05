@@ -88,6 +88,20 @@ end
 log("bodies", bodies.sedan, bodies.pickup)
 check(bodies.sedan and bodies.pickup, "both car bodies occur")
 check(texture_exists("car_parts"), "car part textures")
+for head, parts in file.read("zomboid:models/zomboid_car.vcm"):gmatch("(@box[^\n]*)\n(.-)}") do
+    local a = {}
+    for v in head:match("from %(([^)]*)%)"):gmatch("[-%d.]+") do a[#a + 1] = tonumber(v) end
+    for v in head:match("to %(([^)]*)%)"):gmatch("[-%d.]+") do a[#a + 1] = tonumber(v) end
+    local rot = head:match("rotate %((-?%d+)")
+    if rot and head:find("car_parts", 1, true) then
+        local side = rot == "-35" and "north" or "south"
+        local region = parts:match("tags %(" .. side .. "%) region (%b())")
+        check(region ~= parts:match("tags %(top%) region (%b())"), "glass seen from the driver's seat is see-through")
+    elseif not rot then
+        check(not (a[1] < 0 and a[4] > 0 and a[2] < 0.3 and a[5] > 0.3 and a[3] > -0.6 and a[6] < 0.55
+            and not (a[3] < 0 and a[6] > 0)), "box in front of or behind the driver's eyes: " .. head)
+    end
+end
 
 for _, name in ipairs({"bat", "spiked_bat", "axe", "knife", "crowbar", "hammer", "frying_pan", "spear", "pistol",
                        "shotgun", "flashlight", "gas_can"}) do

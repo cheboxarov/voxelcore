@@ -111,6 +111,7 @@ log(string.format("drove %.1f m, speed %.1f, fuel %.2f -> %.2f", moved, car.spee
 check(moved > 8, "car moved")
 check(car.data.fuel < fuel0, "fuel burned")
 check(vec3.distance(ppos, pos) < 1.5, "driver rides inside")
+check(pos[2] - ppos[2] > 0.38, "driver's head stays under the cabin roof")
 check(cars.status(pid):find("км/ч"), "HUD status")
 car.data.fuel, car.speed = 29.9, 15
 check(utf8.length(cars.status(pid)) <= 27, "HUD status fits one line of the status box: " .. cars.status(pid))

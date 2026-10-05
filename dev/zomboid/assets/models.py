@@ -635,7 +635,8 @@ def car_layout():
     add("sedan", (-27, -8, -22), (27, 3, 12), hidden=("top", "north", "south"), dark=("bottom",))
     add("sedan", (-27, -8, -48), (27, 3, -22), hidden=("south",), dark=("bottom",))
     add("sedan", (-24.5, 15, -21), (24.5, 16.5, 11))
-    add("sedan", (-24.4, 3, -5), (24.4, 15, -3), hidden=("top", "bottom", "north", "south"))
+    add("sedan", (-24.4, 3, -5), (-22.4, 15, -3), hidden=("top", "bottom"))
+    add("sedan", (22.4, 3, -5), (24.4, 15, -3), hidden=("top", "bottom"))
     add("pickup", (-27, -8, -8), (27, 3, 12), hidden=("top", "south"), dark=("bottom",))
     add("pickup", (-24.5, 15, -7), (24.5, 16.5, 11))
     add("pickup", (-24.6, 3, -7), (-22, 15, -5), hidden=("top", "bottom"))
@@ -857,6 +858,7 @@ def parts_sheet(name, mode):
         f.set(i, j, ramp("3a3a40")[1 if i % 4 == 0 else 2 if i % 4 != 1 else 3])
     F["dark"] = sh.face(2, 2)
     F["dark"].rect(0, 0, 1, 1, hexc("16161a"))
+    F["clear"] = sh.face(4, 4)
     sh.save()
     return sh, F
 
@@ -910,6 +912,7 @@ def cabin_glass(psh, F, group):
         for z0, rot, key in ((18, -35, "wind"), (-28, 35, "rear")):
             net = {s: F["glass"] for s in SIDES}
             net["south" if z0 > 0 else "north"] = F[key]
+            net["north" if z0 > 0 else "south"] = F["clear"]
             extra = " origin %s rotate (%g,0,0)" % (vec((0, 3, z0)), rot)
             out.append(box((-24, 3, z0 - 0.5), (24, 17.5, z0 + 0.5), g, net, psh, extra))
         for zc, ze in ((10, 18), (-20, -28)):
@@ -923,6 +926,7 @@ def cabin_glass(psh, F, group):
         out.append(box((-24, 3, -6), (24, 15, 10), g, net, psh))
         net = {s: F["glass"] for s in SIDES}
         net["south"] = F["wind"]
+        net["north"] = F["clear"]
         out.append(box((-24, 3, 17.5), (24, 17.5, 18.5), g, net, psh, " origin %s rotate (-35,0,0)" % vec((0, 3, 18))))
         for x in (-24, 24):
             out.append("@tri a %s b %s c %s texture \"%s\" region %s cull-face off" % (

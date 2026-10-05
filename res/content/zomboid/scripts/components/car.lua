@@ -88,7 +88,7 @@ function on_physics_update(delta)
         end
         body:set_vel({math.sin(h) * speed, vel[2], math.cos(h) * speed})
         local pos = tsf:get_pos()
-        player.set_pos(driver, pos[1], pos[2] - 0.3, pos[3])
+        player.set_pos(driver, pos[1], pos[2] - 0.4, pos[3])
         player.set_vel(driver, 0, 0, 0)
     else
         speed = 0
