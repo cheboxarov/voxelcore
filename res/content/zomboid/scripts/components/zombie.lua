@@ -41,6 +41,7 @@ if data.kind == nil then
     data.kind = data.sprinter and "sprinter" or "normal"
     data.sprinter = nil
 end
+local LEDGES = {["base:ground"] = true, ["base:grass_block"] = true, ["base:sand"] = true, ["base:stone"] = true}
 local kind = zombies.KINDS[data.kind]
 local size = kind.size or {1, 1, 1}
 if kind.size then
@@ -50,6 +51,8 @@ if kind.hitbox then
     body:set_size(kind.hitbox)
 end
 mob.set_movement_speed(kind.speed)
+mob.set_jump_force(8)
+mob.set_ground_damping(12)
 
 rig:set_texture("$shirt", "blocks:z_shirt_" .. data.shirt)
 rig:set_texture("$pants", "blocks:z_pants_" .. data.pants)
@@ -278,6 +281,11 @@ local function front_cell(pos, dir, dy, reach)
     return math.floor(pos[1] + dir[1] * reach), math.floor(pos[2] - kind.half + dy), math.floor(pos[3] + dir[3] * reach)
 end
 
+local function ledge(x, y, z)
+    return LEDGES[block.material(block.get(x, y, z))] and not block.is_solid_at(x, y + 1, z)
+        and not block.is_solid_at(x, y + 2, z)
+end
+
 local function check_stuck(pos)
     local moved = horizontal_distance(pos, last_pos)
     last_pos = pos
@@ -299,7 +307,7 @@ local function check_stuck(pos)
     end
     if stuck >= 2 and body:is_grounded() then
         local x, y, z = front_cell(pos, move_dir, 0)
-        if block.is_solid_at(x, y, z) and not block.is_solid_at(x, y + 1, z) and not block.is_solid_at(x, y + 2, z) then
+        if ledge(x, y, z) then
             mob.jump()
         else
             local side = math.random() < 0.5 and 1 or -1
@@ -512,6 +520,14 @@ function on_physics_update(delta)
     else
         mob.set_dir({move_dir[1], 0, move_dir[3]})
         mob.go({move_dir[1], move_dir[3]}, move_mul, false, false)
+        if body:is_grounded() then
+            local x, y, z = front_cell(tsf:get_pos(), move_dir, 0, 0.6)
+            if ledge(x, y, z) then
+                mob.jump()
+                local vel = body:get_vel()
+                body:set_vel({move_dir[1] * 3, vel[2], move_dir[3] * 3})
+            end
+        end
     end
 end
 

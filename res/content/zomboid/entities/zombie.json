@@ -1,13 +1,6 @@
 {
     "components": [
-        {
-            "name": "core:mob",
-            "args": {
-                "jump_force": 7.0,
-                "movement_speed": 13.0,
-                "ground_damping": 12.0
-            }
-        },
+        "core:mob",
         "core:pathfinding",
         "zomboid:zombie"
     ],
