@@ -437,7 +437,7 @@ local function place(p, def, lot, seed)
     if p.car then
         local cx, cz = town.to_world(p, p.car[1], p.car[2])
         local inside = p.car[1] >= 0 and p.car[1] < w and p.car[2] >= 0 and p.car[2] < d
-        if inside or cx < lot.x0 or cx > lot.x1 or cz < lot.z0 or cz > lot.z1 then
+        if (inside and not p.def.own_car) or cx < lot.x0 or cx > lot.x1 or cz < lot.z0 or cz > lot.z1 then
             p.car = nil
         end
     end

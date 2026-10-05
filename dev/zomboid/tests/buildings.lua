@@ -110,6 +110,19 @@ for _, kind in ipairs(KINDS) do
         end
         log("generated", kind, "rot", p.rot, "blocks", total, "mismatched", wrong)
         check(wrong <= total * 0.01, kind .. " generated as planned")
+        if p.def.car_color then
+            local sx, sz = town.car_spot(p)
+            local color
+            app.sleep_until(function()
+                for _, uid in ipairs(entities.get_all_in_radius({sx + 0.5, G + 1, sz + 0.5}, 2)) do
+                    local car = entities.get(uid):get_component("zomboid:car")
+                    if car then color = car.data.color end
+                end
+                return color ~= nil
+            end, 5000)
+            log(kind, "car", color)
+            check(color == p.def.car_color, kind .. " car colour")
+        end
     end
 end
 

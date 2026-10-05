@@ -37,7 +37,8 @@ end
 local function blocked(x, z)
     local out = {}
     local kind = town.column(x, z, out)
-    if kind == "building" or kind == "river" or kind == nil then
+    local garage = kind == "building" and town.building_at(x, z) and select(2, town.building_at(x, z)).def.own_car
+    if (kind == "building" and not garage) or kind == "river" or kind == nil then
         return kind or "wild"
     end
     for _, e in ipairs(out) do

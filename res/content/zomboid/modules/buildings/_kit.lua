@@ -202,6 +202,7 @@ local function compile(def)
     end
     def.w, def.d, def.grid, def.spots, def.yard, def.car = w, d, cells, spots, yard, car
     def.door = def.door or door
+    def.own_car = car ~= nil
     def.ground = {}
     for z = 0, d - 1 do
         for x = 0, w - 1 do
