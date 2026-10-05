@@ -23,7 +23,7 @@ return kit.building {
         "#kkkkkkkk.kkkkkkk.#",
         "#........L........#",
         "#%%%%%%D%%%%%%%%%%#",
-        "#ooo::kkk:::n%ffff#",
+        "#ooo::k:kk::n%ffff#",
         "#::::::;:::::D....#",
         "#:dd::::::kk:%cccc#",
         "#::::;:::::::%.L..#",

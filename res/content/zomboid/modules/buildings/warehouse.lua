@@ -48,7 +48,7 @@ return kit.building {
             "W..........%..................cc......W",
             "#d.d..L...c%..L.........L.....cc..L...#",
             "#..........D..................cc......#",
-            "Wcccc..kkkk%..................ccccccc.W",
+            "Wcccc.kk.kk%..................ccccccc.W",
             "#WW#WW#WD#WW#WW#WW#GGGWW#WW#WW#WW#WW#W#",
         },
         {

@@ -39,10 +39,10 @@ return kit.building {
         "#c..ssssssssssss....sssssssssssss....f#",
         "Wc...................................fW",
         "#%%%%%%%D%%%%%%%%%%%%%%%%%%%%%D%%%%%%%#",
-        "#sssss.sssss....%.....%ccccccccc......#",
+        "#sssssss.sss....%.....%ccccccc.c......#",
         "#.....L.........%..L..D......L........#",
-        "#sssss.sssss....%d.d..%cccccccc.......#",
-        "#cccc...........%u...w%.......cc.cc.c.#",
+        "#sssssss.sss....%d.d..%cccccccc.......#",
+        "#cccc...........%u...w%.......cc..cc.c#",
         "#WW#WD#WW#WW#WW#WW#WW#WW#WW#WW#WWDWW#W#",
     }},
     loot = {

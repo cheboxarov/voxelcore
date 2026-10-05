@@ -73,7 +73,8 @@ local function compile(def)
             assert(#row == w, def.kind .. " floor " .. i .. " row " .. z .. " width " .. #row)
         end
     end
-    local legend = setmetatable(def.legend or {}, {__index = LEGEND})
+    def.legend = setmetatable(def.legend or {}, {__index = LEGEND})
+    local legend = def.legend
     local function at(f, x, z)
         local rows = floors[f + 1]
         if rows == nil or x < 0 or z < 0 or x >= w or z >= d then

@@ -47,7 +47,8 @@ local function columns(p)
     return list
 end
 
--- registry and plans: deterministic, only existing blocks, loot for every container
+-- registry and plans: deterministic, only existing blocks, loot for every container, doors not blocked by furniture
+local blocked = {}
 for _, kind in ipairs(KINDS) do
     local def = town.building_def(kind)
     check(def and def.title and def.color and def.zones, kind .. " registered")
@@ -78,8 +79,26 @@ for _, kind in ipairs(KINDS) do
         end
     end
     check(lamps > 0, kind .. " has lamps")
+    local function free(rows, x, z)
+        local c = (rows[z] or ""):sub(x, x)
+        local e = def.legend[c]
+        return c == "" or c == " " or c == "D" or c:match("%d") or (e ~= nil and not e[1] and not e[2])
+    end
+    for f, rows in ipairs(def.floors) do
+        for z, row in ipairs(rows) do
+            for x = 1, #row do
+                if row:sub(x, x) == "D" then
+                    local along_x = not free(rows, x - 1, z) or not free(rows, x + 1, z)
+                    local through_z = along_x and free(rows, x, z - 1) and free(rows, x, z + 1)
+                    local through_x = not along_x and free(rows, x - 1, z) and free(rows, x + 1, z)
+                    if not (through_z or through_x) then table.insert(blocked, string.format("%s %d:%d,%d", kind, f, x - 1, z - 1)) end
+                end
+            end
+        end
+    end
     log(kind, a.w .. "x" .. a.d, "blocks " .. blocks, "door " .. a.door)
 end
+check(#blocked == 0, "doors blocked by furniture: " .. table.concat(blocked, " "))
 
 -- every kind in the current town is generated exactly as its def describes, rotated ones first
 local placed, present = {}, 0
