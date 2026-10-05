@@ -1,5 +1,6 @@
 local clock = require "zomboid:clock"
 local town = require "zomboid:town"
+local countryside = require "zomboid:countryside"
 local zombies = require "zomboid:zombies"
 local noise = require "zomboid:noise"
 local sandbox = require "zomboid:sandbox"
@@ -95,20 +96,51 @@ function population.seed_building(p, key)
     return n
 end
 
+function population.seed_lot(p, key)
+    local ax, az = town.to_world(p, p.door, -4)
+    local ay = town.GROUND + 1
+    local crowd = math.floor(math.random(1, 3) * sandbox.get("zombie_density") + 0.5)
+    local n = spawn_group(key, crowd, function()
+        return ax + math.random(-3, 3), az + math.random(-2, 2), {anchor = {ax + 0.5, ay, az + 0.5}}
+    end)
+    population.seeded[key] = clock.day()
+    return n
+end
+
+local function due(key, x, z, ppos)
+    local center = {x, ppos[2], z}
+    local d = vec3.distance(center, ppos)
+    if population.seeded[key] == clock.day() or d < population.SEED_NEAR or d > population.SEED_FAR
+        or block.get(x, town.GROUND, z) == -1 then
+        return false
+    end
+    if zombies.count_near(center, 20) >= 2 then
+        population.seeded[key] = clock.day()
+        return false
+    end
+    return true
+end
+
 local function seed_near(ppos)
     for _, c in ipairs(town.cells()) do
-        local key = c.cx .. ":" .. c.cz
         local x, z = town.cell_center(c.cx, c.cz)
-        local center = {x, ppos[2], z}
-        local d = vec3.distance(center, ppos)
-        if population.seeded[key] ~= clock.day() and d >= population.SEED_NEAR and d <= population.SEED_FAR
-            and block.get(x, town.GROUND, z) ~= -1 then
-            if zombies.count_near(center, 20) >= 2 then
-                population.seeded[key] = clock.day()
-            else
-                population.seed_cell(c.cx, c.cz)
-            end
+        if due(c.cx .. ":" .. c.cz, x, z, ppos) then
+            population.seed_cell(c.cx, c.cz)
             return
+        end
+    end
+    local ci, cj = math.floor(ppos[1] / countryside.CELL), math.floor(ppos[3] / countryside.CELL)
+    for i = ci - 1, ci + 1 do
+        for j = cj - 1, cj + 1 do
+            local p = countryside.lot(i, j)
+            if p then
+                local key = "lot:" .. i .. ":" .. j
+                local x, z = town.to_world(p, p.door, -4)
+                if due(key, x, z, ppos) then
+                    population.seed_lot(p, key)
+                    return
+                end
+            end
         end
     end
 end

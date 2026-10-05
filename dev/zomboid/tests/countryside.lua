@@ -132,5 +132,22 @@ campfire_safe(fx, fz)
 local camp = first.campsite
 campfire_safe(town.to_world(camp, 13, 10))
 
+-- zombies gather at countryside lots when the player comes near
+local population = require "zomboid:population"
+local zombies = require "zomboid:zombies"
+local clock = require "zomboid:clock"
+for _, kind in ipairs({"farm", "campsite"}) do
+    local lot = first[kind]
+    local key = "lot:" .. lot.cx .. ":" .. lot.cz
+    local dx, dz = town.to_world(lot, lot.door, -4)
+    population.seeded[key] = nil
+    visit(dx, dz, 8)
+    player.set_pos(pid, dx + 0.5, G + 2, dz + 30.5)
+    app.sleep_until(function() return population.seeded[key] == clock.day() end, 400)
+    local near = zombies.count_near({dx + 0.5, G + 1, dz + 0.5}, 8)
+    print("[zomboid-test] zombies at the " .. kind .. ": " .. near)
+    assert(near > 0, "no zombies at the " .. kind)
+end
+
 app.close_world(false)
 app.delete_world("zcountry")
