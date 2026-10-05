@@ -88,7 +88,6 @@ return kit.building {
     title = "школа",
     color = {200, 160, 100},
     zones = {"suburb"},
-    weight = 2,
     cells = 2,
     materials = {
         wall = {"base:brick", "zomboid:bld_plaster"},

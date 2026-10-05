@@ -110,7 +110,6 @@ return kit.building {
     title = "больница",
     color = {235, 235, 240},
     zones = {"downtown"},
-    weight = {downtown = 2},
     cells = 2,
     materials = {
         wall = {"zomboid:bld_plaster", "base:brick"},

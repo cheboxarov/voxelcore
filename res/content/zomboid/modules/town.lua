@@ -47,11 +47,10 @@ local function reg()
     registry = {list = load_dir("buildings"), by_kind = {}, pick = {}, decor = {}}
     for _, def in ipairs(registry.list) do
         registry.by_kind[def.kind] = def
-        for _, zone in ipairs(def.zones or {}) do
+        for _, zone in ipairs((def.cells or 1) == 1 and def.zones or {}) do
             local w = type(def.weight) == "table" and def.weight[zone] or def.weight or 1
-            local key = zone .. ":" .. (def.cells or 1)
-            registry.pick[key] = registry.pick[key] or {}
-            table.insert(registry.pick[key], {def.kind, w})
+            registry.pick[zone] = registry.pick[zone] or {}
+            table.insert(registry.pick[zone], {def.kind, w})
         end
     end
     for _, d in ipairs(load_dir("decor")) do
@@ -102,8 +101,12 @@ local GRIDS = {
             {1, 3, 1, 1, "."}, {1, 1, 3, 3, "."}, {19, 23, 1, 1, "."}, {23, 23, 3, 3, "."},
             {1, 3, 23, 23, "."}, {1, 1, 21, 21, "."}, {17, 23, 23, 23, "."}, {23, 23, 21, 21, "."},
         },
-        groups = {{19, 3}, {19, 13}, {19, 19}, {3, 15}, {9, 15}},
-        forced = {["11:11"] = "police", ["11:13"] = "grocery", ["17:9"] = "pharmacy", ["23:13"] = "gas_station"},
+        groups = {{19, 3, "supermarket"}, {19, 13, "warehouse"}, {19, 19, "factory"}, {3, 15, "school"}, {9, 15, "hospital"}},
+        forced = {
+            ["11:11"] = "police", ["11:13"] = "grocery", ["17:9"] = "pharmacy", ["23:13"] = "gas_station",
+            ["1:11"] = "military", ["1:13"] = "motel", ["15:3"] = "fire_station", ["15:9"] = "apartments",
+            ["9:13"] = "diner", ["19:7"] = "workshop",
+        },
     },
     {
         name = "village", x0 = 560, z0 = -37, cx0 = 100, cz0 = 0,
@@ -113,7 +116,7 @@ local GRIDS = {
         h = {[2] = {{0, 6, "#"}}},
         zones = {{1, 5, 1, 3, "V"}},
         groups = {},
-        forced = {["5:3"] = "gas_station", ["3:1"] = "church"},
+        forced = {["5:3"] = "gas_station", ["3:1"] = "church", ["5:1"] = "bar"},
     },
 }
 
@@ -462,9 +465,8 @@ local function plan_group(c)
     local anchor = cells[cell_key(g.cx0 + (a[1] - 1) / 2, g.cz0 + (a[2] - 1) / 2)]
     if anchor.group_plan == nil then
         local seed = anchor.cx * 131 + anchor.cz
-        local kind = weighted(reg().pick[anchor.zone .. ":2"] or {}, 0, hash(seed, 0, 29))
         local lot = make_lot(g, a[1], a[2], a[1] + 2, a[2] + 2, anchor.zone, seed)
-        anchor.group_plan = try_plan(anchor, kind, lot, 2, seed) or false
+        anchor.group_plan = try_plan(anchor, a[3], lot, 2, seed) or false
         if anchor.group_plan then
             anchor.group_plan.group = a
         end
@@ -484,7 +486,7 @@ function town.lot_kind(cx, cz)
     if forced and reg().by_kind[forced] then
         return forced
     end
-    return weighted(reg().pick[c.zone .. ":1"] or {}, PARK_WEIGHT[c.zone] or 0, hash(cx, cz, 17)) or "park"
+    return weighted(reg().pick[c.zone] or {}, PARK_WEIGHT[c.zone] or 0, hash(cx, cz, 17)) or "park"
 end
 
 function town.plan(cx, cz)

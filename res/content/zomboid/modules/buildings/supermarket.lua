@@ -5,7 +5,6 @@ return kit.building {
     title = "супермаркет",
     color = {240, 220, 140},
     zones = {"downtown", "suburb", "industrial"},
-    weight = {downtown = 1, suburb = 1, industrial = 1.3},
     cells = 2,
     materials = {
         wall = {"base:brick", "zomboid:bld_plaster", "zomboid:bld_concrete"},
