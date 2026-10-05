@@ -276,5 +276,50 @@ for _, kind in ipairs({"apartments", "school", "hospital", "fire_station", "ware
     end
 end
 
+-- a zombie under or above the player takes the stairs to the player's floor
+survival.get(pid).setup = nil
+for _, kind in ipairs({"apartments", "hospital"}) do
+    local p = placed[kind]
+    local x0, z0 = town.to_world(p, 0, 0)
+    local x1, z1 = town.to_world(p, p.w - 1, p.d - 1)
+    player.set_pos(pid, (x0 + x1) / 2, G + 30, (z0 + z1) / 2)
+    wait_area(math.min(x0, x1), math.min(z0, z1), math.max(x0, x1), math.max(z0, z1))
+    local ground, best, best_d = {}, nil, -1
+    local entry = stair_route(p)[1]
+    for _, s in ipairs(p.def.spots) do
+        if s[2] == 0 then ground[s[1] * 1000 + s[3]] = true end
+    end
+    for _, s in ipairs(p.def.spots) do
+        local x, z = town.to_world(p, p.flip and p.w - 1 - s[1] or s[1], s[3])
+        local d = math.abs(x - entry[1]) + math.abs(z - entry[2])
+        if s[2] == 1 and ground[s[1] * 1000 + s[3]] and d > best_d then
+            best, best_d = {x, z}, d
+        end
+    end
+    check(best, kind .. " has a room above a room")
+    local x, z = best[1], best[2]
+    for _, up in ipairs({true, false}) do
+        player.set_pos(pid, x + 0.5, G + (up and 5.9 or 1.9), z + 0.5)
+        player.set_vel(pid, 0, 0, 0)
+        survival.get(pid).health = 100
+        local uid = zombies.spawn(x, G + (up and 1 or 5), z, {kind = "normal"}):get_uid()
+        app.tick()
+        local comp = zombies.registry[uid]
+        comp.hear({player.get_pos(pid)}, pid)
+        local ticks = 0
+        repeat
+            app.tick()
+            ticks = ticks + 1
+            local y = comp.get_pos()[2]
+        until ticks >= 2400 or (up and y > G + 5.5 or not up and y < G + 2.5)
+        log(kind, up and "upstairs" or "downstairs", "from", best_d, "blocks off the stairs, ticks", ticks,
+            "zombie y", comp.get_pos()[2])
+        check(ticks < 2400,
+            kind .. " zombie follows the player " .. (up and "upstairs" or "downstairs"))
+        entities.get(uid):despawn()
+        app.tick()
+    end
+end
+
 app.close_world(false)
 app.delete_world("zbld")

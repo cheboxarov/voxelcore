@@ -90,7 +90,7 @@ local function compile(def)
         return outside(f, x - 1, z) or outside(f, x + 1, z) or outside(f, x, z - 1) or outside(f, x, z + 1)
     end
 
-    local cells, spots, yard, door, car = {}, {}, {}, nil, nil
+    local cells, spots, yard, stairs, door, car = {}, {}, {}, {}, nil, nil
     for z = 0, d - 1 do
         for x = 0, w - 1 do
             local list, n, top = {}, 0, nil
@@ -145,6 +145,10 @@ local function compile(def)
                     add(base, WALLS[c] or (e and e.g) or "$floor")
                 end
                 if digit and digit > 0 then
+                    if digit == 1 or digit == 8 then
+                        stairs[f] = stairs[f] or {}
+                        stairs[f][digit] = stairs[f][digit] or {x, z}
+                    end
                     local dy = base + math.ceil(digit / 2)
                     add(dy, digit % 2 == 0 and "$stair" or "$slab")
                     occ[dy - base] = true
@@ -201,7 +205,63 @@ local function compile(def)
             cells[z * w + x] = list
         end
     end
-    def.w, def.d, def.grid, def.spots, def.yard, def.car = w, d, cells, spots, yard, car
+    local function step(k, x, z)
+        local n = tonumber(at(k, x, z))
+        return n and n > 0 and n or nil
+    end
+    local flows = {}
+    for k = 0, #floors - 1 do
+        local s, link = stairs[k], {}
+        if s and s[1] then
+            local x, z, dx, dz, seen = s[1][1], s[1][2], 0, 0, {}
+            while true do
+                local a, next_dir = step(k, x, z), nil
+                seen[z * w + x] = true
+                for _, dir in ipairs({{dx, dz}, unpack(FACING)}) do
+                    local b = step(k, x + dir[1], z + dir[2])
+                    if not next_dir and (dir[1] ~= 0 or dir[2] ~= 0) and (b == a or b == a + 1)
+                        and not seen[(z + dir[2]) * w + x + dir[1]] then
+                        next_dir = dir
+                    end
+                end
+                if next_dir == nil then
+                    break
+                end
+                dx, dz = next_dir[1], next_dir[2]
+                link[z * w + x] = (z + dz) * w + x + dx
+                x, z = x + dx, z + dz
+            end
+        end
+        for _, up in ipairs({true, false}) do
+            local start, entry, level = s and s[up and 8 or 1], up and 1 or 8, up and k or k + 1
+            if start and s[entry] then
+                local nxt, queue, i = {[start[2] * w + start[1]] = false}, {start}, 1
+                while queue[i] do
+                    local x, z = queue[i][1], queue[i][2]
+                    i = i + 1
+                    local a = step(k, x, z)
+                    for _, dir in ipairs(FACING) do
+                        local nx, nz = x + dir[1], z + dir[2]
+                        local b = step(k, nx, nz)
+                        local ok
+                        if a and b then
+                            ok = link[z * w + x] == nz * w + nx or link[nz * w + nx] == z * w + x
+                        elseif (a or b) == entry then
+                            ok = b ~= nil or WALKABLE[at(level, nx, nz)]
+                        else
+                            ok = not a and not b and WALKABLE[at(level, nx, nz)]
+                        end
+                        if ok and nxt[nz * w + nx] == nil then
+                            nxt[nz * w + nx] = z * w + x
+                            table.insert(queue, {nx, nz})
+                        end
+                    end
+                end
+                flows[k * 2 + (up and 1 or 0)] = nxt
+            end
+        end
+    end
+    def.w, def.d, def.grid, def.spots, def.yard, def.flows, def.car = w, d, cells, spots, yard, flows, car
     def.door = def.door or door
     def.own_car = car ~= nil
     def.ground = {}
@@ -249,6 +309,15 @@ function kit.building(def)
 
     function def.kind_at(p, hx, hz)
         return def.ground[hz * w + (p.flip and w - 1 - hx or hx)]
+    end
+
+    function def.stair_path(p, k, up, hx, hz)
+        local field = def.flows[k * 2 + (up and 1 or 0)]
+        local nxt = field and field[hz * w + (p.flip and w - 1 - hx or hx)]
+        if nxt then
+            local x = nxt % w
+            return p.flip and w - 1 - x or x, math.floor(nxt / w)
+        end
     end
 
     function def.spot(p, rand, outdoor)

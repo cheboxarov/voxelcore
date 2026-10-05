@@ -95,6 +95,7 @@ local flash = 0
 local move_dir = nil
 local move_mul = 1.0
 local use_path = false
+local rail = nil
 
 function get_pos()
     return tsf:get_pos()
@@ -206,7 +207,9 @@ local function think()
         local mark = noise.loudest(pos, heard_at)
         if mark then
             heard_at = mark.time
-            hear(mark.pos, mark.pid, vec3.distance(pos, mark.pos))
+            if mark.pid or mode ~= "investigate" or target_pid == nil then
+                hear(mark.pos, mark.pid, vec3.distance(pos, mark.pos))
+            end
         end
     end
     local pid = player.get_nearest(pos)
@@ -227,10 +230,14 @@ local function think()
             elseif now - last_seen > 6 then
                 mode = "investigate"
                 goal_until = now + 15
+            elseif target_pid == pid and math.abs(ppos[2] - pos[2]) > 2
+                and town.building_at(math.floor(ppos[1]), math.floor(ppos[3])) then
+                goal = ppos
             end
         end
     end
-    if mode == "investigate" and (goal == nil or now > goal_until or horizontal_distance(pos, goal) < 1.5) then
+    if mode == "investigate" and (goal == nil or now > goal_until
+        or (horizontal_distance(pos, goal) < 1.5 and math.abs(pos[2] - goal[2]) < 2)) then
         mode = "idle"
         goal = nil
         wander_at = now + 3 + math.random() * 6
@@ -323,6 +330,7 @@ local function do_bash()
     end
     local night = clock.is_night()
     bash_ready = now + (night and 1.1 or 1.4)
+    goal_until = math.max(goal_until, now + 2)
     attack_anim = 1
     if barricade.bash(bash_target[1], bash_target[2], bash_target[3], (night and 7 or 5) * kind.bash) then
         bash_target = nil
@@ -445,6 +453,31 @@ function is_downed()
     return now < downed_until
 end
 
+local function stairs_toward(pos, goal)
+    local x, z = math.floor(pos[1]), math.floor(pos[3])
+    local _, p = town.building_at(x, z)
+    if p == nil then
+        local _, gp = town.building_at(math.floor(goal[1]), math.floor(goal[3]))
+        if gp == nil or gp.def.stair_path == nil then
+            return nil
+        end
+        local dx, dz = town.to_world(gp, gp.door, 0)
+        return {dx + 0.5, town.GROUND + 1, dz + 0.5}, math.abs(dx + 0.5 - pos[1]) + math.abs(dz + 0.5 - pos[3]) < 3
+    end
+    if p.def.stair_path == nil then
+        return nil
+    end
+    local up = goal[2] > pos[2]
+    local level = (pos[2] - kind.half - town.GROUND - 1) / 4
+    local hx, hz = town.to_local(p, x, z)
+    local nx, nz = p.def.stair_path(p, up and math.floor(level + 0.05) or math.ceil(level - 0.05) - 1, up, hx, hz)
+    if nx then
+        local wx, wz = town.to_world(p, nx, nz)
+        rail = wx == x and {1, x + 0.5} or {3, z + 0.5}
+        return {wx + 0.5, pos[2], wz + 0.5}, true
+    end
+end
+
 function on_update(tps)
     now = now + 1 / tps
     if dead then
@@ -482,8 +515,10 @@ function on_update(tps)
         end
     end
 
+    local was_path = use_path
     move_dir = nil
     use_path = false
+    rail = nil
     if now < stun_until or goal == nil or bash_target ~= nil then
         pf.set_target(nil)
         return
@@ -494,17 +529,33 @@ function on_update(tps)
         return
     end
     local dist = horizontal_distance(pos, goal)
-    if dist < 1.0 then
+    local height = (pos[2] - kind.half - town.GROUND - 1) % 4
+    local level = math.abs(goal[2] - pos[2]) < ((height < 0.3 or height > 3.7) and 1.2 or 0.4)
+    local target, walk
+    if not level then
+        target, walk = stairs_toward(pos, goal)
+    end
+    if dist < 1.0 and target == nil then
         return
     end
     move_mul = speed_multiplier()
+    if walk then
+        move_mul = math.min(move_mul, 0.6)
+        if stuck < 3 then
+            goal_until = math.max(goal_until, now + 2)
+        end
+    end
     local route = pf.get_route()
-    local direct = dist < 7 or (mode == "chase" and now - last_seen < 0.5) or (route ~= nil and #route == 0)
+    local direct = walk or target == nil and (dist < 7 or (mode == "chase" and now - last_seen < 0.5) or (route ~= nil and #route == 0))
+    target = target or goal
     if direct then
         pf.set_target(nil)
-        move_dir = vec3.normalize({goal[1] - pos[1], 0, goal[3] - pos[3]})
+        move_dir = vec3.normalize({target[1] - pos[1], 0, target[3] - pos[3]})
     else
-        pf.set_target({math.floor(goal[1]), math.floor(goal[2]), math.floor(goal[3])})
+        if not was_path then
+            pf.reset_route()
+        end
+        pf.set_target({math.floor(target[1]), math.floor(target[2]), math.floor(target[3])})
         use_path = true
         move_dir = mob.get_dir()
     end
@@ -526,6 +577,11 @@ function on_physics_update(delta)
                 local vel = body:get_vel()
                 body:set_vel({move_dir[1] * 3, vel[2], move_dir[3] * 3})
             end
+        end
+        if rail then
+            local vel = body:get_vel()
+            vel[rail[1]] = (rail[2] - tsf:get_pos()[rail[1]]) * 8
+            body:set_vel(vel)
         end
     end
 end
