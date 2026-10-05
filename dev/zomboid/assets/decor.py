@@ -339,17 +339,20 @@ def detail_textures():
         img.rect(7, 10, 8, 10, hexc("c0a040"))
     block("desk", 549, desk)
 
-    def bookshelf(img):
-        img.noise(hexc("6a4a2e"), 0.06)
-        for y0 in (1, 5, 9, 13):
-            x = 1
-            while x < 15:
-                w = 1 + img.r.randrange(2)
-                col = img.r.choice(("8a2a22", "2a4a7a", "3a6a3a", "c8a040", "5a3a6a", "d8d0c0"))
-                img.rect(x, y0, min(14, x + w - 1), y0 + 2, hexc(col))
-                x += w
-            img.line(0, y0 + 3, 15, y0 + 3, hexc("4a3020"))
-    block("bookshelf", 550, bookshelf)
+    shelf = Canvas(32, 64, seed=550)
+    shelf.rect(0, 0, 31, 63, hexc("4e3420"))
+    shelf.rect(2, 2, 29, 61, hexc("6a4a2e"))
+    for y0 in (3, 18, 33, 48):
+        x = 3
+        while x < 29:
+            w = 2 + shelf.r.randrange(3)
+            h = 10 + shelf.r.randrange(3)
+            col = hexc(shelf.r.choice(("8a2a22", "2a4a7a", "3a6a3a", "c8a040", "5a3a6a", "d8d0c0")))
+            shelf.rect(x, y0 + 12 - h, min(28, x + w - 1), y0 + 11, col)
+            shelf.line(x, y0 + 12 - h, x, y0 + 11, shade(col, 1.2))
+            x += w
+        shelf.rect(2, y0 + 12, 29, y0 + 14, hexc("4e3420"))
+    shelf.save(os.path.join(BLOCKS, "decor_bookshelf.png"))
 
     def toys(img):
         img.noise(hexc("d06a8a"), 0.05)

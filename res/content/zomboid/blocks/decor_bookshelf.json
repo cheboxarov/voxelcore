@@ -1,8 +1,8 @@
 {
     "caption": "Книжный шкаф",
     "texture-faces": [
-        "wood_side",
-        "wood_side",
+        "wood_side_tall",
+        "wood_side_tall",
         "wood_side",
         "wood_side",
         "decor_bookshelf",
