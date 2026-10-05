@@ -101,7 +101,7 @@ end
 
 local MEDS = {
     {"zomboid:bandage", 6, 2, 5}, {"zomboid:disinfectant", 5, 1, 2}, {"zomboid:painkillers", 5, 1, 2},
-    {"zomboid:antibiotics", 4, 1, 2}, {"zomboid:splint", 3, 1, 1}, {"zomboid:rag", 2, 2, 4},
+    {"zomboid:antibiotics", 3, 1, 2}, {"zomboid:splint", 3, 1, 1}, {"zomboid:rag", 2, 2, 4},
     {"zomboid:book_first_aid_1", 1, 1, 1}, {"zomboid:book_first_aid_2", 1, 1, 1},
 }
 
@@ -121,11 +121,11 @@ return kit.building {
     },
     floors = {ground(), ward(true), ward(false)},
     loot = {
-        medicine_cabinet = MEDS,
-        shelf = {rolls = {3, 6}, unpack(MEDS)},
+        medicine_cabinet = {rolls = {0, 1}, unpack(MEDS)},
+        shelf = {rolls = {1, 2}, unpack(MEDS)},
         crate = {
-            rolls = {2, 4},
-            {"zomboid:bandage", 5, 3, 8}, {"zomboid:disinfectant", 3, 1, 3}, {"zomboid:splint", 2, 1, 2},
+            rolls = {0, 2},
+            {"zomboid:bandage", 5, 2, 5}, {"zomboid:disinfectant", 3, 1, 3}, {"zomboid:splint", 2, 1, 2},
             {"zomboid:water_bottle", 2, 1, 3}, {"zomboid:rag", 2, 3, 6},
         },
         locker = {

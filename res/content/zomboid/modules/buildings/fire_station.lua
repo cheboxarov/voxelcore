@@ -52,7 +52,8 @@ return kit.building {
     },
     loot = {
         locker = {
-            {"zomboid:axe", 4, 1, 1}, {"zomboid:crowbar", 3, 1, 1}, {"zomboid:flashlight", 4, 1, 1},
+            rolls = {0, 1},
+            {"zomboid:axe", 2, 1, 1}, {"zomboid:crowbar", 3, 1, 1}, {"zomboid:flashlight", 4, 1, 1},
             {"zomboid:boots", 3, 1, 1}, {"zomboid:raincoat", 3, 1, 1}, {"zomboid:bandage", 2, 1, 2},
             {"zomboid:leather_jacket", 1, 1, 1}, {"zomboid:hammer", 1, 1, 1},
         },

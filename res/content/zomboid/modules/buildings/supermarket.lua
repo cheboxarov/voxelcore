@@ -47,7 +47,7 @@ return kit.building {
     }},
     loot = {
         shelf = {
-            rolls = {2, 6},
+            rolls = {0, 2},
             {"zomboid:canned_beans", 6, 1, 3}, {"zomboid:chips", 5, 1, 3}, {"zomboid:chocolate", 3, 1, 2},
             {"zomboid:soda", 4, 1, 3}, {"zomboid:water_bottle", 4, 1, 3}, {"zomboid:bread", 3, 1, 2},
             {"zomboid:cigarettes", 1, 1, 1}, {"zomboid:magazine", 2, 1, 1}, {"zomboid:matches", 2, 1, 2},
@@ -60,7 +60,7 @@ return kit.building {
             {"zomboid:bread", 2, 1, 2}, {"zomboid:apple", 3, 1, 4}, {"zomboid:carrot", 2, 1, 3},
         },
         crate = {
-            rolls = {2, 5},
+            rolls = {0, 2},
             {"zomboid:potato", 4, 2, 5}, {"zomboid:carrot", 4, 2, 5}, {"zomboid:apple", 4, 2, 5},
             {"zomboid:canned_beans", 4, 2, 6}, {"zomboid:water_bottle", 3, 2, 4}, {"zomboid:chips", 2, 2, 4},
             {"zomboid:soda", 2, 2, 4},

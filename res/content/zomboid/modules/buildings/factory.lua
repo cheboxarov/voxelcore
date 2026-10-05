@@ -115,14 +115,14 @@ return kit.building {
             {"zomboid:water_bottle", 2, 1, 1}, {"zomboid:hammer", 1, 1, 1}, {"zomboid:map", 1, 1, 1},
         },
         crate = {
-            rolls = {2, 5},
+            rolls = {0, 1},
             {"zomboid:plank", 5, 4, 10}, {"zomboid:nails", 5, 10, 40}, {"zomboid:stick", 3, 2, 5},
             {"zomboid:gas_can_empty", 2, 1, 1}, {"zomboid:gas_can", 1, 1, 1}, {"zomboid:empty_bottle", 2, 1, 3},
             {"zomboid:generator.item", 0.3, 1, 1},
         },
         shelf = {
-            rolls = {2, 4},
-            {"zomboid:nails", 5, 10, 30}, {"zomboid:plank", 4, 2, 6}, {"zomboid:rag", 3, 2, 4},
+            rolls = {0, 2},
+            {"zomboid:nails", 5, 5, 20}, {"zomboid:plank", 4, 2, 6}, {"zomboid:rag", 3, 2, 4},
             {"zomboid:shovel", 1, 1, 1}, {"zomboid:axe", 1, 1, 1}, {"zomboid:hammer", 2, 1, 1},
         },
         wardrobe = {

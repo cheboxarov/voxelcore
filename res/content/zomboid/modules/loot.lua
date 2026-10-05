@@ -126,12 +126,16 @@ function loot.table_for(container, x, z)
     return special or TABLES[container]
 end
 
+function loot.rolls(container, entries)
+    return entries.rolls or ROLLS[container] or {1, 3}
+end
+
 function loot.fill(invid, container, x, z, apocalypse_hour)
     local entries = loot.table_for(container, x, z)
     if entries == nil then
         return 0
     end
-    local rolls = entries.rolls or ROLLS[container] or {1, 3}
+    local rolls = loot.rolls(container, entries)
     local n = math.random(rolls[1], rolls[2])
     local _, p = town.building_at(x, z)
     if p and p.looted then
