@@ -110,15 +110,29 @@ local function police(s)
     end
 end
 
-local function cordon()
-    local x = CORDON_X
-    local z0, z1
-    for z = -15, 15 do
-        if town.column(x, z) == "road" then
-            z0, z1 = z0 or z, z
+local function camp_spot()
+    for x = CORDON_X, CORDON_X - 120, -6 do
+        local z0, z1
+        for z = -45, 45 do
+            if town.column(x, z) == "road" then
+                z0, z1 = z0 or z, z
+            end
+        end
+        local wild = z0 ~= nil
+        for dx = -13, 3 do
+            for dz = -16, -1 do
+                wild = wild and town.column(x + dx, z0 + dz) == nil
+            end
+        end
+        if wild then
+            return x, z0, z1
         end
     end
-    if z0 == nil then
+end
+
+local function cordon()
+    local x, z0, z1 = camp_spot()
+    if x == nil then
         return
     end
     for _, z in ipairs({z0, z0 + 1, z1 - 1, z1}) do

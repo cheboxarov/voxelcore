@@ -48,7 +48,7 @@ local SOFT = {["core:struct_air"] = true, ["zomboid:decor_blood"] = true, ["zomb
 local counts, found, solid, bad, ids = {}, {}, {}, {}, {}
 local first_pass = {}
 local B = town.BOUNDS
-for wx = B[1] - 30, 560 do
+for wx = B[1] - 170, 560 do
     for wz = B[2] - 5, B[4] + 5 do
         local out = {}
         local kind = town.column(wx, wz, out)

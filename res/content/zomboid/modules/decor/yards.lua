@@ -23,6 +23,18 @@ local function builder(p)
         if p.car and math.abs(hx - p.car[1]) <= 2 and math.abs(hz - p.car[2]) <= 2 then
             return nil
         end
+        for _, d in ipairs(util.DIRS) do
+            local nx, nz = hx + d[1], hz + d[2]
+            if nx >= 0 and nx < p.w and nz >= 0 and nz < p.d then
+                local out = {}
+                p.def.column(p, nx, nz, out)
+                for _, e in ipairs(out) do
+                    if e[2] == "base:wooden_door" or e[2] == "zomboid:door_barricade" then
+                        return nil
+                    end
+                end
+            end
+        end
         return x, z
     end
     function b.put(hx, hz, entries)
@@ -139,7 +151,9 @@ function yards.column(ctx, wx, wz, out)
     if util.emit(lot(ctx.plan).blocks, wx, wz, out) then
         return true
     end
-    if not ctx.plan.classic and hash(wx, wz, 99) < 0.006 then
+    local hx, hz = town.to_local(ctx.plan, wx, wz)
+    local near = hx >= -1 and hx <= ctx.plan.w and hz >= -1 and hz <= ctx.plan.d
+    if not near and not ctx.plan.classic and hash(wx, wz, 99) < 0.006 then
         table.insert(out, util.decal("litter", hash(wz, wx, 100))[1])
         return true
     end

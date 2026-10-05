@@ -351,6 +351,9 @@ local function damage(p, hx, hz, out, first)
 end
 
 function house.column(p, hx, hz, out)
+    if p.hw == nil then
+        p.hw, p.floors, p.roof = p.w, 1, ROOFS[1]
+    end
     if hx >= p.hw then
         return garage(p, hx - p.hw, hz, out)
     end
