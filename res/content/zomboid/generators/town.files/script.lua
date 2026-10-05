@@ -26,7 +26,7 @@ end
 function place_structures(x, z, w, d, hmap, chunk_height)
     local placements = {}
     local column = {}
-    local biomes = nature.chunk_biomes(x / w, z / d, SEED)
+    local biome_at
     for lz = 0, d - 1 do
         for lx = 0, w - 1 do
             local wx, wz = x + lx, z + lz
@@ -39,7 +39,8 @@ function place_structures(x, z, w, d, hmap, chunk_height)
             end
             if kind == nil then
                 local h = math.floor(hmap:at(lx, lz) * chunk_height)
-                flora.column(placements, wx, wz, lx, lz, h, biomes[lz * w + lx + 1], hmap, SEED % 100003)
+                biome_at = biome_at or nature.chunk_biome_at(x / w, z / d, SEED)
+                flora.column(placements, wx, wz, lx, lz, h, biome_at, hmap, SEED % 100003)
             elseif kind == "park" or kind == "lawn" then
                 local tree = town.tree_at(wx, wz, SEED % 100003)
                 if tree then

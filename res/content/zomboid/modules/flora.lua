@@ -75,6 +75,14 @@ local SMALL = {
     town = {bush = 0.002},
 }
 
+local SMALL_KINDS = {"bush", "log", "rock", "outcrop"}
+local SMALL_MAX = 0
+for _, small in pairs(SMALL) do
+    local sum = 0
+    for _, p in pairs(small) do sum = sum + p end
+    SMALL_MAX = math.max(SMALL_MAX, sum)
+end
+
 local function pick(mix, r)
     local total = 0
     for i = 2, #mix do total = total + mix[i][2] end
@@ -88,10 +96,22 @@ local function pick(mix, r)
     return mix[#mix][1]
 end
 
+local AROUND = {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}
+local DIAGONAL = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}
+
+local function free(x, z)
+    return town.column(x, z) == nil and not countryside.near_road(x, z)
+end
+
 local function clear(wx, wz, radius)
+    for _, o in ipairs(AROUND) do
+        if not free(wx + o[1] * radius, wz + o[2] * radius) then
+            return false
+        end
+    end
     local k = radius - 1
-    for _, o in ipairs({{0, 0}, {radius, 0}, {-radius, 0}, {0, radius}, {0, -radius}, {k, k}, {-k, k}, {k, -k}, {-k, -k}}) do
-        if town.column(wx + o[1], wz + o[2]) ~= nil or countryside.occupied(wx + o[1], wz + o[2]) then
+    for _, o in ipairs(DIAGONAL) do
+        if k > 0 and not free(wx + o[1] * k, wz + o[2] * k) then
             return false
         end
     end
@@ -123,16 +143,18 @@ local function dry(hmap, lx, lz)
     return true
 end
 
--- vegetation and rocks for one wild column; h is the surface height
-function flora.column(out, wx, wz, lx, lz, h, biome, hmap, seed)
+-- vegetation and rocks for one wild column; h is the surface height, biome_at(lx, lz) is asked only when needed
+function flora.column(out, wx, wz, lx, lz, h, biome_at, hmap, seed)
     if h < SEA then
         return
     end
     local y = h + 1
     local cx, cz = math.floor(wx / CELL), math.floor(wz / CELL)
     local spot = math.floor(hash(cx, cz, seed + 41) * CELL * CELL)
-    local mix = MIX[biome]
+    local biome
     if wx - cx * CELL == spot % CELL and wz - cz * CELL == math.floor(spot / CELL) then
+        biome = biome_at(lx, lz)
+        local mix = MIX[biome]
         if hash(cx, cz, seed + 42) < mix[1] then
             local kind = pick(mix, hash(cx, cz, seed + 43))
             if clear(wx, wz, kind == "tree" and 6 or 3) then
@@ -143,10 +165,13 @@ function flora.column(out, wx, wz, lx, lz, h, biome, hmap, seed)
             return
         end
     end
-    local small = SMALL[biome]
     local r = hash(wx, wz, seed + 45)
+    if r >= SMALL_MAX then
+        return
+    end
+    local small = SMALL[biome or biome_at(lx, lz)]
     local acc = 0
-    for _, name in ipairs({"bush", "log", "rock", "outcrop"}) do
+    for _, name in ipairs(SMALL_KINDS) do
         local p = small[name]
         if p then
             acc = acc + p

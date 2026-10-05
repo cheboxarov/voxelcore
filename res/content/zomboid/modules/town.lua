@@ -718,12 +718,19 @@ local function lot_column(c, p, lot, wx, wz, out)
     return "lawn"
 end
 
+local countryside_mod
+
+local function countryside()
+    countryside_mod = countryside_mod or require "zomboid:countryside"
+    return countryside_mod
+end
+
 function town.column(wx, wz, out)
     local g, col, row, ox, oz = locate(wx, wz)
     if g == nil then
         local kind = highway(wx, wz, out)
         if kind == nil then
-            kind = require("zomboid:countryside").column(wx, wz, out)
+            kind = countryside().column(wx, wz, out)
             if kind then
                 return kind
             end
@@ -831,7 +838,7 @@ end
 function town.building_at(wx, wz)
     local g, col, row = locate(wx, wz)
     if g == nil then
-        return require("zomboid:countryside").building_at(wx, wz)
+        return countryside().building_at(wx, wz)
     end
     local p
     if col % 2 == 1 and row % 2 == 1 then

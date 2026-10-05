@@ -288,13 +288,23 @@ function nature.biome_params(x, y, w, h, bpd, seed)
     return f.open, f.wet, f.rock
 end
 
+local NAMES, VALUES = {}, {}
+for i, biome in ipairs(nature.BIOMES) do
+    NAMES[i] = biome[1]
+    for j = 1, 3 do
+        VALUES[i * 6 + j * 2 - 1], VALUES[i * 6 + j * 2] = biome[j + 1][1], biome[j + 1][2]
+    end
+end
+local abs = math.abs
+
 local function choose(a, b, c)
     local best, score = nil, math.huge
-    for _, biome in ipairs(nature.BIOMES) do
-        local s = math.abs((a - biome[2][1]) / biome[2][2]) + math.abs((b - biome[3][1]) / biome[3][2])
-            + math.abs((c - biome[4][1]) / biome[4][2])
+    for i = 1, #NAMES do
+        local o = i * 6
+        local s = abs((a - VALUES[o + 1]) / VALUES[o + 2]) + abs((b - VALUES[o + 3]) / VALUES[o + 4])
+            + abs((c - VALUES[o + 5]) / VALUES[o + 6])
         if s < score then
-            best, score = biome[1], s
+            best, score = NAMES[i], s
         end
     end
     return best
@@ -306,18 +316,26 @@ local function upscale(m, bpd)
     return m
 end
 
--- biome names of a chunk exactly as the engine picks them, index lz * 16 + lx + 1
-function nature.chunk_biomes(cx, cz, seed)
+-- biome_at(lx, lz) of a chunk exactly as the engine picks the biome
+function nature.chunk_biome_at(cx, cz, seed)
     local bpd = nature.BIOMES_BPD
     local n = CHUNK / bpd + 1
     local a, b, c = nature.biome_params(cx * CHUNK / bpd, cz * CHUNK / bpd, n, n, bpd, seed)
     upscale(a, bpd)
     upscale(b, bpd)
     upscale(c, bpd)
+    return function(lx, lz)
+        return choose(a:at(lx, lz), b:at(lx, lz), c:at(lx, lz))
+    end
+end
+
+-- biome names of a chunk, index lz * 16 + lx + 1
+function nature.chunk_biomes(cx, cz, seed)
+    local biome_at = nature.chunk_biome_at(cx, cz, seed)
     local out = {}
     for lz = 0, CHUNK - 1 do
         for lx = 0, CHUNK - 1 do
-            out[lz * CHUNK + lx + 1] = choose(a:at(lx, lz), b:at(lx, lz), c:at(lx, lz))
+            out[lz * CHUNK + lx + 1] = biome_at(lx, lz)
         end
     end
     return out

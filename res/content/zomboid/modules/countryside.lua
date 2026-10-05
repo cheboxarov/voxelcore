@@ -226,10 +226,9 @@ function countryside.column(wx, wz, out)
     return nil
 end
 
--- trees and rocks keep off lots and roads
-function countryside.occupied(wx, wz)
-    return lot_at(wx, wz) ~= nil or road_at(wx, wz) or road_at(wx + 2, wz) or road_at(wx - 2, wz)
-        or road_at(wx, wz + 2) or road_at(wx, wz - 2)
+-- trees and rocks keep two blocks off dirt roads (lots and the roads themselves are town.column kinds)
+function countryside.near_road(wx, wz)
+    return road_at(wx + 2, wz) or road_at(wx - 2, wz) or road_at(wx, wz + 2) or road_at(wx, wz - 2)
 end
 
 -- flat pads {cx, cz, half_w, half_d, ramp} touching the area; lots_only for biome shaping
