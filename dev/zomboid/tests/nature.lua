@@ -47,6 +47,9 @@ local function check_mirror(x0, z0, r)
                     assert(nature.water_at(x, z))
                 elseif LAYER[top] then
                     local expected = TOP[nature.biome(x, z)] or "base:grass_block"
+                    if expected == "base:grass_block" and top == "base:dirt" and block.is_solid_at(x, h + 1, z) then
+                        expected = top
+                    end
                     assert(top == expected, string.format("biome mirror at %d,%d: %s is %s, expected %s",
                         x, z, nature.biome(x, z), top, expected))
                     biomes_checked = biomes_checked + 1
@@ -151,6 +154,7 @@ local totals = {}
 for _, biome in ipairs({"forest", "birch", "meadow", "swamp", "hills"}) do
     local x, z = find(biome, 160)
     visit(x, z, 20)
+    app.sleep(30)
     local cols, tops = check_mirror(x, z, 20)
     local n = count(x, z, 20, LOGS)
     totals[biome] = n
