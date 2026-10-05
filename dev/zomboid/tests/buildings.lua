@@ -129,6 +129,21 @@ for _, kind in ipairs(KINDS) do
         end
         log("generated", kind, "rot", p.rot, "blocks", total, "mismatched", wrong)
         check(wrong == 0, kind .. " generated as planned")
+        if p.car and p.def.own_car and not p.def.kind_at(p, p.car[1], p.car[2]) then
+            local hz, kind_at = p.car[2] - 1, nil
+            repeat
+                for hx = p.car[1] - 1, p.car[1] + 1 do
+                    local x, z = town.to_world(p, hx, hz)
+                    for dy = 1, 2 do
+                        check(block.is_replaceable_at(x, G + dy, z), kind .. " car drives out at " .. hx .. "," .. hz)
+                    end
+                end
+                kind_at = town.column(town.to_world(p, p.car[1], hz))
+                hz = hz - 1
+            until kind_at == "road" or hz < -12
+            check(kind_at == "road", kind .. " car reaches the road")
+            log(kind, "garage car drives", p.car[2] - hz, "blocks to the road")
+        end
         if p.def.car_color then
             local sx, sz = town.car_spot(p)
             local color
